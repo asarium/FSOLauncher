@@ -1,0 +1,31 @@
+﻿<UserControl xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:UI.WPF.Modules.General.ViewModels"
+             xmlns:internal="clr-namespace:UI.WPF.Modules.General.ViewModels.Internal" mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance {x:Type viewModels:JoystickSettingsViewModel}}"
+             x:Class="UI.WPF.Modules.General.Views.JoystickSettingsControl" x:Name="UserControl" d:DesignWidth="400"
+             d:DesignHeight="150">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <TextBlock HorizontalAlignment="Right" TextWrapping="Wrap" Text="Joysticks:" VerticalAlignment="Center"
+                   Margin="0,0,5,0" />
+
+        <ComboBox VerticalAlignment="Center" Grid.Column="1" ItemsSource="{Binding Joysticks}"
+                  SelectedItem="{Binding SelectedJoystick}" Margin="5" IsEnabled="{Binding JoysticksAvailable}">
+            <ComboBox.ItemTemplate>
+                <DataTemplate DataType="internal:JoystickViewModel">
+                    <TextBlock Text="{Binding DisplayString}" />
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
+    </Grid>
+</UserControl>

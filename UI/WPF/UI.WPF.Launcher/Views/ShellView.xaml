@@ -1,0 +1,118 @@
+﻿<controls:MetroWindow x:Class="UI.WPF.Launcher.Views.ShellView"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                      xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+                      xmlns:interfaces="clr-namespace:UI.WPF.Launcher.Common.Interfaces;assembly=UI.WPF.Launcher.Common"
+                      xmlns:fsoManagement="clr-namespace:FSOManagement;assembly=FSOManagement"
+                      xmlns:viewModels="clr-namespace:UI.WPF.Launcher.ViewModels"
+                      xmlns:profiles="clr-namespace:FSOManagement.Profiles;assembly=FSOManagement"
+                      xmlns:cal="http://www.caliburnproject.org"
+                      mc:Ignorable="d" ResizeMode="CanResizeWithGrip"
+                      d:DataContext="{d:DesignInstance viewModels:ShellViewModel}" d:DesignHeight="700"
+                      d:DesignWidth="500" Title="{Binding Title}" GlowBrush="{DynamicResource AccentColorBrush}"
+                      Width="{Binding Settings.Width, Mode=TwoWay}" Height="{Binding Settings.Height, Mode=TwoWay}"
+                      TitleCaps="False" SaveWindowPosition="False" WindowStartupLocation="CenterScreen">
+    <controls:MetroWindow.RightWindowCommands>
+        <controls:WindowCommands ItemsSource="{Binding RightCommands}" />
+        <!--
+        <controls:WindowCommands ItemsSource="{Binding RightCommands}">
+            <controls:WindowCommands.ItemTemplate>
+                <DataTemplate>
+                    <ContentControl cal:Bind.ModelWithoutContext="{Binding}" />
+                </DataTemplate>
+            </controls:WindowCommands.ItemTemplate>
+        </controls:WindowCommands>-->
+    </controls:MetroWindow.RightWindowCommands>
+
+    <controls:MetroContentControl>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <WrapPanel>
+                <GroupBox Header="Profile" Margin="5" Width="300" HorizontalAlignment="Center"
+                          VerticalAlignment="Center">
+                    <Grid Margin="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <ComboBox VerticalAlignment="Center" Margin="2"
+                                  ItemsSource="{Binding LauncherViewModel.ProfileManager.Profiles}"
+                                  SelectedItem="{Binding LauncherViewModel.ProfileManager.CurrentProfile}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate DataType="profiles:Profile">
+                                    <TextBlock Text="{Binding Name}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+
+                        <Button VerticalAlignment="Center" Width="40" Grid.Column="1" Margin="2"
+                                Style="{DynamicResource MetroCircleButtonStyle}" Height="40">
+                            <Rectangle
+                                Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"
+                                HorizontalAlignment="Left" Height="18" Width="18">
+                                <Rectangle.OpacityMask>
+                                    <VisualBrush Stretch="Fill" Visual="{DynamicResource appbar_add}" />
+                                </Rectangle.OpacityMask>
+                            </Rectangle>
+                        </Button>
+                    </Grid>
+                </GroupBox>
+                <GroupBox Header="Game" Margin="5" Width="300" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Grid Margin="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <ComboBox ItemsSource="{Binding LauncherViewModel.TotalConversions}"
+                                  HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                                  SelectedItem="{Binding LauncherViewModel.ProfileManager.CurrentProfile.SelectedTotalConversion}"
+                                  IsEnabled="{Binding HasTotalConversions}" Grid.Column="0">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate DataType="fsoManagement:TotalConversion">
+                                    <TextBlock>
+                                        <Run Text="{Binding Name}" FontWeight="Bold" /> -
+                                        <Run Text="{Binding RootFolder, Mode=OneWay}" />
+                                    </TextBlock>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+
+                        <Button VerticalAlignment="Center" Width="40" Grid.Column="1" Margin="2"
+                                Command="{Binding AddGameRootCommand}" Style="{DynamicResource MetroCircleButtonStyle}"
+                                Height="40">
+                            <Rectangle
+                                Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"
+                                HorizontalAlignment="Left" Height="18" Width="18">
+                                <Rectangle.OpacityMask>
+                                    <VisualBrush Stretch="Fill" Visual="{DynamicResource appbar_add}" />
+                                </Rectangle.OpacityMask>
+                            </Rectangle>
+                        </Button>
+                    </Grid>
+                </GroupBox>
+            </WrapPanel>
+
+            <controls:MetroAnimatedSingleRowTabControl x:Name="Items" Grid.Row="1">
+                <TabControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type interfaces:ILauncherTab}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding DisplayName}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </TabControl.ItemTemplate>
+            </controls:MetroAnimatedSingleRowTabControl>
+
+            <StackPanel Grid.Row="2" HorizontalAlignment="Right" Margin="10">
+                <Button Content="Play" Background="Green" FontSize="22" Command="{Binding LaunchGameCommand}" />
+            </StackPanel>
+        </Grid>
+    </controls:MetroContentControl>
+</controls:MetroWindow>

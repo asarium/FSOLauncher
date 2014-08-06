@@ -1,0 +1,22 @@
+﻿<UserControl xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:viewModels="clr-namespace:UI.WPF.Modules.General.ViewModels"
+			 xmlns:views="clr-namespace:UI.WPF.Modules.General.Views"
+			 xmlns:General="clr-namespace:UI.WPF.Modules.General"
+			 x:Class="UI.WPF.Modules.General.Views.GeneralTabView" mc:Ignorable="d"
+			 d:DataContext="{d:DesignInstance {x:Type viewModels:GeneralTabViewModel}}" d:DesignHeight="500"
+			 d:DesignWidth="600">
+	<WrapPanel>
+		<GroupBox Header="Executables" Margin="5" Width="400">
+			<views:ExecutableListView DataContext="{Binding ExecutableListViewModel}" />
+		</GroupBox>
+		<GroupBox Header="Video" Margin="5" Width="400">
+			<views:VideoSettingsControl DataContext="{Binding VideoSettingsViewModel}" />
+		</GroupBox>
+		<GroupBox Header="Joystick" Margin="5" Width="400">
+			<views:JoystickSettingsControl DataContext="{Binding JoystickSettingsViewModel}"/>
+		</GroupBox>
+	</WrapPanel>
+</UserControl>

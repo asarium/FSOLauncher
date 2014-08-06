@@ -1,0 +1,61 @@
+﻿<UserControl xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ViewModels="clr-namespace:UI.WPF.Modules.Mods.ViewModels"
+             xmlns:converters="clr-namespace:UI.WPF.Modules.Mods.Converters"
+             xmlns:views="clr-namespace:UI.WPF.Modules.Mods.Views"
+             xmlns:blendHelpers="clr-namespace:UI.WPF.Modules.Mods.BlendHelpers" mc:Ignorable="d"
+             x:Class="UI.WPF.Modules.Mods.ModDisplayControl" x:Name="UserControl" d:DesignWidth="581.187"
+             d:DesignHeight="275" d:DataContext="{d:DesignInstance {x:Type ViewModels:ModViewModel}}">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/UI.WPF.Modules.Mods;component/Properties/DesignTimeResources.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <Style x:Key="ModBorderStyle" TargetType="{x:Type Border}">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsActiveMod}" Value="True">
+                        <Setter Property="BorderBrush" Value="{DynamicResource AccentColorBrush}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Border MinHeight="180" BorderThickness="0,2,0,0" BorderBrush="{DynamicResource AccentColorBrush}">
+        <Border BorderThickness="5" Margin="3,6" CornerRadius="20" Style="{DynamicResource ModBorderStyle}"
+                Padding="5,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="250" />
+                    <ColumnDefinition Width="130" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <views:ModImageDisplayControl ImagePath="{Binding ImagePath}" Margin="5" />
+
+                <Grid Grid.Column="1" Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Text="{Binding DisplayName}"
+                               VerticalAlignment="Center" FontWeight="Bold" FontSize="15" />
+
+                    <Button Content="Activate" HorizontalAlignment="Center" VerticalAlignment="Center" Width="75"
+                            Grid.Row="1" Margin="0,5" Command="{Binding ActivateCommand}" />
+
+                    <Button Content="More Info" HorizontalAlignment="Center" VerticalAlignment="Center" Width="75"
+                            Grid.Row="2" Margin="0,5,0,15" Command="{Binding MoreInfoCommand}" />
+
+                </Grid>
+
+                <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding InfoText}"
+                           VerticalAlignment="Center" Grid.Column="2" />
+            </Grid>
+        </Border>
+    </Border>
+</UserControl>

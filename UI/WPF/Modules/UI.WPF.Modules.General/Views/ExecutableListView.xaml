@@ -1,0 +1,32 @@
+﻿<UserControl x:Class="UI.WPF.Modules.General.Views.ExecutableListView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:viewModels="clr-namespace:UI.WPF.Modules.General.ViewModels"
+             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:internal="clr-namespace:UI.WPF.Modules.General.ViewModels.Internal"
+             mc:Ignorable="d" d:DataContext="{d:DesignInstance viewModels:ExecutableListViewModel}"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+
+        <ComboBox VerticalAlignment="Center" Margin="0,0,5,0" ItemsSource="{Binding Executables}"
+                          SelectedItem="{Binding SelectedExecutableViewModel}">
+            <ComboBox.ItemTemplate>
+                <DataTemplate DataType="internal:ExecutableViewModel">
+                    <Label Content="{Binding DisplayString}" />
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
+
+        <controls:ToggleSwitch Grid.Column="1" Margin="5,0,0,0" OnLabel="Release" OffLabel="Debug" Width="120"
+                                     IsEnabled="{Binding SelectedExecutableViewModel.HasBothVersions}"
+                                     IsChecked="{Binding SelectedExecutableViewModel.ReleaseSelected}" VerticalAlignment="Center" />
+
+    </Grid>
+</UserControl>

@@ -1,0 +1,48 @@
+﻿<dialogs:SimpleDialog x:Class="UI.WPF.Launcher.Views.GameRootInputDialog"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                      xmlns:dialogs="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
+                      xmlns:views="clr-namespace:UI.WPF.Launcher.Views"
+                      mc:Ignorable="d" d:DesignHeight="300"
+                      d:DesignWidth="600">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Text="Name" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right"
+                   Margin="0,0,10,0" />
+        <TextBox Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Margin="0,5"
+                 Text="{Binding SelectedName, RelativeSource={RelativeSource AncestorType=views:GameRootInputDialog, Mode=FindAncestor}, Mode=TwoWay}" />
+
+        <TextBlock Text="Path:" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,10,0"
+                   HorizontalAlignment="Right" />
+        <Grid Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBox VerticalAlignment="Center" Grid.Column="0" HorizontalAlignment="Stretch" Margin="0,5,5,5"
+                     Text="{Binding SelectedPath, RelativeSource={RelativeSource AncestorType=views:GameRootInputDialog, Mode=FindAncestor}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            <Button Content="Browse..." HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Column="1" Command="{Binding BrowseCommand, RelativeSource={RelativeSource AncestorType=views:GameRootInputDialog, Mode=FindAncestor}}"/>
+        </Grid>
+
+        <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal"
+                    HorizontalAlignment="Right" Height="85">
+            <Button Height="35" MinWidth="80" Style="{DynamicResource AccentedDialogSquareButton}"
+                    Content="{Binding AcceptButtonText, RelativeSource={RelativeSource AncestorType=views:GameRootInputDialog, Mode=FindAncestor}, UpdateSourceTrigger=PropertyChanged}"
+                    Margin="0 0 5 0" Command="{Binding AcceptCommand, RelativeSource={RelativeSource AncestorType=views:GameRootInputDialog, Mode=FindAncestor}}" />
+            <Button Height="35" MinWidth="80"
+                    Content="{Binding CancelButtonText, RelativeSource={RelativeSource AncestorType=views:GameRootInputDialog, Mode=FindAncestor}, UpdateSourceTrigger=PropertyChanged}"
+                    Margin="5 0 5 0" Click="CancelButton_Click" />
+        </StackPanel>
+    </Grid>
+</dialogs:SimpleDialog>

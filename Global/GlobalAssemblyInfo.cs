@@ -1,0 +1,16 @@
+// This file contains common AssemblyVersion data to be shared across all projects in this solution.
+using System.Reflection;
+ 
+[assembly: AssemblyCompany("FreeSpace Source Code Project")]
+[assembly: AssemblyProduct("FSOLauncher")]
+[assembly: AssemblyCopyright("Copyright © FreeSpace Source Code Project 2014")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+ 
+#if DEBUG
+[assembly: AssemblyConfiguration("Debug")]
+#else
+[assembly: AssemblyConfiguration("Release")]
+#endif
+
+[assembly: AssemblyVersion("0.1.0.0")]

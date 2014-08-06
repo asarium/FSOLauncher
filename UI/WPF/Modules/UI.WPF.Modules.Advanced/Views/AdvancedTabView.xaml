@@ -1,0 +1,63 @@
+﻿<UserControl xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:viewModels="clr-namespace:UI.WPF.Modules.Advanced.ViewModels"
+             xmlns:fsoManagement="clr-namespace:FSOManagement;assembly=FSOManagement"
+             x:Class="UI.WPF.Modules.Advanced.Views.AdvancedTabView" mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance {x:Type viewModels:AdvancedTabViewModel}}" d:DesignHeight="500"
+             d:DesignWidth="400">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <ScrollViewer>
+            <ItemsControl ItemsSource="{Binding FlagCollectionView}" BorderThickness="0">
+                <ItemsControl.GroupStyle>
+                    <GroupStyle>
+                        <GroupStyle.HeaderTemplate>
+                            <DataTemplate>
+                                <Grid Background="{DynamicResource AccentColorBrush}" Height="30">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="20" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="1" Text="{Binding Name}" VerticalAlignment="Center"
+                                               HorizontalAlignment="Stretch" FontSize="14" FontWeight="Bold"
+                                               Foreground="{DynamicResource WhiteBrush}" />
+                                </Grid>
+                            </DataTemplate>
+                        </GroupStyle.HeaderTemplate>
+                    </GroupStyle>
+                </ItemsControl.GroupStyle>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="viewModels:FlagViewModel">
+                        <StackPanel Orientation="Horizontal" Height="30">
+                            <CheckBox IsChecked="{Binding Enabled, Mode=TwoWay}" HorizontalAlignment="Center"
+                                      Width="20" VerticalAlignment="Center" />
+                            <TextBlock Text="{Binding DisplayString}" HorizontalAlignment="Stretch"
+                                       VerticalAlignment="Center" Margin="5,0,0,0" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+        </ScrollViewer>
+
+        <Rectangle Grid.Row="1" VerticalAlignment="Center" Margin="0,3" Fill="{DynamicResource AccentColorBrush}"
+                   Height="1" />
+
+        <GroupBox Margin="3" Grid.Row="2" Header="Custom options">
+            <TextBox TextWrapping="Wrap" VerticalAlignment="Top" />
+        </GroupBox>
+
+        <GroupBox Margin="3" Grid.Row="3" Header="Current commandline">
+            <TextBox TextWrapping="Wrap" VerticalAlignment="Top" Height="75" IsReadOnly="True"
+                     Text="{Binding CurrentCommandLine, Mode=OneWay}" />
+        </GroupBox>
+    </Grid>
+</UserControl>
