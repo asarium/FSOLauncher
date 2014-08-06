@@ -8,10 +8,8 @@ using System.Windows.Data;
 using System.Windows.Input;
 using Caliburn.Micro;
 using FSOManagement.Interfaces;
-using FSOManagement.Profiles;
 using ReactiveUI;
 using SDLGlue;
-using Splat;
 using UI.WPF.Launcher.Common.Interfaces;
 using UI.WPF.Launcher.Common.Services;
 using UI.WPF.Modules.General.ViewModels.Internal;
@@ -29,11 +27,11 @@ namespace UI.WPF.Modules.General.ViewModels
 
         private ListCollectionView _resolutionCollectionView;
 
+        private string _selectedTextureFilter;
+
         private VideoDisplayViewModel _selectedVideoDisplay;
 
         private WindowModeViewModel _selectedWindowMode;
-
-        private string _selectedTextureFilter;
 
         [ImportingConstructor]
         public VideoSettingsViewModel(IProfileManager profileManager)
@@ -50,11 +48,6 @@ namespace UI.WPF.Modules.General.ViewModels
             InitializeWindowMode(profileManager);
 
             InitializeTextureFilter(profileManager);
-        }
-
-        private void InitializeTextureFilter(IProfileManager profileManager)
-        {
-            profileManager.WhenAny(x => x.CurrentProfile.TextureFiltering, val => Enum.GetName(typeof(TextureFiltering), val.Value)).BindTo(this, )
         }
 
         public IEnumerable<WindowModeViewModel> WindowModes
@@ -157,6 +150,46 @@ namespace UI.WPF.Modules.General.ViewModels
                 _selectedTextureFilter = value;
                 NotifyOfPropertyChange();
             }
+        }
+
+        private void InitializeTextureFilter(IProfileManager profileManager)
+        {
+            // Not really a clean solution but this solves the infinite recursion problem
+            var notifying = false;
+
+            var settingsObservable = profileManager.WhenAny(x => x.CurrentProfile.TextureFiltering,
+                val => Enum.GetName(typeof(TextureFiltering), val.Value));
+
+            var thisObservable = this.WhenAny(x => x.SelectedTextureFilter, val =>
+            {
+                TextureFiltering value;
+
+                return Enum.TryParse(val.Value, true, out value) ? value : TextureFiltering.Trilinear;
+            });
+
+            settingsObservable.Subscribe(filter =>
+            {
+                if (notifying)
+                {
+                    return;
+                }
+
+                notifying = true;
+                SelectedTextureFilter = filter;
+                notifying = false;
+            });
+
+            thisObservable.Subscribe(filter =>
+            {
+                if (notifying)
+                {
+                    return;
+                }
+
+                notifying = true;
+                profileManager.CurrentProfile.TextureFiltering = filter;
+                notifying = false;
+            });
         }
 
         private void FlagManagerOnFlagChanged(object sender, FlagChangedEventArgs args)

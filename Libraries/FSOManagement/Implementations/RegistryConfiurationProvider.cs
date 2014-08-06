@@ -182,6 +182,8 @@ namespace FSOManagement.Implementations
                         fsKey.DeleteValue("CurrentJoystickGUID");
                         fsKey.DeleteValue("CurrentJoystick");
                     }
+
+                    fsKey.SetValue("TextureFilter", (uint) profile.TextureFiltering);
                 }
             }
         }

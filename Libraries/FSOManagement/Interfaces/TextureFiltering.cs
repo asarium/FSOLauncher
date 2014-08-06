@@ -2,7 +2,7 @@
 {
     public enum TextureFiltering
     {
-        Bilinear,
-        Trilinear
+        Bilinear = 0,
+        Trilinear = 1
     }
 }
