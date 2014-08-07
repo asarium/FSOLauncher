@@ -1,8 +1,10 @@
 ﻿#region Usings
 
 using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using FSOManagement.Interfaces;
@@ -137,11 +139,100 @@ namespace FSOManagement.Implementations
     {
         private static readonly string UserSid = ClsLookupAccountName.GetUserSid();
 
+        private const string VideoCardPattern = @"OGL -\((\d*)x(\d*)\)x\d* bit";
+
+        private static readonly Regex VideoCardRegex = new Regex(VideoCardPattern);
+
         #region IConfigurationProvider Members
 
         public Task WriteConfigurationAsync(IProfile profile, CancellationToken token)
         {
             return Task.Run(() => WriteRegistry(profile, token), token);
+        }
+
+        public Task PullConfigurationAsync(IProfile profile, CancellationToken token)
+        {
+            return Task.Run(() => ReadRegistry(profile, token), token);
+        }
+
+        private static void ReadRegistry(IProfile profile, CancellationToken token)
+        {
+            var registryPath = string.Format(@"{0}_Classes\VirtualStore\Machine\Software\Wow6432Node\Volition\Freespace2", UserSid);
+
+            using (var hkeyCurrentUser = RegistryKey.OpenBaseKey(RegistryHive.Users, RegistryView.Default))
+            {
+                using (var fsKey = hkeyCurrentUser.OpenSubKey(registryPath, RegistryKeyPermissionCheck.ReadWriteSubTree))
+                {
+                    if (fsKey == null)
+                    {
+                        return;
+                    }
+
+                    var videoSettings = fsKey.GetValue("VideocardFs2open") as string;
+
+                    if (videoSettings != null)
+                    {
+                        var match = VideoCardRegex.Match(videoSettings);
+
+                        if (match.Groups.Count == 3)
+                        {
+                            try
+                            {
+                                var width = int.Parse(match.Groups[1].Value);
+                                var height = int.Parse(match.Groups[2].Value);
+
+                                profile.ResolutionWidth = width;
+                                profile.ResolutionHeight = height;
+                            }
+                            catch (FormatException e)
+                            {
+                                // Ignore exception
+                            }
+                        }
+                    }
+
+                    var joystickGuid = fsKey.GetValue("CurrentJoystickGUID") as string;
+
+                    if (joystickGuid == null)
+                    {
+                        var joystickIndex = fsKey.GetValue("CurrentJoystick");
+
+                        if (joystickIndex is int)
+                        {
+                            var joysticks = SDLJoystick.GetJoysticks().Skip((int) joystickIndex);
+
+                            if (joysticks.Any())
+                            {
+                                profile.SelectedJoystickGuid = joysticks.First().GUID;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        profile.SelectedJoystickGuid = joystickGuid;
+                    }
+
+                    var textureFilter = fsKey.GetValue("TextureFilter");
+                    if (textureFilter is int)
+                    {
+                        TextureFiltering filter;
+                        switch ((int) textureFilter)
+                        {
+                            case 0:
+                                filter = TextureFiltering.Bilinear;
+                                break;
+                            case 1:
+                                filter = TextureFiltering.Trilinear;
+                                break;
+                            default:
+                                filter = TextureFiltering.Bilinear;
+                                break;
+                        }
+
+                        profile.TextureFiltering = filter;
+                    }
+                }
+            }
         }
 
         #endregion
@@ -183,7 +274,7 @@ namespace FSOManagement.Implementations
                         fsKey.DeleteValue("CurrentJoystick");
                     }
 
-                    fsKey.SetValue("TextureFilter", (uint) profile.TextureFiltering);
+                    fsKey.SetValue("TextureFilter", (uint) profile.TextureFiltering, RegistryValueKind.DWord);
                 }
             }
         }

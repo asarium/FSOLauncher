@@ -9,6 +9,8 @@ namespace FSOManagement.Interfaces
 {
     public interface IConfigurationProvider
     {
-        Task WriteConfigurationAsync(IProfile profile, CancellationToken token);
+        Task PushConfigurationAsync(IProfile profile, CancellationToken token);
+
+        Task PullConfigurationAsync(IProfile profile, CancellationToken token);
     }
 }

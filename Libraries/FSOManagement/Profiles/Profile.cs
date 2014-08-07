@@ -194,7 +194,7 @@ namespace FSOManagement.Profiles
 
             progressMessages.Report("Writing configurations...");
 
-            await ConfigProvider.WriteConfigurationAsync(this, token);
+            await ConfigProvider.PushConfigurationAsync(this, token);
         }
 
         public async Task<Process> LaunchSelectedExecutableAsync(CancellationToken token, IProgress<string> progressReporter)
@@ -235,6 +235,11 @@ namespace FSOManagement.Profiles
             }, token);
 
             return launchedProcess;
+        }
+
+        public Task PullConfigurationAsync(CancellationToken token)
+        {
+            return ConfigProvider.PullConfigurationAsync(this, token);
         }
 
         [field: NonSerialized]

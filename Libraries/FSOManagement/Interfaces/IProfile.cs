@@ -48,6 +48,8 @@ namespace FSOManagement.Interfaces
 
         Task<Process> LaunchSelectedExecutableAsync(CancellationToken token, IProgress<string> progressReporter);
 
+        Task PullConfigurationAsync(CancellationToken token);
+
         #endregion
     }
 }
