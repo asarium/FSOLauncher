@@ -145,7 +145,7 @@ namespace FSOManagement.Implementations
 
         #region IConfigurationProvider Members
 
-        public Task WriteConfigurationAsync(IProfile profile, CancellationToken token)
+        public Task PushConfigurationAsync(IProfile profile, CancellationToken token)
         {
             return Task.Run(() => WriteRegistry(profile, token), token);
         }
