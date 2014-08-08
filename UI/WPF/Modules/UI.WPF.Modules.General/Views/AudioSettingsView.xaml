@@ -1,0 +1,31 @@
+﻿<UserControl x:Class="UI.WPF.Modules.General.Views.AudioSettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:internal="clr-namespace:UI.WPF.Modules.General.ViewModels.Internal"
+             xmlns:viewModels="clr-namespace:UI.WPF.Modules.General.ViewModels"
+             mc:Ignorable="d" d:DataContext="{d:DesignInstance viewModels:AudioSettingsViewModel}"
+             d:DesignHeight="300" d:DesignWidth="400">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <TextBlock HorizontalAlignment="Right" TextWrapping="Wrap" Text="Audio Devices:" VerticalAlignment="Center"
+                   Margin="0,0,5,0" />
+
+        <ComboBox VerticalAlignment="Center" Grid.Column="1" ItemsSource="{Binding Devices}"
+                  SelectedItem="{Binding SelectedDevice}" Margin="5" IsEnabled="{Binding DevicesAvailable}">
+            <ComboBox.ItemTemplate>
+                <DataTemplate DataType="internal:OpenALDeviceViewModel">
+                    <TextBlock Text="{Binding Name}" />
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
+    </Grid>
+</UserControl>

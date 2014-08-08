@@ -5,7 +5,7 @@
              xmlns:viewModels="clr-namespace:UI.WPF.Modules.General.ViewModels"
              xmlns:internal="clr-namespace:UI.WPF.Modules.General.ViewModels.Internal"
              mc:Ignorable="d"
-             x:Class="UI.WPF.Modules.General.Views.VideoSettingsControl" x:Name="UserControl" d:DesignWidth="400"
+             x:Class="UI.WPF.Modules.General.Views.VideoSettingsView" x:Name="UserControl" d:DesignWidth="400"
              d:DesignHeight="200" d:DataContext="{d:DesignInstance {x:Type viewModels:VideoSettingsViewModel}}">
     <Grid Margin="0">
         <Grid.RowDefinitions>

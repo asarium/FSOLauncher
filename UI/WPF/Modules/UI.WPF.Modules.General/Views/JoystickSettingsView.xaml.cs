@@ -3,11 +3,11 @@
 namespace UI.WPF.Modules.General.Views
 {
 	/// <summary>
-	/// Interaction logic for VideoSettingsControl.xaml
+	/// Interaction logic for JoystickSettingsView.xaml
 	/// </summary>
-	public partial class VideoSettingsControl : UserControl
+	public partial class JoystickSettingsView : UserControl
 	{
-		public VideoSettingsControl()
+		public JoystickSettingsView()
 		{
 			this.InitializeComponent();
 		}

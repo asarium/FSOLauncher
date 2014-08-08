@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -154,42 +155,15 @@ namespace UI.WPF.Modules.General.ViewModels
 
         private void InitializeTextureFilter(IProfileManager profileManager)
         {
-            // Not really a clean solution but this solves the infinite recursion problem
-            var notifying = false;
+            profileManager.WhenAny(x => x.CurrentProfile.TextureFiltering, val => Enum.GetName(typeof(TextureFiltering), val.Value))
+                .BindTo(this, x => x.SelectedTextureFilter);
 
-            var settingsObservable = profileManager.WhenAny(x => x.CurrentProfile.TextureFiltering,
-                val => Enum.GetName(typeof(TextureFiltering), val.Value));
-
-            var thisObservable = this.WhenAny(x => x.SelectedTextureFilter, val =>
+            this.WhenAny(x => x.SelectedTextureFilter, val =>
             {
                 TextureFiltering value;
 
                 return Enum.TryParse(val.Value, true, out value) ? value : TextureFiltering.Trilinear;
-            });
-
-            settingsObservable.Subscribe(filter =>
-            {
-                if (notifying)
-                {
-                    return;
-                }
-
-                notifying = true;
-                SelectedTextureFilter = filter;
-                notifying = false;
-            });
-
-            thisObservable.Subscribe(filter =>
-            {
-                if (notifying)
-                {
-                    return;
-                }
-
-                notifying = true;
-                profileManager.CurrentProfile.TextureFiltering = filter;
-                notifying = false;
-            });
+            }).BindTo(profileManager, x => x.CurrentProfile.TextureFiltering);
         }
 
         private void FlagManagerOnFlagChanged(object sender, FlagChangedEventArgs args)
