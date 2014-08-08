@@ -82,6 +82,7 @@
     <Compile Include="ExecutableManager.cs" />
     <Compile Include="FlagFileReader.cs" />
     <Compile Include="FSOUtilities.cs" />
+    <Compile Include="Implementations\ConfigurationKeyNames.cs" />
     <Compile Include="Implementations\IniModDependencies.cs" />
     <Compile Include="Implementations\NoModDependencies.cs" />
     <Compile Include="Implementations\RegistryConfigurationProvider.cs" />
@@ -97,7 +98,6 @@
     <Compile Include="OpenAL\AL.cs" />
     <Compile Include="OpenAL\LPUtf8StrMarshaler.cs" />
     <Compile Include="OpenAL\OpenALManager.cs" />
-    <Compile Include="Profiles\ConfigurationHandler.cs" />
     <Compile Include="Profiles\ConfigurationKey.cs" />
     <Compile Include="Profiles\DefaultConfigurationKey.cs" />
     <Compile Include="Profiles\FlagInformation.cs" />
