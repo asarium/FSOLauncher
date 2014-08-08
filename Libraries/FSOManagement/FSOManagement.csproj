@@ -66,6 +66,7 @@
       <HintPath>..\..\packages\Rx-XAML.2.2.5\lib\net45\System.Reactive.Windows.Threading.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Speech" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -87,12 +88,14 @@
     <Compile Include="Implementations\IniModDependencies.cs" />
     <Compile Include="Implementations\NoModDependencies.cs" />
     <Compile Include="Implementations\RegistryConfigurationProvider.cs" />
+    <Compile Include="Implementations\WindowsSpeechHandler.cs" />
     <Compile Include="Interfaces\IConfigurationProvider.cs" />
     <Compile Include="Interfaces\IFlagManager.cs" />
     <Compile Include="Interfaces\ILauncherSettings.cs" />
     <Compile Include="Interfaces\IModActivationManager.cs" />
     <Compile Include="Interfaces\IModDependencies.cs" />
     <Compile Include="Interfaces\IProfile.cs" />
+    <Compile Include="Interfaces\ISpeechHandler.cs" />
     <Compile Include="Interfaces\TextureFiltering.cs" />
     <Compile Include="Modification.cs" />
     <Compile Include="ModManager.cs" />
@@ -110,6 +113,7 @@
     <Compile Include="Profiles\Profile.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Speech\SpeechManager.cs" />
     <Compile Include="TotalConversion.cs" />
     <Compile Include="Util\DLLLoader\IDynamicLibraryLoader.cs" />
     <Compile Include="Util\DLLLoader\LinuxLoader.cs" />
