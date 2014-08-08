@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using FSOManagement.Interfaces;
+using FSOManagement.Profiles.Keys;
 using FSOManagement.Util;
 using Microsoft.Win32;
 using SDLGlue;
@@ -89,38 +90,6 @@ namespace FSOManagement.Implementations
         private enum TOKEN_INFORMATION_CLASS
         {
             TokenUser = 1,
-
-            TokenGroups,
-
-            TokenPrivileges,
-
-            TokenOwner,
-
-            TokenPrimaryGroup,
-
-            TokenDefaultDacl,
-
-            TokenSource,
-
-            TokenType,
-
-            TokenImpersonationLevel,
-
-            TokenStatistics,
-
-            TokenRestrictedSids,
-
-            TokenSessionId,
-
-            TokenGroupsAndPrivileges,
-
-            TokenSessionReference,
-
-            TokenSandBoxInert,
-
-            TokenAuditPolicy,
-
-            TokenOrigin
         }
 
         #endregion
@@ -246,6 +215,21 @@ namespace FSOManagement.Implementations
                             {
                                 profile.SelectedAudioDevice = playbackDevice;
                             }
+
+                            var sampleRate = audioFolder.GetValue(ConfigurationKeyNames.SampleRate);
+
+                            if (sampleRate is int)
+                            {
+                                // Funny syntax...
+                                profile.SampleRate = (uint) (int) sampleRate;
+                            }
+
+                            var enableEfx = audioFolder.GetValue(ConfigurationKeyNames.EnableEFX);
+
+                            if (enableEfx is int)
+                            {
+                                profile.EfxEnabled = ((int) enableEfx) != 0;
+                            }
                         }
                     }
                 }
@@ -303,6 +287,10 @@ namespace FSOManagement.Implementations
                             {
                                 audioFolder.DeleteValue(ConfigurationKeyNames.PlaybackDevice);
                             }
+
+                            audioFolder.SetValue(ConfigurationKeyNames.SampleRate, (int) profile.SampleRate);
+
+                            audioFolder.SetValue(ConfigurationKeyNames.EnableEFX, profile.EfxEnabled ? 1 : 0);
                         }
                     }
                 }

@@ -13,5 +13,9 @@
         public const string SoundFolderName = "Sound";
 
         public const string PlaybackDevice = "PlaybackDevice";
+
+        public const string SampleRate = "SampleRate";
+
+        public const string EnableEFX = "EnableEFX";
     }
 }

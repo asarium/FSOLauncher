@@ -1,14 +1,16 @@
-﻿<UserControl x:Class="UI.WPF.Modules.General.Views.AudioSettingsView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<UserControl xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:internal="clr-namespace:UI.WPF.Modules.General.ViewModels.Internal"
              xmlns:viewModels="clr-namespace:UI.WPF.Modules.General.ViewModels"
-             mc:Ignorable="d" d:DataContext="{d:DesignInstance viewModels:AudioSettingsViewModel}"
-             d:DesignHeight="300" d:DesignWidth="400">
+             xmlns:Custom="http://metro.mahapps.com/winfx/xaml/controls"
+             x:Class="UI.WPF.Modules.General.Views.AudioSettingsView" mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance {x:Type viewModels:AudioSettingsViewModel}}" d:DesignHeight="300"
+             d:DesignWidth="400">
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -22,10 +24,38 @@
         <ComboBox VerticalAlignment="Center" Grid.Column="1" ItemsSource="{Binding Devices}"
                   SelectedItem="{Binding SelectedDevice}" Margin="5" IsEnabled="{Binding DevicesAvailable}">
             <ComboBox.ItemTemplate>
-                <DataTemplate DataType="internal:OpenALDeviceViewModel">
+                <DataTemplate DataType="internal:OpenAlDeviceViewModel">
                     <TextBlock Text="{Binding Name}" />
                 </DataTemplate>
             </ComboBox.ItemTemplate>
         </ComboBox>
+        <Expander Header="Advanced" Grid.Row="1" Grid.ColumnSpan="2" Margin="0,5,0,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock HorizontalAlignment="Right" TextWrapping="Wrap" Text="EFX:" VerticalAlignment="Center"
+                           Margin="5" />
+
+                <Custom:ToggleSwitch HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"
+                                     Margin="5,2,0,2" OffLabel="Disabled" OnLabel="Enabled" Width="135"
+                                     IsChecked="{Binding EfxEnabled, Mode=TwoWay}" IsEnabled="{Binding EfxAvailable}" />
+
+                <TextBlock HorizontalAlignment="Right" TextWrapping="Wrap" Text="Sample Rate:"
+                           VerticalAlignment="Center" Grid.Row="1" Margin="5" />
+
+                <Custom:NumericUpDown HorizontalAlignment="Left" VerticalAlignment="Top" StringFormat="{}{0} Hz"
+                                      Value="{Binding ProfileManager.CurrentProfile.SampleRate}" Grid.Column="1"
+                                      Width="150" Grid.Row="1" Margin="5"
+                                      ToolTip="Common values are&#x0a; - 48000 Hz: High Quality&#x0a; - 41000 Hz: Medium Quality&#x0a; - 22050 Hz: Low Quality"
+                                      Interval="100" />
+            </Grid>
+        </Expander>
     </Grid>
 </UserControl>

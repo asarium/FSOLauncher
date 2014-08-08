@@ -155,6 +155,18 @@ namespace FSOManagement.Profiles
             set { SetValue(Audio.SelectedAudioDevice, value); }
         }
 
+        public uint SampleRate
+        {
+            get { return GetValue(Audio.SampleRate); }
+            set { SetValue(Audio.SampleRate, value); }
+        }
+
+        public bool EfxEnabled
+        {
+            get { return GetValue(Audio.EfxEnabled); }
+            set { SetValue(Audio.EfxEnabled, value); }
+        }
+
         public IFlagManager FlagManager
         {
             get { return _flagManager; }
@@ -279,10 +291,14 @@ namespace FSOManagement.Profiles
         private static bool CanLaunch(Executable value)
         {
             if (value == null)
+            {
                 return false;
+            }
 
             if (!File.Exists(value.FullPath))
+            {
                 return false;
+            }
 
             return true;
         }

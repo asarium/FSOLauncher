@@ -40,6 +40,10 @@ namespace FSOManagement.Interfaces
 
         string SelectedAudioDevice { get; set; }
 
+        uint SampleRate { get; set; }
+
+        bool EfxEnabled { get; set; }
+
         #endregion
 
         #endregion
