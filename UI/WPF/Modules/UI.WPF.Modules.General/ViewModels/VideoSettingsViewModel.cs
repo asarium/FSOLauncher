@@ -3,15 +3,14 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows.Data;
 using System.Windows.Input;
 using Caliburn.Micro;
 using FSOManagement.Interfaces;
-using FSOManagement.Profiles;
 using ReactiveUI;
 using SDLGlue;
-using Splat;
 using UI.WPF.Launcher.Common.Interfaces;
 using UI.WPF.Launcher.Common.Services;
 using UI.WPF.Modules.General.ViewModels.Internal;
@@ -29,11 +28,11 @@ namespace UI.WPF.Modules.General.ViewModels
 
         private ListCollectionView _resolutionCollectionView;
 
+        private string _selectedTextureFilter;
+
         private VideoDisplayViewModel _selectedVideoDisplay;
 
         private WindowModeViewModel _selectedWindowMode;
-
-        private string _selectedTextureFilter;
 
         [ImportingConstructor]
         public VideoSettingsViewModel(IProfileManager profileManager)
@@ -50,11 +49,6 @@ namespace UI.WPF.Modules.General.ViewModels
             InitializeWindowMode(profileManager);
 
             InitializeTextureFilter(profileManager);
-        }
-
-        private void InitializeTextureFilter(IProfileManager profileManager)
-        {
-            profileManager.WhenAny(x => x.CurrentProfile.TextureFiltering, val => Enum.GetName(typeof(TextureFiltering), val.Value)).BindTo(this, )
         }
 
         public IEnumerable<WindowModeViewModel> WindowModes
@@ -157,6 +151,19 @@ namespace UI.WPF.Modules.General.ViewModels
                 _selectedTextureFilter = value;
                 NotifyOfPropertyChange();
             }
+        }
+
+        private void InitializeTextureFilter(IProfileManager profileManager)
+        {
+            profileManager.WhenAny(x => x.CurrentProfile.TextureFiltering, val => Enum.GetName(typeof(TextureFiltering), val.Value))
+                .BindTo(this, x => x.SelectedTextureFilter);
+
+            this.WhenAny(x => x.SelectedTextureFilter, val =>
+            {
+                TextureFiltering value;
+
+                return Enum.TryParse(val.Value, true, out value) ? value : TextureFiltering.Trilinear;
+            }).BindTo(profileManager, x => x.CurrentProfile.TextureFiltering);
         }
 
         private void FlagManagerOnFlagChanged(object sender, FlagChangedEventArgs args)

@@ -82,9 +82,10 @@
     <Compile Include="ExecutableManager.cs" />
     <Compile Include="FlagFileReader.cs" />
     <Compile Include="FSOUtilities.cs" />
+    <Compile Include="Implementations\ConfigurationKeyNames.cs" />
     <Compile Include="Implementations\IniModDependencies.cs" />
     <Compile Include="Implementations\NoModDependencies.cs" />
-    <Compile Include="Implementations\RegistryConfiurationProvider.cs" />
+    <Compile Include="Implementations\RegistryConfigurationProvider.cs" />
     <Compile Include="Interfaces\IConfigurationProvider.cs" />
     <Compile Include="Interfaces\IFlagManager.cs" />
     <Compile Include="Interfaces\ILauncherSettings.cs" />
@@ -101,6 +102,7 @@
     <Compile Include="Profiles\DefaultConfigurationKey.cs" />
     <Compile Include="Profiles\FlagInformation.cs" />
     <Compile Include="Profiles\FlagManager.cs" />
+    <Compile Include="Profiles\Keys\Audio.cs" />
     <Compile Include="Profiles\Keys\General.cs" />
     <Compile Include="Profiles\Keys\Video.cs" />
     <Compile Include="Profiles\ModActivationManager.cs" />

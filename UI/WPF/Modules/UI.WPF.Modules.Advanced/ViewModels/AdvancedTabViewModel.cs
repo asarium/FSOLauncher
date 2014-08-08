@@ -10,7 +10,6 @@ using System.Windows.Input;
 using Caliburn.Micro;
 using FSOManagement;
 using FSOManagement.Interfaces;
-using FSOManagement.Profiles;
 using ReactiveUI;
 using UI.WPF.Launcher.Common.Interfaces;
 using UI.WPF.Launcher.Common.Services;
@@ -24,13 +23,13 @@ namespace UI.WPF.Modules.Advanced.ViewModels
     {
         private BuildCapabilities _currentBuildCaps;
 
+        private string _currentCommandLine;
+
         private ListCollectionView _flagCollectionView;
 
         private IFlagManager _flagManager;
 
         private bool _hasExecutable;
-
-        private string _currentCommandLine;
 
         [ImportingConstructor]
         public AdvancedTabViewModel(IProfileManager profileManager)
@@ -167,6 +166,11 @@ namespace UI.WPF.Modules.Advanced.ViewModels
 
         private void FlagManagerOnFlagChanged(object sender, FlagChangedEventArgs args)
         {
+            if (FlagCollectionView == null)
+            {
+                return;
+            }
+
             foreach (var viewModel in FlagCollectionView.Cast<FlagViewModel>().Where(model => model.Flag.Name == args.Name))
             {
                 viewModel.SetEnabled(args.Enabled);

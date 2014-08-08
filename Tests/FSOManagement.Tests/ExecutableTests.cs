@@ -100,6 +100,20 @@ namespace FSOManagement.Tests
 
                 CollectionAssert.AreEqual(new[] {"BP"}, exe.AdditionalTags);
             }
+            {
+                var exe = new Executable("/fs2_open_3_7_2_RC3-DEBUG.exe");
+
+                Assert.AreEqual(ExecutableType.FreeSpace, exe.Type);
+                Assert.AreEqual(ExecutableMode.Debug, exe.Mode);
+                Assert.AreEqual(ExecutableFeatureSet.SSE2, exe.FeatureSet);
+
+                Assert.AreEqual(3, exe.Major);
+                Assert.AreEqual(7, exe.Minor);
+                Assert.AreEqual(2, exe.Release);
+                Assert.AreEqual(-1, exe.Revision);
+
+                CollectionAssert.AreEqual(new[] { "RC3" }, exe.AdditionalTags);
+            }
         }
     }
 }

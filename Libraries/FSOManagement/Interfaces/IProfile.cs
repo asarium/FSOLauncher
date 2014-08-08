@@ -20,6 +20,10 @@ namespace FSOManagement.Interfaces
 
         bool CanLaunchExecutable { get; }
 
+        IFlagManager FlagManager { get; }
+
+        IModActivationManager ModActivationManager { get; }
+
         #region Settings
 
         TextureFiltering TextureFiltering { get; set; }
@@ -34,9 +38,7 @@ namespace FSOManagement.Interfaces
 
         int ResolutionHeight { get; set; }
 
-        IFlagManager FlagManager { get; }
-
-        IModActivationManager ModActivationManager { get; }
+        string SelectedAudioDevice { get; set; }
 
         #endregion
 
@@ -47,6 +49,8 @@ namespace FSOManagement.Interfaces
         Task WriteConfigurationAsync(CancellationToken token, IProgress<string> progressMessages);
 
         Task<Process> LaunchSelectedExecutableAsync(CancellationToken token, IProgress<string> progressReporter);
+
+        Task PullConfigurationAsync(CancellationToken token);
 
         #endregion
     }

@@ -11,6 +11,8 @@ namespace UI.WPF.Modules.General.ViewModels
     [Export(typeof(ILauncherTab)), ExportMetadata("Priority", 0)]
     public sealed class GeneralTabViewModel : Screen, ILauncherTab
     {
+        private AudioSettingsViewModel _audioSettingsViewModel;
+
         private ExecutableListViewModel _executableListViewModel;
 
         private JoystickSettingsViewModel _joystickSettingsViewModel;
@@ -63,6 +65,21 @@ namespace UI.WPF.Modules.General.ViewModels
                     return;
                 }
                 _joystickSettingsViewModel = value;
+                NotifyOfPropertyChange();
+            }
+        }
+
+        [Import]
+        public AudioSettingsViewModel AudioSettingsViewModel
+        {
+            get { return _audioSettingsViewModel; }
+            private set
+            {
+                if (Equals(value, _audioSettingsViewModel))
+                {
+                    return;
+                }
+                _audioSettingsViewModel = value;
                 NotifyOfPropertyChange();
             }
         }

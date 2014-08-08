@@ -1,7 +1,7 @@
 // This file contains common AssemblyVersion data to be shared across all projects in this solution.
 using System.Reflection;
  
-[assembly: AssemblyCompany("FreeSpace Source Code Project")]
+[assembly: AssemblyCompany("FSSCP")]
 [assembly: AssemblyProduct("FSOLauncher")]
 [assembly: AssemblyCopyright("Copyright © FreeSpace Source Code Project 2014")]
 [assembly: AssemblyTrademark("")]

@@ -5,7 +5,7 @@
              xmlns:viewModels="clr-namespace:UI.WPF.Modules.General.ViewModels"
              xmlns:internal="clr-namespace:UI.WPF.Modules.General.ViewModels.Internal" mc:Ignorable="d"
              d:DataContext="{d:DesignInstance {x:Type viewModels:JoystickSettingsViewModel}}"
-             x:Class="UI.WPF.Modules.General.Views.JoystickSettingsControl" x:Name="UserControl" d:DesignWidth="400"
+             x:Class="UI.WPF.Modules.General.Views.JoystickSettingsView" x:Name="UserControl" d:DesignWidth="400"
              d:DesignHeight="150">
     <Grid>
         <Grid.RowDefinitions>

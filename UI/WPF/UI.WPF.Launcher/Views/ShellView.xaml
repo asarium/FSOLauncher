@@ -9,21 +9,20 @@
                       xmlns:viewModels="clr-namespace:UI.WPF.Launcher.ViewModels"
                       xmlns:profiles="clr-namespace:FSOManagement.Profiles;assembly=FSOManagement"
                       xmlns:cal="http://www.caliburnproject.org"
+                      xmlns:reactiveUi="clr-namespace:ReactiveUI;assembly=ReactiveUI"
                       mc:Ignorable="d" ResizeMode="CanResizeWithGrip"
                       d:DataContext="{d:DesignInstance viewModels:ShellViewModel}" d:DesignHeight="700"
                       d:DesignWidth="500" Title="{Binding Title}" GlowBrush="{DynamicResource AccentColorBrush}"
                       Width="{Binding Settings.Width, Mode=TwoWay}" Height="{Binding Settings.Height, Mode=TwoWay}"
                       TitleCaps="False" SaveWindowPosition="False" WindowStartupLocation="CenterScreen">
     <controls:MetroWindow.RightWindowCommands>
-        <controls:WindowCommands ItemsSource="{Binding RightCommands}" />
-        <!--
         <controls:WindowCommands ItemsSource="{Binding RightCommands}">
             <controls:WindowCommands.ItemTemplate>
-                <DataTemplate>
-                    <ContentControl cal:Bind.ModelWithoutContext="{Binding}" />
+                <DataTemplate DataType="{x:Type interfaces:IWindowCommand}">
+                    <reactiveUi:ViewModelViewHost ViewModel="{Binding}" />
                 </DataTemplate>
             </controls:WindowCommands.ItemTemplate>
-        </controls:WindowCommands>-->
+        </controls:WindowCommands>
     </controls:MetroWindow.RightWindowCommands>
 
     <controls:MetroContentControl>

@@ -27,7 +27,7 @@ namespace FSOManagement.OpenAL
 
         private static readonly string[] LibraryNames = {"OpenAL32", "libopenal", "OpenAL"};
 
-        public OpenALManager()
+        private OpenALManager()
         {
         }
 

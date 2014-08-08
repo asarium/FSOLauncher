@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using FSOManagement.Annotations;
 using FSOManagement.Interfaces;
 using FSOManagement.Profiles;
@@ -37,7 +38,10 @@ namespace UI.WPF.Modules.Implementations.Implementations
             }
             else
             {
-                _profiles.Add(new Profile("Default"));
+                var defaultProfile = new Profile("Default");
+                defaultProfile.PullConfigurationAsync(CancellationToken.None);
+
+                _profiles.Add(defaultProfile);
             }
 
             CurrentProfile = settings.SelectedProfile ?? _profiles.FirstOrDefault();

@@ -149,6 +149,12 @@ namespace FSOManagement.Profiles
             set { SetValue(Video.ResolutionHeight, value); }
         }
 
+        public string SelectedAudioDevice
+        {
+            get { return GetValue(Audio.SelectedAudioDevice); }
+            set { SetValue(Audio.SelectedAudioDevice, value); }
+        }
+
         public IFlagManager FlagManager
         {
             get { return _flagManager; }
@@ -194,7 +200,7 @@ namespace FSOManagement.Profiles
 
             progressMessages.Report("Writing configurations...");
 
-            await ConfigProvider.WriteConfigurationAsync(this, token);
+            await ConfigProvider.PushConfigurationAsync(this, token);
         }
 
         public async Task<Process> LaunchSelectedExecutableAsync(CancellationToken token, IProgress<string> progressReporter)
@@ -237,6 +243,11 @@ namespace FSOManagement.Profiles
             return launchedProcess;
         }
 
+        public Task PullConfigurationAsync(CancellationToken token)
+        {
+            return ConfigProvider.PullConfigurationAsync(this, token);
+        }
+
         [field: NonSerialized]
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -246,7 +257,7 @@ namespace FSOManagement.Profiles
         {
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
-                return new RegistryConfiurationProvider();
+                return new RegistryConfigurationProvider();
             }
             else
             {
