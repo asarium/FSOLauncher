@@ -5,10 +5,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Serialization;
 using FSOManagement.Annotations;
 using FSOManagement.Util;
 
@@ -46,9 +46,31 @@ namespace FSOManagement
 
         private const string FlagsFile = "flags.lch";
 
-        private List<string> _additionTags;
+        [NonSerialized]
+        private List<string> _additionTags = new List<string>();
+
+        [NonSerialized]
+        private ExecutableFeatureSet _featureSet;
 
         private string _fullPath;
+
+        [NonSerialized]
+        private int _major;
+
+        [NonSerialized]
+        private int _minor;
+
+        [NonSerialized]
+        private ExecutableMode _mode;
+
+        [NonSerialized]
+        private int _release;
+
+        [NonSerialized]
+        private int _revision;
+
+        [NonSerialized]
+        private ExecutableType _type;
 
         [UsedImplicitly]
         public Executable()
@@ -57,35 +79,51 @@ namespace FSOManagement
 
         public Executable(string fullPath)
         {
-            Major = -1;
-            Minor = -1;
-            Release = -1;
-            Revision = -1;
-            Mode = ExecutableMode.Release;
-            FeatureSet = ExecutableFeatureSet.SSE2; // SSE2 is the default
-            FullPath = fullPath;
+            OnCreated();
+            FullPath = fullPath; // Setting this property will reparse the path
         }
 
-        [XmlIgnore]
-        public ExecutableType Type { get; private set; }
+        public ExecutableType Type
+        {
+            get { return _type; }
+            private set { _type = value; }
+        }
 
-        [XmlIgnore]
-        public ExecutableMode Mode { get; private set; }
+        public ExecutableMode Mode
+        {
+            get { return _mode; }
+            private set { _mode = value; }
+        }
 
-        [XmlIgnore]
-        public ExecutableFeatureSet FeatureSet { get; private set; }
+        public ExecutableFeatureSet FeatureSet
+        {
+            get { return _featureSet; }
+            private set { _featureSet = value; }
+        }
 
-        [XmlIgnore]
-        public int Major { get; private set; }
+        public int Major
+        {
+            get { return _major; }
+            private set { _major = value; }
+        }
 
-        [XmlIgnore]
-        public int Minor { get; private set; }
+        public int Minor
+        {
+            get { return _minor; }
+            private set { _minor = value; }
+        }
 
-        [XmlIgnore]
-        public int Release { get; private set; }
+        public int Release
+        {
+            get { return _release; }
+            private set { _release = value; }
+        }
 
-        [XmlIgnore]
-        public int Revision { get; private set; }
+        public int Revision
+        {
+            get { return _revision; }
+            private set { _revision = value; }
+        }
 
         public string FullPath
         {
@@ -118,6 +156,28 @@ namespace FSOManagement
         }
 
         #endregion
+
+        [OnDeserialized]
+        private void OnDeserialized(StreamingContext context)
+        {
+            OnCreated();
+        }
+
+        private void OnCreated()
+        {
+            Major = -1;
+            Minor = -1;
+            Release = -1;
+            Revision = -1;
+            Mode = ExecutableMode.Release;
+            FeatureSet = ExecutableFeatureSet.SSE2; // SSE2 is the default
+            _additionTags = new List<string>();
+
+            if (FullPath != null)
+            {
+                ReparsePath();
+            }
+        }
 
         public override bool Equals(object obj)
         {
@@ -171,7 +231,7 @@ namespace FSOManagement
                 stringBuilder.Append(" Debug");
             }
 
-            if (_additionTags != null && _additionTags.Any())
+            if (_additionTags.Any())
             {
                 stringBuilder.AppendFormat(" ({0})", string.Join(", ", _additionTags));
             }
@@ -226,6 +286,13 @@ namespace FSOManagement
 
         #region Static functions
 
+        private static readonly IEqualityComparer<Executable> GroupingComparerInstance = new GroupingEqualityComparer();
+
+        public static IEqualityComparer<Executable> GroupingComparer
+        {
+            get { return GroupingComparerInstance; }
+        }
+
         internal static string GlobPattern(bool fred = false)
         {
             if (fred)
@@ -263,6 +330,8 @@ namespace FSOManagement
             {
                 throw new ArgumentException("path argument is not valid!");
             }
+
+            _additionTags.Clear();
 
             var parts = fileName.Split(new[] {'_', '.', '-', ' ', '(', ')', '[', ']', '/'}, StringSplitOptions.RemoveEmptyEntries);
 
@@ -315,7 +384,7 @@ namespace FSOManagement
                         {
                             Mode = ExecutableMode.Debug;
                         }
-                        else if (lowerPart.Length != 6 && !int.TryParse(lowerPart, out temp))
+                        else if (lowerPart.Length != 6 && !int.TryParse(lowerPart, out temp)) // This is a hack for the nightly build data tags
                         {
                             ExecutableFeatureSet featureSet;
                             if (Enum.TryParse(lowerPart, true, out featureSet))
@@ -327,12 +396,6 @@ namespace FSOManagement
                                 // Make sure to not add the extensions from Windows and Mac
                                 if (lowerPart != "exe" && lowerPart != "app")
                                 {
-                                    // Slight hack for the date tags of the nightly
-                                    if (_additionTags == null)
-                                    {
-                                        _additionTags = new List<string>();
-                                    }
-
                                     _additionTags.Add(part);
                                 }
                             }
@@ -347,6 +410,57 @@ namespace FSOManagement
             {
                 throw new ArgumentException(string.Format("The name '{0}' is not a valid FreeSpace Open executable name!", fileName));
             }
+        }
+
+        private sealed class GroupingEqualityComparer : IEqualityComparer<Executable>
+        {
+            #region IEqualityComparer<Executable> Members
+
+            public bool Equals(Executable x, Executable y)
+            {
+                if (ReferenceEquals(x, y))
+                {
+                    return true;
+                }
+                if (ReferenceEquals(x, null))
+                {
+                    return false;
+                }
+                if (ReferenceEquals(y, null))
+                {
+                    return false;
+                }
+                if (x.GetType() != y.GetType())
+                {
+                    return false;
+                }
+
+                if (x.AdditionalTags.Any())
+                {
+                    Console.WriteLine();
+                }
+
+                return x._additionTags.SequenceEqual(y._additionTags) && x._featureSet == y._featureSet && x._major == y._major &&
+                       x._minor == y._minor && x._release == y._release && x._revision == y._revision && x._type == y._type;
+            }
+
+            public int GetHashCode(Executable obj)
+            {
+                unchecked
+                {
+                    var hashCode = obj._additionTags.Aggregate(397, (current, additionTag) => (current * 397) ^ additionTag.GetHashCode());
+
+                    hashCode = (hashCode * 397) ^ (int) obj._featureSet;
+                    hashCode = (hashCode * 397) ^ obj._major;
+                    hashCode = (hashCode * 397) ^ obj._minor;
+                    hashCode = (hashCode * 397) ^ obj._release;
+                    hashCode = (hashCode * 397) ^ obj._revision;
+                    hashCode = (hashCode * 397) ^ (int) obj._type;
+                    return hashCode;
+                }
+            }
+
+            #endregion
         }
 
         #endregion

@@ -1,9 +1,7 @@
 ﻿#region Usings
 
-using System;
 using System.ComponentModel.Composition;
 using System.Linq;
-using System.Threading.Tasks;
 using Caliburn.Micro;
 using FSOManagement.OpenAL;
 using ReactiveUI;
@@ -27,11 +25,12 @@ namespace UI.WPF.Modules.General.ViewModels
         public AudioSettingsViewModel(IProfileManager profileManager)
         {
             profileManager.WhenAny(x => x.CurrentProfile.SelectedTotalConversion.RootFolder, val => UpdateDevices(val.Value))
-                .BindTo(this, x=>x.Devices);
+                .BindTo(this, x => x.Devices);
 
             this.WhenAny(x => x.Devices.Count, val => val.Value > 0).BindTo(this, x => x.DevicesAvailable);
 
-            profileManager.WhenAny(x => x.CurrentProfile.SelectedAudioDevice, val => Devices.FirstOrDefault(model => model.Name == val.Value))
+            profileManager.WhenAny(x => x.CurrentProfile.SelectedAudioDevice,
+                val => val.Value == null ? Devices.FirstOrDefault() : Devices.FirstOrDefault(model => model.Name == val.Value))
                 .BindTo(this, x => x.SelectedDevice);
 
             this.WhenAny(x => x.SelectedDevice, val => val.Value == null ? null : val.Value.Name)

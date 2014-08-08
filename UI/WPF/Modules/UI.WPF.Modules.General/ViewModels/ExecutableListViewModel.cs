@@ -15,89 +15,9 @@ using UI.WPF.Modules.General.ViewModels.Internal;
 
 namespace UI.WPF.Modules.General.ViewModels
 {
-    internal class ExecutableComparer : IEqualityComparer<Executable>
-    {
-        #region IEqualityComparer<Executable> Members
-
-        public bool Equals(Executable x, Executable y)
-        {
-            if (ReferenceEquals(x, y))
-            {
-                return true;
-            }
-
-            if (x == null)
-            {
-                return false;
-            }
-
-            if (y == null)
-            {
-                return false;
-            }
-
-            // This checks everything except the exe mode and the full path
-            if (!Equals(x.AdditionalTags, y.AdditionalTags))
-            {
-                return false;
-            }
-
-            if (x.FeatureSet != y.FeatureSet)
-            {
-                return false;
-            }
-
-            if (x.Major != y.Major)
-            {
-                return false;
-            }
-
-            if (x.Minor != y.Minor)
-            {
-                return false;
-            }
-
-            if (x.Release != y.Release)
-            {
-                return false;
-            }
-
-            if (x.Revision != y.Revision)
-            {
-                return false;
-            }
-
-            if (x.Type != y.Type)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        public int GetHashCode(Executable obj)
-        {
-            unchecked
-            {
-                var hashCode = (obj.AdditionalTags != null ? obj.AdditionalTags.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (int) obj.Type;
-                hashCode = (hashCode * 397) ^ (int) obj.FeatureSet;
-                hashCode = (hashCode * 397) ^ obj.Major;
-                hashCode = (hashCode * 397) ^ obj.Minor;
-                hashCode = (hashCode * 397) ^ obj.Release;
-                hashCode = (hashCode * 397) ^ obj.Revision;
-                return hashCode;
-            }
-        }
-
-        #endregion
-    }
-
     [Export(typeof(ExecutableListViewModel))]
     public class ExecutableListViewModel : PropertyChangedBase
     {
-        private static readonly ExecutableComparer GroupingComparer = new ExecutableComparer();
-
         private BindableCollection<ExecutableViewModel> _executables;
 
         private ExecutableViewModel _selectedExecutableViewModel;
@@ -218,10 +138,12 @@ namespace UI.WPF.Modules.General.ViewModels
                 return new BindableCollection<ExecutableViewModel>();
             }
 
-            var grouped = value.GroupBy(x => x, GroupingComparer);
+            var grouped = value.GroupBy(x => x, Executable.GroupingComparer);
             var viewModels = grouped.Select(CreateViewModelFromGroup);
 
-            return new BindableCollection<ExecutableViewModel>(viewModels);
+            var collection = new BindableCollection<ExecutableViewModel>(viewModels);
+
+            return collection;
         }
 
         private void ExecutableAdded(Executable exe)
@@ -319,12 +241,12 @@ namespace UI.WPF.Modules.General.ViewModels
         {
             foreach (var executableViewModel in _executables)
             {
-                if (GroupingComparer.Equals(executableViewModel.Debug, executable))
+                if (Executable.GroupingComparer.Equals(executableViewModel.Debug, executable))
                 {
                     return executableViewModel;
                 }
 
-                if (GroupingComparer.Equals(executableViewModel.Release, executable))
+                if (Executable.GroupingComparer.Equals(executableViewModel.Release, executable))
                 {
                     return executableViewModel;
                 }
