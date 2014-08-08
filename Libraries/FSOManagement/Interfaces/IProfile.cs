@@ -20,6 +20,10 @@ namespace FSOManagement.Interfaces
 
         bool CanLaunchExecutable { get; }
 
+        IFlagManager FlagManager { get; }
+
+        IModActivationManager ModActivationManager { get; }
+
         #region Settings
 
         TextureFiltering TextureFiltering { get; set; }
@@ -34,9 +38,7 @@ namespace FSOManagement.Interfaces
 
         int ResolutionHeight { get; set; }
 
-        IFlagManager FlagManager { get; }
-
-        IModActivationManager ModActivationManager { get; }
+        string SelectedAudioDevice { get; set; }
 
         #endregion
 

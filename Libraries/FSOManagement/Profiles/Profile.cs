@@ -149,6 +149,12 @@ namespace FSOManagement.Profiles
             set { SetValue(Video.ResolutionHeight, value); }
         }
 
+        public string SelectedAudioDevice
+        {
+            get { return GetValue(Audio.SelectedAudioDevice); }
+            set { SetValue(Audio.SelectedAudioDevice, value); }
+        }
+
         public IFlagManager FlagManager
         {
             get { return _flagManager; }
@@ -251,7 +257,7 @@ namespace FSOManagement.Profiles
         {
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
-                return new RegistryConfiurationProvider();
+                return new RegistryConfigurationProvider();
             }
             else
             {
