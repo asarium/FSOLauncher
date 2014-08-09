@@ -68,6 +68,11 @@ namespace UI.WPF.Modules.Implementations.Implementations
             }
         }
 
+        public void AddProfile(IProfile profile)
+        {
+            _profiles.Add(profile);
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         #endregion

@@ -12,6 +12,7 @@ using System.Windows.Input;
 using Caliburn.Micro;
 using FSOManagement;
 using FSOManagement.Interfaces;
+using FSOManagement.Profiles;
 using ReactiveUI;
 using UI.WPF.Launcher.Common;
 using UI.WPF.Launcher.Common.Classes;
@@ -38,6 +39,8 @@ namespace UI.WPF.Launcher.ViewModels
         {
             AddGameRootCommand = ReactiveCommand.CreateAsyncTask(async _ => await AddGameRoot());
 
+            AddProfileCommand = ReactiveCommand.CreateAsyncTask(async _ => await AddProfile());
+
             var canLaunchObservable = settings.WhenAnyValue(x => x.SelectedProfile.CanLaunchExecutable);
             LaunchGameCommand = ReactiveCommand.CreateAsyncTask(canLaunchObservable, async _ => await LaunchExecutable(settings.SelectedProfile));
 
@@ -47,6 +50,8 @@ namespace UI.WPF.Launcher.ViewModels
 
             RightCommands = new BindableCollection<UIElement>();
         }
+
+        public ICommand AddProfileCommand { get; set; }
 
         public ICommand LaunchGameCommand { get; private set; }
 
@@ -158,6 +163,35 @@ namespace UI.WPF.Launcher.ViewModels
         }
 
         #endregion
+
+        private async Task AddProfile()
+        {
+            var dialog = new ProfileInputDialog(LauncherViewModel.ProfileManager) {Title = "Add a new profile"};
+
+            var result = await InteractionService.ShowDialog(dialog);
+
+            if (result.Cancelled)
+            {
+                return;
+            }
+
+            IProfile profile;
+            if (result.ClonedProfile != null)
+            {
+                var cloneProfile = LauncherViewModel.ProfileManager.Profiles.First(p => p.Name == result.ClonedProfile);
+
+                profile = (IProfile)cloneProfile.Clone();
+                profile.Name = result.Name;
+            }
+            else
+            {
+                profile = new Profile(result.Name);
+                await profile.PullConfigurationAsync(CancellationToken.None);
+            }
+
+            LauncherViewModel.ProfileManager.AddProfile(profile);
+            LauncherViewModel.ProfileManager.CurrentProfile = profile;
+        }
 
         private static async Task LaunchExecutable(IProfile selectedProfile)
         {

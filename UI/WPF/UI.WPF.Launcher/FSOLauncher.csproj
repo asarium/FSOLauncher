@@ -153,8 +153,12 @@
     <Compile Include="Properties\Settings.cs" />
     <Compile Include="SingleInstance.cs" />
     <Compile Include="ViewModels\GameRootInputViewModel.cs" />
+    <Compile Include="ViewModels\ProfileInputViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="ViewModels\Test.cs" />
+    <Compile Include="Views\ProfileInputDialog.xaml.cs">
+      <DependentUpon>ProfileInputDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\GameRootInputDialog.xaml.cs">
       <DependentUpon>GameRootInputDialog.xaml</DependentUpon>
     </Compile>
@@ -167,6 +171,10 @@
     </Compile>
     <Compile Include="LauncherBootstrapper.cs" />
     <Page Include="Resources\Icons.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\ProfileInputDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

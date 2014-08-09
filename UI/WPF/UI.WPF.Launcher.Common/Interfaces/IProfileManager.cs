@@ -16,5 +16,7 @@ namespace UI.WPF.Launcher.Common.Interfaces
         IEnumerable<IProfile> Profiles { get; }
 
         IProfile CurrentProfile { get; set; }
+
+        void AddProfile(IProfile profile);
     }
 }

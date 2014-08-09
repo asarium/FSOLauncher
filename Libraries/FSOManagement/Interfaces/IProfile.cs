@@ -10,11 +10,11 @@ using System.Threading.Tasks;
 
 namespace FSOManagement.Interfaces
 {
-    public interface IProfile : INotifyPropertyChanged
+    public interface IProfile : INotifyPropertyChanged, ICloneable
     {
         #region Properties
 
-        string Name { get; }
+        string Name { get; set; }
 
         string CommandLine { get; }
 

@@ -52,7 +52,7 @@
                         </ComboBox>
 
                         <Button VerticalAlignment="Center" Width="40" Grid.Column="1" Margin="2"
-                                Style="{DynamicResource MetroCircleButtonStyle}" Height="40">
+                                Style="{DynamicResource MetroCircleButtonStyle}" Height="40" Command="{Binding AddProfileCommand}">
                             <Rectangle
                                 Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"
                                 HorizontalAlignment="Left" Height="18" Width="18">

@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -165,6 +166,21 @@ namespace FSOManagement.Profiles
         {
             get { return GetValue(Audio.EfxEnabled); }
             set { SetValue(Audio.EfxEnabled, value); }
+        }
+
+        public object Clone()
+        {
+            // Use serialization to get a truly unreated new instance
+            var formatter = new BinaryFormatter();
+
+            using (var stream = new MemoryStream())
+            {
+                formatter.Serialize(stream, this);
+
+                stream.Seek(0, SeekOrigin.Begin);
+
+                return formatter.Deserialize(stream);
+            }
         }
 
         public IFlagManager FlagManager

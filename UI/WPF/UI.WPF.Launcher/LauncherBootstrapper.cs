@@ -28,7 +28,9 @@ namespace UI.WPF.Launcher
     {
         private CompositionContainer _container;
 
+#if !DEBUG
         private bool _unhandledExceptionCaught;
+#endif
 
         public LauncherBootstrapper()
         {
@@ -49,6 +51,8 @@ namespace UI.WPF.Launcher
 
         protected override void OnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
+            // Only handle exceptions in non-debug mode so the debugger can break at the location where the exception was generated
+#if !DEBUG
             // Only ever allow one window to open.
             if (_unhandledExceptionCaught)
             {
@@ -59,7 +63,6 @@ namespace UI.WPF.Launcher
 
             try
             {
-#if DEBUG
                 var dlg = new TaskDialog
                 {
                     ButtonStyle = TaskDialogButtonStyle.Standard,
@@ -83,7 +86,6 @@ namespace UI.WPF.Launcher
                 {
                     Clipboard.SetText(e.Exception.ToString(), TextDataFormat.UnicodeText);
                 }
-#endif
 
                 SDLVideo.Quit();
                 SDLJoystick.Quit();
@@ -95,6 +97,7 @@ namespace UI.WPF.Launcher
             {
                 // Exception in uncaught exception handle? Not good!
             }
+#endif
         }
 
         protected override object GetInstance(Type serviceType, string key)
