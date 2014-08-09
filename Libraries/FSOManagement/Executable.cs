@@ -435,11 +435,6 @@ namespace FSOManagement
                     return false;
                 }
 
-                if (x.AdditionalTags.Any())
-                {
-                    Console.WriteLine();
-                }
-
                 return x._additionTags.SequenceEqual(y._additionTags) && x._featureSet == y._featureSet && x._major == y._major &&
                        x._minor == y._minor && x._release == y._release && x._revision == y._revision && x._type == y._type;
             }
