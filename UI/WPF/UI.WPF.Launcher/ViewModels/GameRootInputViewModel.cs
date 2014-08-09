@@ -29,7 +29,8 @@ namespace UI.WPF.Launcher.ViewModels
         {
             _totalConversions = totalConversions;
 
-            CanAcceptObservable = this.WhenAny(x => x.SelectedPath, pathObservable => GetPathError(pathObservable.Value) == null);
+            CanAcceptObservable = this.WhenAny(x => x.SelectedPath, x => x.SelectedName,
+                (pathObservable, nameObservable) => !string.IsNullOrEmpty(nameObservable.Value) && GetPathError(pathObservable.Value) == null);
 
             var browseCommand = ReactiveCommand.CreateAsyncTask(async x => await BrowseForRoot());
             BrowseCommand = browseCommand;
@@ -78,6 +79,12 @@ namespace UI.WPF.Launcher.ViewModels
                 if (columnName == "SelectedPath")
                 {
                     return GetPathError(SelectedPath);
+                }
+
+                if (columnName == "SelectedName")
+                {
+                    if (string.IsNullOrEmpty(SelectedName))
+                        return "You have to enter a name";
                 }
 
                 return null;

@@ -20,22 +20,28 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <TextBox Grid.Row="0" VerticalAlignment="Center" Margin="0,5" Text="{Binding SelectedName, Mode=TwoWay}"
+            <TextBox Grid.Row="0" VerticalAlignment="Center" Margin="0,5"
+                     Text="{Binding SelectedName, Mode=TwoWay,
+                                                    ValidatesOnDataErrors=True,
+                                                    UpdateSourceTrigger=PropertyChanged,
+                                                    NotifyOnValidationError=True}"
                      controls:TextboxHelper.Watermark="Name" />
 
             <Grid Grid.Row="1" HorizontalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <TextBox VerticalAlignment="Center" Grid.Column="0" HorizontalAlignment="Stretch" Margin="0,5,5,5"
-                         controls:TextboxHelper.Watermark="Path to the game root directory"
+                
+                <Button Content="Browse..." HorizontalAlignment="Right" VerticalAlignment="Center"
+                        Command="{Binding BrowseCommand}" Margin="0,5,5,5" />
+                
+                <TextBox VerticalAlignment="Center" HorizontalAlignment="Stretch"
+                         controls:TextboxHelper.Watermark="Path to the game root directory" Grid.Column="1"
                          Text="{Binding SelectedPath, Mode=TwoWay,
                                                     ValidatesOnDataErrors=True,
                                                     UpdateSourceTrigger=PropertyChanged,
                                                     NotifyOnValidationError=True}" />
-                <Button Content="Browse..." HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Column="1"
-                        Command="{Binding BrowseCommand}" />
             </Grid>
 
             <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right" Height="85">
