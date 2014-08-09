@@ -171,7 +171,7 @@ namespace UI.WPF.Launcher.ViewModels
 
         private async Task AddGameRoot()
         {
-            var dialog = new GameRootInputDialog {Title = "Add a new game directory"};
+            var dialog = new GameRootInputDialog(LauncherViewModel.TotalConversions) {Title = "Add a new game directory"};
 
             var result = await InteractionService.ShowDialog(dialog);
 

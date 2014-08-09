@@ -152,6 +152,7 @@
     <Compile Include="Implementations\SettingsAdapter.cs" />
     <Compile Include="Properties\Settings.cs" />
     <Compile Include="SingleInstance.cs" />
+    <Compile Include="ViewModels\GameRootInputViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="ViewModels\Test.cs" />
     <Compile Include="Views\GameRootInputDialog.xaml.cs">

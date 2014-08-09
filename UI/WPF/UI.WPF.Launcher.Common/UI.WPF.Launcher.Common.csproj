@@ -90,6 +90,7 @@
     <Compile Include="Services\IUpdateService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\IInteractionService.cs" />
+    <Compile Include="Util\PathUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\FSOManagement\FSOManagement.csproj">
