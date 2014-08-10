@@ -185,7 +185,7 @@ namespace UI.WPF.Launcher.ViewModels
             }
             else
             {
-                profile = new Profile(result.Name);
+                profile = LauncherViewModel.ProfileManager.CreateNewProfile(result.Name);
                 await profile.PullConfigurationAsync(CancellationToken.None);
             }
 
