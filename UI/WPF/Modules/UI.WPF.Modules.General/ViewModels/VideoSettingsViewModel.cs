@@ -3,16 +3,16 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Diagnostics;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Windows.Data;
 using System.Windows.Input;
-using Caliburn.Micro;
 using FSOManagement.Interfaces;
 using ReactiveUI;
 using SDLGlue;
 using UI.WPF.Launcher.Common.Interfaces;
 using UI.WPF.Launcher.Common.Services;
+using UI.WPF.Launcher.Common.Util;
 using UI.WPF.Modules.General.ViewModels.Internal;
 
 #endregion
@@ -20,7 +20,7 @@ using UI.WPF.Modules.General.ViewModels.Internal;
 namespace UI.WPF.Modules.General.ViewModels
 {
     [Export(typeof(VideoSettingsViewModel))]
-    public class VideoSettingsViewModel : PropertyChangedBase
+    public class VideoSettingsViewModel : ReactiveObject
     {
         private static readonly DisplayModeComparer DisplayModeComparer = new DisplayModeComparer();
 
@@ -64,15 +64,7 @@ namespace UI.WPF.Modules.General.ViewModels
         public WindowModeViewModel SelectedWindowMode
         {
             get { return _selectedWindowMode; }
-            set
-            {
-                if (Equals(value, _selectedWindowMode))
-                {
-                    return;
-                }
-                _selectedWindowMode = value;
-                NotifyOfPropertyChange();
-            }
+            set { this.RaiseAndSetIfChanged(ref _selectedWindowMode, value); }
         }
 
         [Import]
@@ -81,29 +73,13 @@ namespace UI.WPF.Modules.General.ViewModels
         public ListCollectionView ResolutionCollectionView
         {
             get { return _resolutionCollectionView; }
-            set
-            {
-                if (Equals(value, _resolutionCollectionView))
-                {
-                    return;
-                }
-                _resolutionCollectionView = value;
-                NotifyOfPropertyChange();
-            }
+            set { this.RaiseAndSetIfChanged(ref _resolutionCollectionView, value); }
         }
 
         public VideoDisplayViewModel SelectedVideoDisplay
         {
             get { return _selectedVideoDisplay; }
-            set
-            {
-                if (Equals(value, _selectedVideoDisplay))
-                {
-                    return;
-                }
-                _selectedVideoDisplay = value;
-                NotifyOfPropertyChange();
-            }
+            set { this.RaiseAndSetIfChanged(ref _selectedVideoDisplay, value); }
         }
 
         public ICommand DetectResolutionCommand { get; private set; }
@@ -111,27 +87,7 @@ namespace UI.WPF.Modules.General.ViewModels
         public IFlagManager FlagManager
         {
             get { return _flagManager; }
-            private set
-            {
-                if (Equals(value, _flagManager))
-                {
-                    return;
-                }
-
-                if (_flagManager != null)
-                {
-                    _flagManager.FlagChanged -= FlagManagerOnFlagChanged;
-                }
-
-                _flagManager = value;
-
-                if (_flagManager != null)
-                {
-                    _flagManager.FlagChanged += FlagManagerOnFlagChanged;
-                }
-
-                NotifyOfPropertyChange();
-            }
+            private set { this.RaiseAndSetIfChanged(ref _flagManager, value); }
         }
 
         public IEnumerable<string> TextureFilters
@@ -142,28 +98,18 @@ namespace UI.WPF.Modules.General.ViewModels
         public string SelectedTextureFilter
         {
             get { return _selectedTextureFilter; }
-            set
-            {
-                if (value == _selectedTextureFilter)
-                {
-                    return;
-                }
-                _selectedTextureFilter = value;
-                NotifyOfPropertyChange();
-            }
+            set { this.RaiseAndSetIfChanged(ref _selectedTextureFilter, value); }
         }
 
         private void InitializeTextureFilter(IProfileManager profileManager)
         {
-            profileManager.WhenAny(x => x.CurrentProfile.TextureFiltering, val => Enum.GetName(typeof(TextureFiltering), val.Value))
-                .BindTo(this, x => x.SelectedTextureFilter);
+            profileManager.CreateProfileBinding(x => x.TextureFiltering, val => Enum.GetName(typeof(TextureFiltering), val), this,
+                x => x.SelectedTextureFilter, val =>
+                {
+                    TextureFiltering value;
 
-            this.WhenAny(x => x.SelectedTextureFilter, val =>
-            {
-                TextureFiltering value;
-
-                return Enum.TryParse(val.Value, true, out value) ? value : TextureFiltering.Trilinear;
-            }).BindTo(profileManager, x => x.CurrentProfile.TextureFiltering);
+                    return Enum.TryParse(val, true, out value) ? value : TextureFiltering.Trilinear;
+                });
         }
 
         private void FlagManagerOnFlagChanged(object sender, FlagChangedEventArgs args)
@@ -173,6 +119,11 @@ namespace UI.WPF.Modules.General.ViewModels
 
         private void UpdateWindowMode(IFlagManager manager)
         {
+            if (manager == null)
+            {
+                return;
+            }
+
             if (manager.IsFlagSet("-fullscreen_window"))
             {
                 SelectedWindowMode = new WindowModeViewModel(WindowModeViewModel.WindowingType.Borderless);
@@ -193,8 +144,33 @@ namespace UI.WPF.Modules.General.ViewModels
 
             this.WhenAnyValue(x => x.FlagManager).Subscribe(UpdateWindowMode);
 
+            var beforeChange = this.ObservableForProperty(x => x.FlagManager, true).Select(x => x.Value);
+
+            var afterChange = this.ObservableForProperty(x => x.FlagManager).Select(x => x.Value);
+
+            beforeChange.Subscribe(manager =>
+            {
+                if (manager != null)
+                {
+                    manager.FlagChanged -= FlagManagerOnFlagChanged;
+                }
+            });
+
+            afterChange.Subscribe(manager =>
+            {
+                if (manager != null)
+                {
+                    manager.FlagChanged += FlagManagerOnFlagChanged;
+                }
+            });
+
             this.WhenAnyValue(x => x.SelectedWindowMode).Subscribe(mode =>
             {
+                if (mode == null)
+                {
+                    return;
+                }
+
                 switch (mode.Value)
                 {
                     case WindowModeViewModel.WindowingType.Fullscreen:
@@ -217,28 +193,51 @@ namespace UI.WPF.Modules.General.ViewModels
 
         private void InitializeVideoDisplaySelection(IProfileManager profileManager)
         {
-            SelectedVideoDisplay =
-                ResolutionCollectionView.OfType<VideoDisplayViewModel>()
-                    .FirstOrDefault(
-                        display =>
-                            display.Width == profileManager.CurrentProfile.ResolutionWidth &&
-                            display.Height == profileManager.CurrentProfile.ResolutionHeight);
+            IDisposable displayBinding = null;
+            IDisposable heightBinding = null;
 
-            if (SelectedVideoDisplay == null)
+            profileManager.GetProfileObservable().Subscribe(profile =>
             {
-                DetectResolution(false);
-            }
+                if (widthBinding != null)
+                {
+                    widthBinding.Dispose();
+                }
+                if (heightBinding != null)
+                {
+                    heightBinding.Dispose();
+                }
 
-            this.WhenAny(x => x.SelectedVideoDisplay, val => val.Value.Width).BindTo(profileManager, x => x.CurrentProfile.ResolutionWidth);
-            this.WhenAny(x => x.SelectedVideoDisplay, val => val.Value.Height).BindTo(profileManager, x => x.CurrentProfile.ResolutionHeight);
+                SelectedVideoDisplay =
+                    ResolutionCollectionView.OfType<VideoDisplayViewModel>()
+                        .FirstOrDefault(display => display.Width == profile.ResolutionWidth && display.Height == profile.ResolutionHeight);
+
+                if (SelectedVideoDisplay == null)
+                {
+                    DetectResolution(false);
+                }
+                widthBinding = this.WhenAnyValue(x => x.SelectedVideoDisplay, val => val.Value == null ? -1 : val.Value.Width)
+                    .BindTo(profile, x => x.ResolutionWidth);
+
+                heightBinding = this.WhenAny(x => x.SelectedVideoDisplay, val => val.Value == null ? -1 : val.Value.Height)
+                    .BindTo(profile, x => x.ResolutionHeight);
+            });
         }
 
         private void InitializeResolutions()
         {
-            var displays = SDLVideoDisplay.GetVideoDisplays();
+            var displays = SDLVideoDisplay.GetVideoDisplays().ToArray();
 
-            var videoDisplayCollection =
-                displays.First().DisplayModes.Distinct(DisplayModeComparer).CreateDerivedCollection(mode => new VideoDisplayViewModel(mode));
+            IEnumerable<VideoDisplayViewModel> videoDisplayCollection;
+
+            if (!displays.Any())
+            {
+                videoDisplayCollection = Enumerable.Empty<VideoDisplayViewModel>();
+            }
+            else
+            {
+                videoDisplayCollection =
+                    displays.First().DisplayModes.Distinct(DisplayModeComparer).CreateDerivedCollection(mode => new VideoDisplayViewModel(mode));
+            }
 
             ResolutionCollectionView = (ListCollectionView) CollectionViewSource.GetDefaultView(videoDisplayCollection);
             ResolutionCollectionView.GroupDescriptions.Add(new PropertyGroupDescription("AspectRatio"));
