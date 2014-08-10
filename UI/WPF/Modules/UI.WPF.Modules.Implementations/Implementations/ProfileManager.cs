@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Composition;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using FSOManagement.Annotations;
@@ -18,7 +19,7 @@ using UI.WPF.Launcher.Common.Interfaces;
 namespace UI.WPF.Modules.Implementations.Implementations
 {
     [Export(typeof(IProfileManager))]
-    public sealed class ProfileManager : IProfileManager
+    public sealed class ProfileManager : ReactiveObject, IProfileManager
     {
         private IProfile _currentProfile;
 
@@ -30,7 +31,7 @@ namespace UI.WPF.Modules.Implementations.Implementations
             _profiles = new ReactiveList<IProfile>();
             _profiles.Changed.Subscribe(_ => settings.Profiles = _profiles);
 
-            this.WhenAnyValue(x => x.CurrentProfile).BindTo(settings, x => x.SelectedProfile);
+            CurrentProfileObservable = this.WhenAny(x => x.CurrentProfile, x => x.Value);
 
             if (settings.Profiles != null)
             {
@@ -38,13 +39,15 @@ namespace UI.WPF.Modules.Implementations.Implementations
             }
             else
             {
-                var defaultProfile = new Profile("Default");
+                var defaultProfile = CreateNewProfile("Default");
                 defaultProfile.PullConfigurationAsync(CancellationToken.None);
 
                 _profiles.Add(defaultProfile);
             }
 
             CurrentProfile = settings.SelectedProfile ?? _profiles.FirstOrDefault();
+
+            this.WhenAnyValue(x => x.CurrentProfile).BindTo(settings, x => x.SelectedProfile);
         }
 
         #region IProfileManager Members
@@ -57,34 +60,21 @@ namespace UI.WPF.Modules.Implementations.Implementations
         public IProfile CurrentProfile
         {
             get { return _currentProfile; }
-            set
-            {
-                if (Equals(value, _currentProfile))
-                {
-                    return;
-                }
-                _currentProfile = value;
-                OnPropertyChanged();
-            }
+            set { this.RaiseAndSetIfChanged(ref _currentProfile, value); }
         }
+
+        public IObservable<IProfile> CurrentProfileObservable { get; private set; }
 
         public void AddProfile(IProfile profile)
         {
             _profiles.Add(profile);
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public IProfile CreateNewProfile(string name)
+        {
+            return new Profile(name);
+        }
 
         #endregion
-
-        [NotifyPropertyChangedInvocator]
-        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            var handler = PropertyChanged;
-            if (handler != null)
-            {
-                handler(this, new PropertyChangedEventArgs(propertyName));
-            }
-        }
     }
 }

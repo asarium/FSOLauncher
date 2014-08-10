@@ -1,5 +1,6 @@
 ﻿#region Usings
 
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using Caliburn.Micro;
@@ -11,12 +12,16 @@ using ReactiveUI;
 
 namespace UI.WPF.Launcher.Common.Interfaces
 {
-    public interface IProfileManager : INotifyPropertyChanged
+    public interface IProfileManager : IReactiveObject
     {
         IEnumerable<IProfile> Profiles { get; }
 
         IProfile CurrentProfile { get; set; }
 
+        IObservable<IProfile> CurrentProfileObservable { get; }
+
         void AddProfile(IProfile profile);
+
+        IProfile CreateNewProfile(string name);
     }
 }
