@@ -4,10 +4,11 @@ using System;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Reactive.Linq;
-using Caliburn.Micro;
 using ReactiveUI;
 using SDLGlue;
+using UI.WPF.Launcher.Common.Classes;
 using UI.WPF.Launcher.Common.Interfaces;
+using UI.WPF.Launcher.Common.Util;
 using UI.WPF.Modules.General.ViewModels.Internal;
 
 #endregion
@@ -15,7 +16,7 @@ using UI.WPF.Modules.General.ViewModels.Internal;
 namespace UI.WPF.Modules.General.ViewModels
 {
     [Export(typeof(JoystickSettingsViewModel))]
-    public class JoystickSettingsViewModel : PropertyChangedBase
+    public class JoystickSettingsViewModel : ReactiveObjectBase
     {
         private ReactiveList<JoystickViewModel> _joysticks;
 
@@ -25,6 +26,43 @@ namespace UI.WPF.Modules.General.ViewModels
 
         [ImportingConstructor]
         public JoystickSettingsViewModel(IProfileManager profileManager)
+        {
+            InitializeJoystickList(profileManager);
+
+            InitializeCurrentJoystickBinding(profileManager);
+        }
+
+        /// <summary>
+        ///     Specifies if the selected joystick was present when the view model was created. If this is <code>false</code>
+        ///     adding a joystick with the saved GUID will select that joystick.
+        /// </summary>
+        private bool SelectedJoystickPresent { get; set; }
+
+        public ReactiveList<JoystickViewModel> Joysticks
+        {
+            get { return _joysticks; }
+            private set { RaiseAndSetIfPropertyChanged(ref _joysticks, value); }
+        }
+
+        public JoystickViewModel SelectedJoystick
+        {
+            get { return _selectedJoystick; }
+            set { RaiseAndSetIfPropertyChanged(ref _selectedJoystick, value); }
+        }
+
+        public bool JoysticksAvailable
+        {
+            get { return _joysticksAvailable; }
+            set { RaiseAndSetIfPropertyChanged(ref _joysticksAvailable, value); }
+        }
+
+        private void InitializeCurrentJoystickBinding(IProfileManager profileManager)
+        {
+            profileManager.CreateProfileBinding(x => x.SelectedJoystickGuid, GetJoystickViewModel, this, x => x.SelectedJoystick,
+                val => val.Joystick == null ? null : val.Joystick.GUID);
+        }
+
+        private void InitializeJoystickList(IProfileManager profileManager)
         {
             Joysticks = new ReactiveList<JoystickViewModel>();
             Joysticks.CountChanged.Select(x => x > 0).BindTo(this, x => x.JoysticksAvailable);
@@ -45,62 +83,7 @@ namespace UI.WPF.Modules.General.ViewModels
                 SelectedJoystickPresent = true;
             });
 
-            // If the profile changes, make sure that the joystick is also changed
-            profileManager.WhenAny(x => x.CurrentProfile, guid => GetJoystickViewModel(guid.Value.SelectedJoystickGuid))
-                .BindTo(this, x => x.SelectedJoystick);
-
-            this.WhenAny(x => x.SelectedJoystick, val => val.Value.Joystick == null ? null : val.Value.Joystick.GUID)
-                .BindTo(profileManager, x => x.CurrentProfile.SelectedJoystickGuid);
-
             SDLJoystick.JoystickEvent += SdlJoystickEvent;
-        }
-
-        /// <summary>
-        ///     Specifies if the selected joystick was present when the view model was created. If this is <code>false</code>
-        ///     adding a joystick with the saved GUID will select that joystick.
-        /// </summary>
-        private bool SelectedJoystickPresent { get; set; }
-
-        public ReactiveList<JoystickViewModel> Joysticks
-        {
-            get { return _joysticks; }
-            private set
-            {
-                if (Equals(value, _joysticks))
-                {
-                    return;
-                }
-                _joysticks = value;
-                NotifyOfPropertyChange();
-            }
-        }
-
-        public JoystickViewModel SelectedJoystick
-        {
-            get { return _selectedJoystick; }
-            set
-            {
-                if (Equals(value, _selectedJoystick))
-                {
-                    return;
-                }
-                _selectedJoystick = value;
-                NotifyOfPropertyChange();
-            }
-        }
-
-        public bool JoysticksAvailable
-        {
-            get { return _joysticksAvailable; }
-            set
-            {
-                if (value.Equals(_joysticksAvailable))
-                {
-                    return;
-                }
-                _joysticksAvailable = value;
-                NotifyOfPropertyChange();
-            }
         }
 
         private JoystickViewModel GetJoystickViewModel(string guid)
