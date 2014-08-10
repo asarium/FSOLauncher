@@ -91,6 +91,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\IInteractionService.cs" />
     <Compile Include="Util\PathUtils.cs" />
+    <Compile Include="Util\ProfileManagerExtensions.cs" />
+    <Compile Include="Classes\ReactiveObjectBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\FSOManagement\FSOManagement.csproj">
