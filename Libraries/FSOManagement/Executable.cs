@@ -279,7 +279,14 @@ namespace FSOManagement
                 caps = await FlagFileReader.ReadFlagFileAsync(new MemoryStream(buffer));
             }
 
-            File.Delete(flagFilePath);
+            try
+            {
+                File.Delete(flagFilePath);
+            }
+            catch (IOException)
+            {
+                // TODO: Maybe handle this case better...
+            }
 
             return caps;
         }
