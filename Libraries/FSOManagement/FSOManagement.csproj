@@ -82,6 +82,7 @@
     <Compile Include="ExecutableManager.cs" />
     <Compile Include="FlagFileReader.cs" />
     <Compile Include="FSOUtilities.cs" />
+    <Compile Include="Implementations\ClsLookupAccountName.cs" />
     <Compile Include="Implementations\ConfigurationKeyNames.cs" />
     <Compile Include="Implementations\IniModDependencies.cs" />
     <Compile Include="Implementations\NoModDependencies.cs" />
