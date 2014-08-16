@@ -5,6 +5,7 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using System.Reactive.Linq;
 using Caliburn.Micro;
+using FSOManagement.Interfaces;
 using FSOManagement.OpenAL;
 using ReactiveUI;
 using UI.WPF.Launcher.Common.Interfaces;
@@ -14,7 +15,6 @@ using UI.WPF.Modules.General.ViewModels.Internal;
 
 namespace UI.WPF.Modules.General.ViewModels
 {
-    [Export(typeof(AudioSettingsViewModel))]
     public class AudioSettingsViewModel : PropertyChangedBase
     {
         private IObservableCollection<OpenAlDeviceViewModel> _devices;
@@ -27,10 +27,9 @@ namespace UI.WPF.Modules.General.ViewModels
 
         private bool _efxAvailable;
 
-        [ImportingConstructor]
-        public AudioSettingsViewModel(IProfileManager profileManager)
+        public AudioSettingsViewModel(IProfile profile)
         {
-            profileManager.WhenAnyValue(x => x.CurrentProfile.SelectedTotalConversion.RootFolder).Subscribe(root =>
+            profile.WhenAnyValue(x => x.SelectedTotalConversion.RootFolder).Subscribe(root =>
             {
                 Devices = UpdateDevices(root);
                 var defaultDevice = OpenALManager.GetDefaultDevice(OpenALManager.DeviceType.Playback, root);
@@ -40,31 +39,27 @@ namespace UI.WPF.Modules.General.ViewModels
 
             this.WhenAny(x => x.Devices.Count, val => val.Value > 0).BindTo(this, x => x.DevicesAvailable);
 
-            profileManager.WhenAny(x => x.CurrentProfile.SelectedAudioDevice,
+            profile.WhenAny(x => x.SelectedAudioDevice,
                 val => val.Value == null ? SelectedDevice : Devices.FirstOrDefault(model => model.Name == val.Value))
                 .BindTo(this, x => x.SelectedDevice);
 
             this.WhenAny(x => x.SelectedDevice, val => val.Value == null ? null : val.Value.Name)
-                .BindTo(profileManager, x => x.CurrentProfile.SelectedAudioDevice);
+                .BindTo(profile, x => x.SelectedAudioDevice);
 
-            InitializeEfx(profileManager);
-
-            ProfileManager = profileManager;
+            InitializeEfx(profile);
         }
 
-        private void InitializeEfx(IProfileManager profileManager)
+        private void InitializeEfx(IProfile profile)
         {
-            var efxEnabledObservable = profileManager.WhenAnyValue(x => x.CurrentProfile.EfxEnabled);
+            var efxEnabledObservable = profile.WhenAnyValue(x => x.EfxEnabled);
             var efxAvailableObservable = this.WhenAnyValue(x => x.SelectedDevice.SupportsEfx);
 
             efxEnabledObservable.CombineLatest(efxAvailableObservable, (enabled, available) => available && enabled).BindTo(this, x => x.EfxEnabled);
 
             efxAvailableObservable.BindTo(this, x => x.EfxAvailable);
 
-            this.WhenAnyValue(x => x.EfxEnabled).BindTo(profileManager, x => x.CurrentProfile.EfxEnabled);
+            this.WhenAnyValue(x => x.EfxEnabled).BindTo(profile, x => x.EfxEnabled);
         }
-
-        public IProfileManager ProfileManager { get; private set; }
 
         public IObservableCollection<OpenAlDeviceViewModel> Devices
         {

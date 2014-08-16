@@ -19,7 +19,6 @@ using UI.WPF.Modules.General.ViewModels.Internal;
 
 namespace UI.WPF.Modules.General.ViewModels
 {
-    [Export(typeof(VideoSettingsViewModel))]
     public class VideoSettingsViewModel : ReactiveObject
     {
         private static readonly DisplayModeComparer DisplayModeComparer = new DisplayModeComparer();
@@ -34,8 +33,7 @@ namespace UI.WPF.Modules.General.ViewModels
 
         private WindowModeViewModel _selectedWindowMode;
 
-        [ImportingConstructor]
-        public VideoSettingsViewModel(IProfileManager profileManager)
+        public VideoSettingsViewModel(IProfile profile)
         {
             InitializeResolutions();
 
@@ -44,11 +42,11 @@ namespace UI.WPF.Modules.General.ViewModels
 
             DetectResolutionCommand = detectCommand;
 
-            InitializeVideoDisplaySelection(profileManager);
+            InitializeVideoDisplaySelection(profile);
 
-            InitializeWindowMode(profileManager);
+            InitializeWindowMode(profile);
 
-            InitializeTextureFilter(profileManager);
+            InitializeTextureFilter(profile);
         }
 
         public IEnumerable<WindowModeViewModel> WindowModes
@@ -101,15 +99,17 @@ namespace UI.WPF.Modules.General.ViewModels
             set { this.RaiseAndSetIfChanged(ref _selectedTextureFilter, value); }
         }
 
-        private void InitializeTextureFilter(IProfileManager profileManager)
+        private void InitializeTextureFilter(IProfile profile)
         {
-            profileManager.CreateProfileBinding(x => x.TextureFiltering, val => Enum.GetName(typeof(TextureFiltering), val), this,
-                x => x.SelectedTextureFilter, val =>
-                {
-                    TextureFiltering value;
+            profile.WhenAny(x => x.TextureFiltering, val => Enum.GetName(typeof(TextureFiltering), val.Value))
+                .BindTo(this, x => x.SelectedTextureFilter);
 
-                    return Enum.TryParse(val, true, out value) ? value : TextureFiltering.Trilinear;
-                });
+            this.WhenAny(x => x.SelectedTextureFilter, val =>
+            {
+                TextureFiltering value;
+
+                return Enum.TryParse(val.Value, true, out value) ? value : TextureFiltering.Trilinear;
+            }).BindTo(profile, x => x.TextureFiltering);
         }
 
         private void FlagManagerOnFlagChanged(object sender, FlagChangedEventArgs args)
@@ -138,9 +138,9 @@ namespace UI.WPF.Modules.General.ViewModels
             }
         }
 
-        private void InitializeWindowMode(IProfileManager profileManager)
+        private void InitializeWindowMode(IProfile profile)
         {
-            profileManager.WhenAnyValue(x => x.CurrentProfile.FlagManager).BindTo(this, x => x.FlagManager);
+            profile.WhenAnyValue(x => x.FlagManager).BindTo(this, x => x.FlagManager);
 
             this.WhenAnyValue(x => x.FlagManager).Subscribe(UpdateWindowMode);
 
@@ -174,16 +174,16 @@ namespace UI.WPF.Modules.General.ViewModels
                 switch (mode.Value)
                 {
                     case WindowModeViewModel.WindowingType.Fullscreen:
-                        profileManager.CurrentProfile.FlagManager.SetFlag("-window", false);
-                        profileManager.CurrentProfile.FlagManager.SetFlag("-fullscreen_window", false);
+                        profile.FlagManager.SetFlag("-window", false);
+                        profile.FlagManager.SetFlag("-fullscreen_window", false);
                         break;
                     case WindowModeViewModel.WindowingType.Borderless:
-                        profileManager.CurrentProfile.FlagManager.SetFlag("-window", false);
-                        profileManager.CurrentProfile.FlagManager.SetFlag("-fullscreen_window", true);
+                        profile.FlagManager.SetFlag("-window", false);
+                        profile.FlagManager.SetFlag("-fullscreen_window", true);
                         break;
                     case WindowModeViewModel.WindowingType.Windowed:
-                        profileManager.CurrentProfile.FlagManager.SetFlag("-window", true);
-                        profileManager.CurrentProfile.FlagManager.SetFlag("-fullscreen_window", false);
+                        profile.FlagManager.SetFlag("-window", true);
+                        profile.FlagManager.SetFlag("-fullscreen_window", false);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -191,36 +191,22 @@ namespace UI.WPF.Modules.General.ViewModels
             });
         }
 
-        private void InitializeVideoDisplaySelection(IProfileManager profileManager)
+        private void InitializeVideoDisplaySelection(IProfile profile)
         {
-            IDisposable displayBinding = null;
-            IDisposable heightBinding = null;
+            SelectedVideoDisplay =
+                ResolutionCollectionView.OfType<VideoDisplayViewModel>()
+                    .FirstOrDefault(display => display.Width == profile.ResolutionWidth && display.Height == profile.ResolutionHeight);
 
-            profileManager.GetProfileObservable().Subscribe(profile =>
+            if (SelectedVideoDisplay == null)
             {
-                if (widthBinding != null)
-                {
-                    widthBinding.Dispose();
-                }
-                if (heightBinding != null)
-                {
-                    heightBinding.Dispose();
-                }
+                DetectResolution(false);
+            }
 
-                SelectedVideoDisplay =
-                    ResolutionCollectionView.OfType<VideoDisplayViewModel>()
-                        .FirstOrDefault(display => display.Width == profile.ResolutionWidth && display.Height == profile.ResolutionHeight);
+            this.WhenAny(x => x.SelectedVideoDisplay, val => val.Value == null ? -1 : val.Value.Width)
+                .BindTo(profile, x => x.ResolutionWidth);
 
-                if (SelectedVideoDisplay == null)
-                {
-                    DetectResolution(false);
-                }
-                widthBinding = this.WhenAnyValue(x => x.SelectedVideoDisplay, val => val.Value == null ? -1 : val.Value.Width)
-                    .BindTo(profile, x => x.ResolutionWidth);
-
-                heightBinding = this.WhenAny(x => x.SelectedVideoDisplay, val => val.Value == null ? -1 : val.Value.Height)
-                    .BindTo(profile, x => x.ResolutionHeight);
-            });
+            this.WhenAny(x => x.SelectedVideoDisplay, val => val.Value == null ? -1 : val.Value.Height)
+                .BindTo(profile, x => x.ResolutionHeight);
         }
 
         private void InitializeResolutions()

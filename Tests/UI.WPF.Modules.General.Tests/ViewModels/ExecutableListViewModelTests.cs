@@ -32,10 +32,7 @@ namespace UI.WPF.Modules.General.Tests.ViewModels
 
             var testProfile = new Profile("Test") {SelectedTotalConversion = tcMock.Object};
 
-            var profileManagerMock = new Mock<IProfileManager>();
-            profileManagerMock.Setup(x => x.CurrentProfile).Returns(testProfile);
-
-            var tabViewModel = new ExecutableListViewModel(profileManagerMock.Object);
+            var tabViewModel = new ExecutableListViewModel(testProfile);
 
             Assert.AreEqual(1, tabViewModel.Executables.Count);
             var executableVm = tabViewModel.Executables.First();
@@ -86,11 +83,8 @@ namespace UI.WPF.Modules.General.Tests.ViewModels
             tcMock.Setup(x => x.ExecutableManager).Returns(exeManager.Object);
 
             var testProfile = new Profile("Test") { SelectedTotalConversion = tcMock.Object };
-
-            var profileManagerMock = new Mock<IProfileManager>();
-            profileManagerMock.Setup(x => x.CurrentProfile).Returns(testProfile);
-
-            var tabViewModel = new ExecutableListViewModel(profileManagerMock.Object);
+            
+            var tabViewModel = new ExecutableListViewModel(testProfile);
 
             tabViewModel.SelectedExecutableViewModel = tabViewModel.Executables[0];
             tabViewModel.Executables[0].ReleaseSelected = true;

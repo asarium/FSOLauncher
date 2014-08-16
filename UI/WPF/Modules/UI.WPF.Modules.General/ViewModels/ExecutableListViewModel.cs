@@ -3,19 +3,17 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.ComponentModel.Composition;
 using System.Linq;
 using Caliburn.Micro;
 using FSOManagement;
+using FSOManagement.Interfaces;
 using ReactiveUI;
-using UI.WPF.Launcher.Common.Interfaces;
 using UI.WPF.Modules.General.ViewModels.Internal;
 
 #endregion
 
 namespace UI.WPF.Modules.General.ViewModels
 {
-    [Export(typeof(ExecutableListViewModel))]
     public class ExecutableListViewModel : PropertyChangedBase
     {
         private BindableCollection<ExecutableViewModel> _executables;
@@ -26,14 +24,13 @@ namespace UI.WPF.Modules.General.ViewModels
 
         private BindableCollection<Executable> _selectedTcExecutables;
 
-        [ImportingConstructor]
-        public ExecutableListViewModel(IProfileManager profileManager)
+        public ExecutableListViewModel(IProfile profile)
         {
-            profileManager.WhenAnyValue(x => x.CurrentProfile.SelectedTotalConversion).BindTo(this, x => x.SelectedTc);
+            profile.WhenAnyValue(x => x.SelectedTotalConversion).BindTo(this, x => x.SelectedTc);
             this.WhenAnyValue(x => x.SelectedTc.ExecutableManager.Executables).BindTo(this, x => x.SelectedTcExecutables);
             this.WhenAny(x => x.SelectedTcExecutables, val => CreateExecutableCollection(val.Value)).BindTo(this, x => x.Executables);
 
-            var selectedExecutable = profileManager.CurrentProfile.SelectedExecutable;
+            var selectedExecutable = profile.SelectedExecutable;
             var viewModel = FindViewModelFor(selectedExecutable, false);
 
             if (viewModel != null)
@@ -43,7 +40,7 @@ namespace UI.WPF.Modules.General.ViewModels
                 SelectedExecutableViewModel = viewModel;
             }
 
-            this.WhenAnyValue(x => x.SelectedExecutableViewModel.SelectedExecutable).BindTo(profileManager, x => x.CurrentProfile.SelectedExecutable);
+            this.WhenAnyValue(x => x.SelectedExecutableViewModel.SelectedExecutable).BindTo(profile, x => x.SelectedExecutable);
         }
 
         public TotalConversion SelectedTc

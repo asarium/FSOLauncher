@@ -4,6 +4,7 @@ using System;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Reactive.Linq;
+using FSOManagement.Interfaces;
 using ReactiveUI;
 using SDLGlue;
 using UI.WPF.Launcher.Common.Classes;
@@ -15,7 +16,6 @@ using UI.WPF.Modules.General.ViewModels.Internal;
 
 namespace UI.WPF.Modules.General.ViewModels
 {
-    [Export(typeof(JoystickSettingsViewModel))]
     public class JoystickSettingsViewModel : ReactiveObjectBase
     {
         private ReactiveList<JoystickViewModel> _joysticks;
@@ -24,12 +24,11 @@ namespace UI.WPF.Modules.General.ViewModels
 
         private JoystickViewModel _selectedJoystick;
 
-        [ImportingConstructor]
-        public JoystickSettingsViewModel(IProfileManager profileManager)
+        public JoystickSettingsViewModel(IProfile profile)
         {
-            InitializeJoystickList(profileManager);
+            InitializeJoystickList(profile);
 
-            InitializeCurrentJoystickBinding(profileManager);
+            InitializeCurrentJoystickBinding(profile);
         }
 
         /// <summary>
@@ -56,13 +55,15 @@ namespace UI.WPF.Modules.General.ViewModels
             set { RaiseAndSetIfPropertyChanged(ref _joysticksAvailable, value); }
         }
 
-        private void InitializeCurrentJoystickBinding(IProfileManager profileManager)
+        private void InitializeCurrentJoystickBinding(IProfile profile)
         {
-            profileManager.CreateProfileBinding(x => x.SelectedJoystickGuid, GetJoystickViewModel, this, x => x.SelectedJoystick,
-                val => val.Joystick == null ? null : val.Joystick.GUID);
+            profile.WhenAny(x => x.SelectedJoystickGuid, val => GetJoystickViewModel(val.Value)).BindTo(this, x => x.SelectedJoystick);
+
+            this.WhenAny(x => x.SelectedJoystick, val => val.Value.Joystick == null ? null : val.Value.Joystick.GUID)
+                .BindTo(profile, x => x.SelectedJoystickGuid);
         }
 
-        private void InitializeJoystickList(IProfileManager profileManager)
+        private void InitializeJoystickList(IProfile profile)
         {
             Joysticks = new ReactiveList<JoystickViewModel>();
             Joysticks.CountChanged.Select(x => x > 0).BindTo(this, x => x.JoysticksAvailable);
@@ -70,11 +71,11 @@ namespace UI.WPF.Modules.General.ViewModels
             Joysticks.Add(new JoystickViewModel("<none>"));
             Joysticks.AddRange(SDLJoystick.GetJoysticks().Select(joy => new JoystickViewModel(joy)));
 
-            SelectedJoystickPresent = GetJoystickViewModel(profileManager.CurrentProfile.SelectedJoystickGuid) != null;
+            SelectedJoystickPresent = GetJoystickViewModel(profile.SelectedJoystickGuid) != null;
 
             Joysticks.ItemsAdded.Subscribe(addedModel =>
             {
-                if (SelectedJoystickPresent || addedModel.Joystick.GUID != profileManager.CurrentProfile.SelectedJoystickGuid)
+                if (SelectedJoystickPresent || addedModel.Joystick.GUID != profile.SelectedJoystickGuid)
                 {
                     return;
                 }

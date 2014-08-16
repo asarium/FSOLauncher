@@ -1,8 +1,10 @@
 ﻿#region Usings
 
+using System;
 using System.ComponentModel.Composition;
 using Caliburn.Micro;
 using UI.WPF.Launcher.Common.Interfaces;
+using UI.WPF.Launcher.Common.Util;
 
 #endregion
 
@@ -19,12 +21,20 @@ namespace UI.WPF.Modules.General.ViewModels
 
         private VideoSettingsViewModel _videoSettingsViewModel;
 
-        public GeneralTabViewModel()
+        [ImportingConstructor]
+        public GeneralTabViewModel(IProfileManager profileManager)
         {
             DisplayName = "General";
+
+            profileManager.GetProfileObservable().Subscribe(profile =>
+            {
+                ExecutableListViewModel = new ExecutableListViewModel(profile);
+                VideoSettingsViewModel = new VideoSettingsViewModel(profile);
+                JoystickSettingsViewModel = new JoystickSettingsViewModel(profile);
+                AudioSettingsViewModel = new AudioSettingsViewModel(profile);
+            });
         }
 
-        [Import]
         public ExecutableListViewModel ExecutableListViewModel
         {
             get { return _executableListViewModel; }
@@ -39,7 +49,6 @@ namespace UI.WPF.Modules.General.ViewModels
             }
         }
 
-        [Import]
         public VideoSettingsViewModel VideoSettingsViewModel
         {
             get { return _videoSettingsViewModel; }
@@ -54,7 +63,6 @@ namespace UI.WPF.Modules.General.ViewModels
             }
         }
 
-        [Import]
         public JoystickSettingsViewModel JoystickSettingsViewModel
         {
             get { return _joystickSettingsViewModel; }
@@ -69,7 +77,6 @@ namespace UI.WPF.Modules.General.ViewModels
             }
         }
 
-        [Import]
         public AudioSettingsViewModel AudioSettingsViewModel
         {
             get { return _audioSettingsViewModel; }
