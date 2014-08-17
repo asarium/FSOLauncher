@@ -55,6 +55,7 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ExecutableTests.cs" />
+    <Compile Include="Implementations\WindowsSpeechHandlerTests.cs" />
     <Compile Include="ModificationTests.cs" />
     <Compile Include="Profiles\ProfileTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
