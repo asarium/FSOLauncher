@@ -7,6 +7,7 @@ using System.Reactive.Linq;
 using Caliburn.Micro;
 using FSOManagement.Interfaces;
 using FSOManagement.OpenAL;
+using FSOManagement.Profiles;
 using ReactiveUI;
 using UI.WPF.Launcher.Common.Interfaces;
 using UI.WPF.Modules.General.ViewModels.Internal;
@@ -47,7 +48,11 @@ namespace UI.WPF.Modules.General.ViewModels
                 .BindTo(profile, x => x.SelectedAudioDevice);
 
             InitializeEfx(profile);
+
+            Profile = profile;
         }
+
+        public IProfile Profile { get; private set; }
 
         private void InitializeEfx(IProfile profile)
         {
