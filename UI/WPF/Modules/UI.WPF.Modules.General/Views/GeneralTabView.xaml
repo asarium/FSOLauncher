@@ -7,18 +7,23 @@
              x:Class="UI.WPF.Modules.General.Views.GeneralTabView" mc:Ignorable="d"
              d:DataContext="{d:DesignInstance {x:Type viewModels:GeneralTabViewModel}}" d:DesignHeight="500"
              d:DesignWidth="600">
-    <WrapPanel>
-        <GroupBox Header="Executables" Margin="5" Width="400">
-            <ContentControl x:Name="ExecutableListViewModel" />
-        </GroupBox>
-        <GroupBox Header="Video" Margin="5" Width="400">
-            <ContentControl x:Name="VideoSettingsViewModel" />
-        </GroupBox>
-        <GroupBox Header="Joystick" Margin="5" Width="400">
-            <ContentControl x:Name="JoystickSettingsViewModel" />
-        </GroupBox>
-        <GroupBox Header="Audio" Margin="5" Width="400">
-            <ContentControl x:Name="AudioSettingsViewModel" />
-        </GroupBox>
-    </WrapPanel>
+    <ScrollViewer>
+		<WrapPanel>
+			<GroupBox Header="Executables" Margin="5" Width="400">
+				<ContentControl x:Name="ExecutableListViewModel" />
+			</GroupBox>
+			<GroupBox Header="Video" Margin="5" Width="400">
+				<ContentControl x:Name="VideoSettingsViewModel" />
+			</GroupBox>
+			<GroupBox Header="Joystick" Margin="5" Width="400">
+				<ContentControl x:Name="JoystickSettingsViewModel" />
+			</GroupBox>
+			<GroupBox Header="Audio" Margin="5" Width="400">
+				<ContentControl x:Name="AudioSettingsViewModel" />
+			</GroupBox>
+			<GroupBox Header="Speech" Margin="5" Width="400">
+				<ContentControl x:Name="SpeechViewModel" />
+			</GroupBox>
+		</WrapPanel>
+	</ScrollViewer>
 </UserControl>

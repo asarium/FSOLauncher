@@ -21,6 +21,8 @@ namespace UI.WPF.Modules.General.ViewModels
 
         private VideoSettingsViewModel _videoSettingsViewModel;
 
+        private SpeechViewModel _speechViewModel;
+
         [ImportingConstructor]
         public GeneralTabViewModel(IProfileManager profileManager)
         {
@@ -32,7 +34,22 @@ namespace UI.WPF.Modules.General.ViewModels
                 VideoSettingsViewModel = new VideoSettingsViewModel(profile);
                 JoystickSettingsViewModel = new JoystickSettingsViewModel(profile);
                 AudioSettingsViewModel = new AudioSettingsViewModel(profile);
+                SpeechViewModel = new SpeechViewModel(profile);
             });
+        }
+
+        public SpeechViewModel SpeechViewModel
+        {
+            get { return _speechViewModel; }
+            private set
+            {
+                if (Equals(value, _speechViewModel))
+                {
+                    return;
+                }
+                _speechViewModel = value;
+                NotifyOfPropertyChange();
+            }
         }
 
         public ExecutableListViewModel ExecutableListViewModel

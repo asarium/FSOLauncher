@@ -12,10 +12,24 @@
 
         public const string SoundFolderName = "Sound";
 
+
         public const string PlaybackDevice = "PlaybackDevice";
 
         public const string SampleRate = "SampleRate";
 
         public const string EnableEFX = "EnableEFX";
+
+
+        public const string SpeechVoice = "SpeechVoice";
+
+        public const string SpeechVolume = "SpeechVolume";
+
+        public const string SpeechTechroom = "SpeechTechroom";
+
+        public const string SpeechBriefings = "SpeechBriefings";
+
+        public const string SpeechIngame = "SpeechIngame";
+
+        public const string SpeechMulti = "SpeechMulti";
     }
 }

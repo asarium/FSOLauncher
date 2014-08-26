@@ -44,6 +44,22 @@ namespace FSOManagement.Interfaces
 
         bool EfxEnabled { get; set; }
 
+        string SpeechVoiceName { get; set; }
+
+        int SpeechVoiceVolume { get; set; }
+
+        #region Voice settings
+
+        bool UseVoiceInTechRoom { get; set; }
+
+        bool UseVoiceInBriefing { get; set; }
+
+        bool UseVoiceInGame { get; set; }
+
+        bool UseVoiceInMulti { get; set; }
+
+        #endregion
+
         #endregion
 
         #endregion

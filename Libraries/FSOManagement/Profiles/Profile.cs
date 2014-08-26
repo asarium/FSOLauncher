@@ -26,8 +26,6 @@ namespace FSOManagement.Profiles
     [Serializable]
     public class Profile : IProfile, IDeserializationCallback
     {
-        private static readonly IConfigurationProvider ConfigProvider = InitializeConfigProvider();
-
         [NonSerialized]
         private bool _canLaunchExecutable;
 
@@ -168,6 +166,18 @@ namespace FSOManagement.Profiles
             set { SetValue(Audio.EfxEnabled, value); }
         }
 
+        public string SpeechVoiceName
+        {
+            get { return GetValue(General.VoiceName); }
+            set { SetValue(General.VoiceName, value); }
+        }
+
+        public int SpeechVoiceVolume
+        {
+            get { return GetValue(General.VoiceVolume); }
+            set { SetValue(General.VoiceVolume, value); }
+        }
+
         public object Clone()
         {
             // Use serialization to get a truly unreated new instance
@@ -228,7 +238,7 @@ namespace FSOManagement.Profiles
 
             progressMessages.Report("Writing configurations...");
 
-            await ConfigProvider.PushConfigurationAsync(this, token);
+            await ConfigurationManager.WriteConfigurationAsync(this);
         }
 
         public async Task<Process> LaunchSelectedExecutableAsync(CancellationToken token, IProgress<string> progressReporter)
@@ -273,7 +283,7 @@ namespace FSOManagement.Profiles
 
         public Task PullConfigurationAsync(CancellationToken token)
         {
-            return ConfigProvider.PullConfigurationAsync(this, token);
+            return ConfigurationManager.ReadConfigurationAsync(this);
         }
 
         [field: NonSerialized]
@@ -281,18 +291,34 @@ namespace FSOManagement.Profiles
 
         #endregion
 
-        private static IConfigurationProvider InitializeConfigProvider()
+        #region Voice settings
+
+        public bool UseVoiceInTechRoom
         {
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
-            {
-                return new RegistryConfigurationProvider();
-            }
-            else
-            {
-                throw new NotImplementedException("Configuration for other platforms is not yet implemented...");
-            }
+            get { return GetValue(Keys.Speech.UseInTechRoom); }
+            set { SetValue(Keys.Speech.UseInTechRoom, value); }
         }
 
+        public bool UseVoiceInBriefing
+        {
+            get { return GetValue(Keys.Speech.UseInBriefing); }
+            set { SetValue(Keys.Speech.UseInBriefing, value); }
+        }
+
+        public bool UseVoiceInGame
+        {
+            get { return GetValue(Keys.Speech.UseInGame); }
+            set { SetValue(Keys.Speech.UseInGame, value); }
+        }
+
+        public bool UseVoiceInMulti
+        {
+            get { return GetValue(Keys.Speech.UseInMulti); }
+            set { SetValue(Keys.Speech.UseInMulti, value); }
+        }
+
+        #endregion
+        
         private void OnCreated()
         {
             _modActivationManager = new ModActivationManager(this);

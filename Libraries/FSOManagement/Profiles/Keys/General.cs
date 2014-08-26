@@ -15,6 +15,10 @@ namespace FSOManagement.Profiles.Keys
 
         public static readonly IConfigurationKey<string> SelectedJoystickGUID = new DefaultConfigurationKey<string>("SelectedJoystickGUID");
 
+        public static readonly IConfigurationKey<string> VoiceName = new DefaultConfigurationKey<string>("SpeechVoiceName");
+
+        public static readonly IConfigurationKey<int> VoiceVolume = new DefaultConfigurationKey<int>("SpeechVoiceVolume", 100);
+
         internal static readonly IConfigurationKey<Modification> SelectedModification =
             new DefaultConfigurationKey<Modification>("SelectedModification");
 

@@ -15,8 +15,16 @@ namespace FSOManagement.Interfaces
     /// </remarks>
     public interface IConfigurationProvider
     {
-        Task PushConfigurationAsync(IProfile profile, CancellationToken token);
+        Task ReadConfigurationAsync();
 
-        Task PullConfigurationAsync(IProfile profile, CancellationToken token);
+        TVal Read<TVal>(string key, string section = null) where TVal : class;
+
+        TVal? ReadValue<TVal>(string key, string section = null) where TVal : struct;
+
+        void WriteValue<TVal>(string key, string section, TVal value);
+
+        bool DeleteValue(string key, string section = null);
+
+        Task WriteConfigurationAsync();
     }
 }
