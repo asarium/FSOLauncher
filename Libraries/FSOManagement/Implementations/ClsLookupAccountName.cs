@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
+using FSOManagement.Annotations;
 
 namespace FSOManagement.Implementations
 {
@@ -17,16 +18,23 @@ namespace FSOManagement.Implementations
         private static extern bool GetTokenInformation(IntPtr tokenHandle, TOKEN_INFORMATION_CLASS tokenInformationClass, IntPtr tokenInformation,
             int tokenInformationLength, out int returnLength);
 
+        [CanBeNull]
         public static string GetUserSid()
         {
             var tokenInfLength = 0;
 
-            // first call gets lenght of TokenInformation
-            GetTokenInformation(WindowsIdentity.GetCurrent().Token, TOKEN_INFORMATION_CLASS.TokenUser, IntPtr.Zero, tokenInfLength, out tokenInfLength);
+            // first call gets length of TokenInformation
+            var windowsIdentity = WindowsIdentity.GetCurrent();
+            if (windowsIdentity == null)
+            {
+                return null;
+            }
+
+            GetTokenInformation(windowsIdentity.Token, TOKEN_INFORMATION_CLASS.TokenUser, IntPtr.Zero, tokenInfLength, out tokenInfLength);
 
             var tokenInformation = Marshal.AllocHGlobal(tokenInfLength);
 
-            var result = GetTokenInformation(WindowsIdentity.GetCurrent().Token, TOKEN_INFORMATION_CLASS.TokenUser, tokenInformation, tokenInfLength,
+            var result = GetTokenInformation(windowsIdentity.Token, TOKEN_INFORMATION_CLASS.TokenUser, tokenInformation, tokenInfLength,
                 out tokenInfLength);
 
             try
