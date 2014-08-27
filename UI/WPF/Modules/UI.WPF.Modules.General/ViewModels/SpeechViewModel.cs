@@ -1,12 +1,12 @@
 ﻿#region Usings
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using FSOManagement.Implementations;
+using FSOManagement.Annotations;
 using FSOManagement.Interfaces;
+using FSOManagement.Speech;
 using ReactiveUI;
 using UI.WPF.Launcher.Common.Classes;
 
@@ -14,27 +14,24 @@ using UI.WPF.Launcher.Common.Classes;
 
 namespace UI.WPF.Modules.General.ViewModels
 {
-    public class SpeechViewModel : ReactiveObjectBase, IDisposable
+    public class SpeechViewModel : ReactiveObjectBase
     {
         private IProfile _profile;
 
         private IVoice _selectedVoice;
 
-        private ISpeechHandler _speechHandler;
-
         private string _testPlayString = "Press play to test this string.";
 
         private IEnumerable<IVoice> _voices;
-        
-        public SpeechViewModel(IProfile profile)
+
+        public SpeechViewModel([NotNull] IProfile profile)
         {
-            _speechHandler = new WindowsSpeechHandler();
-            Voices = _speechHandler.InstalledVoices;
+            Voices = SpeechManager.SpeechHandler.InstalledVoices;
 
             profile.WhenAny(x => x.SpeechVoiceName,
                 val =>
-                    _speechHandler.InstalledVoices.FirstOrDefault(voice => voice.Name == val.Value) ?? _speechHandler.InstalledVoices.FirstOrDefault())
-                .BindTo(this, x => x.SelectedVoice);
+                    SpeechManager.SpeechHandler.InstalledVoices.FirstOrDefault(voice => voice.Name == val.Value) ??
+                    SpeechManager.SpeechHandler.InstalledVoices.FirstOrDefault()).BindTo(this, x => x.SelectedVoice);
 
             this.WhenAny(x => x.SelectedVoice, val => val.Value == null ? null : val.Value.Name).BindTo(profile, x => x.SpeechVoiceName);
 
@@ -46,53 +43,44 @@ namespace UI.WPF.Modules.General.ViewModels
             PlayStringCommand = playCommand;
         }
 
+        [NotNull]
         public ICommand PlayStringCommand { get; private set; }
 
+        [NotNull]
         public string TestPlayString
         {
             get { return _testPlayString; }
             set { RaiseAndSetIfPropertyChanged(ref _testPlayString, value); }
         }
 
+        [NotNull]
         public IProfile Profile
         {
             get { return _profile; }
             private set { RaiseAndSetIfPropertyChanged(ref _profile, value); }
         }
 
+        [NotNull]
         public IEnumerable<IVoice> Voices
         {
             get { return _voices; }
             private set { RaiseAndSetIfPropertyChanged(ref _voices, value); }
         }
 
+        [CanBeNull]
         public IVoice SelectedVoice
         {
             get { return _selectedVoice; }
             set { RaiseAndSetIfPropertyChanged(ref _selectedVoice, value); }
         }
 
-        #region IDisposable Members
-
-        public void Dispose()
-        {
-            if (_speechHandler != null)
-            {
-                _speechHandler.Dispose();
-                _speechHandler = null;
-            }
-        }
-
-        #endregion
-
+        [NotNull]
         private async Task PlayStringAsync()
         {
-            await SelectedVoice.SpeakAsync(TestPlayString, Profile.SpeechVoiceVolume, 1);
-        }
-
-        ~SpeechViewModel()
-        {
-            Dispose();
+            if (SelectedVoice != null)
+            {
+                await SelectedVoice.SpeakAsync(TestPlayString, Profile.SpeechVoiceVolume, 1);
+            }
         }
     }
 }
