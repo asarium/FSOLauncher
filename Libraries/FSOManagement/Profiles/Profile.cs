@@ -99,19 +99,7 @@ namespace FSOManagement.Profiles
             }
         }
 
-        public bool CanLaunchExecutable
-        {
-            get { return _canLaunchExecutable; }
-            private set
-            {
-                if (value.Equals(_canLaunchExecutable))
-                {
-                    return;
-                }
-                _canLaunchExecutable = value;
-                OnPropertyChanged();
-            }
-        }
+        public IObservable<bool> CanLaunchExecutable { get; private set; }
 
         public TextureFiltering TextureFiltering
         {
@@ -331,10 +319,10 @@ namespace FSOManagement.Profiles
             _modActivationManager = new ModActivationManager(this);
             _flagManager = new FlagManager(this);
 
-            this.WhenAny(x => x.ModActivationManager.CommandLine, x => x.FlagManager.CommandLine,
-                (cmd1, cmd2) => JoinCommandLine(cmd1.Value, cmd2.Value)).BindTo(this, x => x.CommandLine);
+            this.WhenAny(x => x.ModActivationManager.CommandLine, x => x.FlagManager.CommandLine, x => x.ExtraCommandLine,
+                (cmd1, cmd2, cmd3) => JoinCommandLine(cmd1.Value, cmd2.Value, cmd3.Value)).BindTo(this, x => x.CommandLine);
 
-            this.WhenAny(x => x.SelectedExecutable, val => CanLaunch(val.Value)).BindTo(this, x => x.CanLaunchExecutable);
+            CanLaunchExecutable = this.WhenAny(x => x.SelectedExecutable, val => CanLaunch(val.Value));
         }
 
         private static bool CanLaunch([CanBeNull] Executable value)

@@ -34,6 +34,8 @@ namespace UI.WPF.Launcher.ViewModels
 
         private string _title = "FSO Launcher";
 
+        private ICommand _launchGameCommand;
+
         [ImportingConstructor]
         public ShellViewModel(IEventAggregator eventAggregator, ISettings settings)
         {
@@ -41,8 +43,10 @@ namespace UI.WPF.Launcher.ViewModels
 
             AddProfileCommand = ReactiveCommand.CreateAsyncTask(async _ => await AddProfile());
 
-            var canLaunchObservable = settings.WhenAnyValue(x => x.SelectedProfile.CanLaunchExecutable);
-            LaunchGameCommand = ReactiveCommand.CreateAsyncTask(canLaunchObservable, async _ => await LaunchExecutable(settings.SelectedProfile));
+            settings.WhenAnyValue(x => x.SelectedProfile).Subscribe(profile =>
+            {
+                LaunchGameCommand = ReactiveCommand.CreateAsyncTask(profile.CanLaunchExecutable, async _ => await LaunchExecutable(settings.SelectedProfile));
+            });
 
             Settings = settings;
 
@@ -53,7 +57,19 @@ namespace UI.WPF.Launcher.ViewModels
 
         public ICommand AddProfileCommand { get; set; }
 
-        public ICommand LaunchGameCommand { get; private set; }
+        public ICommand LaunchGameCommand
+        {
+            get { return _launchGameCommand; }
+            private set
+            {
+                if (Equals(value, _launchGameCommand))
+                {
+                    return;
+                }
+                _launchGameCommand = value;
+                NotifyOfPropertyChange();
+            }
+        }
 
         public ICommand AddGameRootCommand { get; private set; }
 

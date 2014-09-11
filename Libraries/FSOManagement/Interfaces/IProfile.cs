@@ -21,7 +21,8 @@ namespace FSOManagement.Interfaces
         [NotNull]
         string CommandLine { get; }
 
-        bool CanLaunchExecutable { get; }
+        [NotNull]
+        IObservable<bool> CanLaunchExecutable { get; }
 
         [NotNull]
         IFlagManager FlagManager { get; }
