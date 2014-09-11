@@ -1,7 +1,11 @@
-﻿using System;
+﻿#region Usings
+
+using System;
 using FSOManagement.Annotations;
 using FSOManagement.Implementations;
 using FSOManagement.Interfaces;
+
+#endregion
 
 namespace FSOManagement.Speech
 {
@@ -20,9 +24,11 @@ namespace FSOManagement.Speech
                     {
                         _speechHandler = new WindowsSpeechHandler();
                     }
-
-                    // FSO doesn't support TTS on other platforms yet...
-                    throw new NotSupportedException();
+                    else
+                    {
+                        // FSO doesn't support TTS on other platforms yet...
+                        throw new NotSupportedException();
+                    }
                 }
 
                 return _speechHandler;
