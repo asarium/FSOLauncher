@@ -59,6 +59,9 @@ namespace FSOManagement.Interfaces
 
         int SpeechVoiceVolume { get; set; }
 
+        [CanBeNull]
+        string ExtraCommandLine { get; set; }
+
         #region Voice settings
 
         bool UseVoiceInTechRoom { get; set; }

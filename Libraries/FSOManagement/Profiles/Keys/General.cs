@@ -24,5 +24,7 @@ namespace FSOManagement.Profiles.Keys
 
         internal static readonly IConfigurationKey<SortedSet<FlagInformation>> CommandLineOptions =
             new DefaultConfigurationKey<SortedSet<FlagInformation>>("CommandLineOptions");
+
+        internal static readonly IConfigurationKey<string> ExtraCommandLine = new DefaultConfigurationKey<string>("ExtraCommandLine");
     }
 }

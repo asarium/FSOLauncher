@@ -52,12 +52,13 @@
                    Height="1" />
 
         <GroupBox Margin="3" Grid.Row="2" Header="Custom options">
-            <TextBox TextWrapping="Wrap" VerticalAlignment="Top" />
+            <TextBox TextWrapping="Wrap" VerticalAlignment="Top"
+                     Text="{Binding ProfileManager.CurrentProfile.ExtraCommandLine, Mode=TwoWay}" />
         </GroupBox>
 
         <GroupBox Margin="3" Grid.Row="3" Header="Current commandline">
             <TextBox TextWrapping="Wrap" VerticalAlignment="Top" Height="75" IsReadOnly="True"
-                     Text="{Binding CurrentCommandLine, Mode=OneWay}" />
+                     Text="{Binding ProfileManager.CurrentProfile.CommandLine, Mode=OneWay}" />
         </GroupBox>
     </Grid>
 </UserControl>

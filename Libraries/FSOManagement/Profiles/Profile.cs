@@ -167,6 +167,12 @@ namespace FSOManagement.Profiles
             set { SetValue(General.VoiceVolume, value); }
         }
 
+        public string ExtraCommandLine
+        {
+            get { return GetValue(General.ExtraCommandLine); }
+            set { SetValue(General.ExtraCommandLine, value); }
+        }
+
         public object Clone()
         {
             // Use serialization to get a truly unreated new instance

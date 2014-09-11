@@ -23,8 +23,6 @@ namespace UI.WPF.Modules.Advanced.ViewModels
     {
         private BuildCapabilities _currentBuildCaps;
 
-        private string _currentCommandLine;
-
         private ListCollectionView _flagCollectionView;
 
         private IFlagManager _flagManager;
@@ -55,26 +53,10 @@ namespace UI.WPF.Modules.Advanced.ViewModels
             this.WhenAny(x => x.CurrentBuildCaps, val => GenerateFlagView(CreateViewModelEnumerable(val.Value)))
                 .BindTo(this, x => x.FlagCollectionView);
 
-            profileManager.WhenAnyValue(x => x.CurrentProfile.CommandLine).BindTo(this, x => x.CurrentCommandLine);
-
             RegenerateListCommand = regenerateCommand;
         }
 
-        public string CurrentCommandLine
-        {
-            get { return _currentCommandLine; }
-            private set
-            {
-                if (value == _currentCommandLine)
-                {
-                    return;
-                }
-                _currentCommandLine = value;
-                NotifyOfPropertyChange();
-            }
-        }
-
-        private IProfileManager ProfileManager { get; set; }
+        public IProfileManager ProfileManager { get; private set; }
 
         private IFlagManager FlagManager
         {
