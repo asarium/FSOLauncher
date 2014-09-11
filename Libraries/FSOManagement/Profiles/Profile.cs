@@ -26,7 +26,7 @@ namespace FSOManagement.Profiles
     public class Profile : IProfile, IDeserializationCallback
     {
         [NonSerialized]
-        private bool _canLaunchExecutable;
+        private IObservable<bool> _canLaunchExecutable;
 
         [NonSerialized]
         private string _commandLine;
@@ -99,7 +99,11 @@ namespace FSOManagement.Profiles
             }
         }
 
-        public IObservable<bool> CanLaunchExecutable { get; private set; }
+        public IObservable<bool> CanLaunchExecutable
+        {
+            get { return _canLaunchExecutable; }
+            private set { _canLaunchExecutable = value; }
+        }
 
         public TextureFiltering TextureFiltering
         {
