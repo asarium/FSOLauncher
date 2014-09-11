@@ -220,6 +220,12 @@ namespace FSOManagement.Profiles
 
         public async Task WriteConfigurationAsync(CancellationToken token, IProgress<string> progressMessages)
         {
+            if (SelectedTotalConversion == null)
+            {
+                progressMessages.Report("No total conversion selected!");
+                return;
+            }
+
             var rootPath = SelectedTotalConversion.RootFolder;
 
             var cmdlineConfig = Path.Combine(rootPath, "data", FsoConstants.CmdlineConfigFile);
