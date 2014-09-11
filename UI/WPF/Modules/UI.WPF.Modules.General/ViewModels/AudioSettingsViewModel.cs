@@ -30,8 +30,10 @@ namespace UI.WPF.Modules.General.ViewModels
 
         public AudioSettingsViewModel(IProfile profile)
         {
-            profile.WhenAnyValue(x => x.SelectedTotalConversion.RootFolder).Subscribe(root =>
+            profile.WhenAnyValue(x => x.SelectedTotalConversion).Subscribe(tc =>
             {
+                var root = tc == null ? null : tc.RootFolder;
+
                 Devices = UpdateDevices(root);
                 var defaultDevice = OpenALManager.GetDefaultDevice(OpenALManager.DeviceType.Playback, root);
 
