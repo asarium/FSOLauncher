@@ -114,7 +114,7 @@ namespace FSOManagement
             _exeChangedWatcher = null;
         }
 
-        private IEnumerable<Executable> ListExecutables()
+        private IEnumerable<Executable> ListExecutables(bool listFred = false)
         {
             var fsoFilePaths = Directory.EnumerateFiles(_rootPath, Executable.GlobPattern());
 
@@ -132,6 +132,11 @@ namespace FSOManagement
                 }
 
                 yield return exe;
+            }
+
+            if (!listFred)
+            {
+                yield break;
             }
 
             fsoFilePaths = Directory.GetFiles(_rootPath, Executable.GlobPattern(true));
