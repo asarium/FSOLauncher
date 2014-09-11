@@ -68,17 +68,24 @@ namespace SDLGlue
 			{
 				var name = resourcePrefix + file;
 
-				using (var stream = thisAssembly.GetManifestResourceStream(name))
-				{
-					Debug.Assert(stream != null);
+			    try
+			    {
+			        using (var stream = thisAssembly.GetManifestResourceStream(name))
+			        {
+			            Debug.Assert(stream != null);
 
-                    var fileOutPath = Path.Combine(outputPath, file);
+			            var fileOutPath = Path.Combine(outputPath, file);
 
-					using (var outStream = File.OpenWrite(fileOutPath))
-					{
-						stream.CopyTo(outStream);
-					}
-				}
+			            using (var outStream = File.OpenWrite(fileOutPath))
+			            {
+			                stream.CopyTo(outStream);
+			            }
+			        }
+			    }
+			    catch (IOException)
+			    {
+			        // Discard error
+			    }
 			}
 
             return outputPath;
