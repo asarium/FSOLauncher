@@ -1,4 +1,5 @@
 ﻿using System;
+using FSOManagement.Annotations;
 
 namespace FSOManagement.Profiles
 {
@@ -9,17 +10,19 @@ namespace FSOManagement.Profiles
 
         private readonly object _value;
 
-        public FlagInformation(string name, object value = null)
+        public FlagInformation([NotNull] string name, [CanBeNull] object value = null)
         {
             _name = name;
             _value = value;
         }
 
+        [NotNull]
         public string Name
         {
             get { return _name; }
         }
 
+        [CanBeNull]
         public object Value
         {
             get { return _value; }
@@ -39,7 +42,7 @@ namespace FSOManagement.Profiles
             return string.Equals(Name, other.Name);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals([CanBeNull] object obj)
         {
             if (ReferenceEquals(null, obj))
             {
@@ -58,7 +61,7 @@ namespace FSOManagement.Profiles
 
         public override int GetHashCode()
         {
-            return (Name != null ? Name.GetHashCode() : 0);
+            return Name.GetHashCode();
         }
     }
 }

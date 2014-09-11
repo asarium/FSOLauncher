@@ -13,7 +13,7 @@ using FSOManagement.Interfaces;
 
 namespace FSOManagement.Profiles
 {
-    public class FlagManager : IFlagManager
+    public sealed class FlagManager : IFlagManager
     {
         private readonly SortedSet<FlagInformation> _flagInformations;
 
@@ -21,14 +21,17 @@ namespace FSOManagement.Profiles
 
         private string _commandLine;
 
-        public FlagManager(Profile profile)
+        public FlagManager([NotNull] Profile profile)
         {
             _profile = profile;
             _flagInformations = profile.CommandLineOptions ?? new SortedSet<FlagInformation>();
 
-            profile.CommandLineOptions = _flagInformations;
+            _profile.CommandLineOptions = _flagInformations;
         }
 
+        #region IFlagManager Members
+
+        [NotNull]
         public string CommandLine
         {
             get { return _commandLine; }
@@ -43,31 +46,18 @@ namespace FSOManagement.Profiles
             }
         }
 
-        #region INotifyPropertyChanged Members
-
         [field: NonSerialized]
         public event PropertyChangedEventHandler PropertyChanged;
-
-        #endregion
 
         [field: NonSerialized]
         public event FlagChangedHandler FlagChanged;
 
-        protected virtual void OnFlagChanged(FlagChangedEventArgs args)
-        {
-            var handler = FlagChanged;
-            if (handler != null)
-            {
-                handler(this, args);
-            }
-        }
-
-        public bool IsFlagSet(string name)
+        public bool IsFlagSet([NotNull] string name)
         {
             return _flagInformations.Contains(new FlagInformation(name));
         }
 
-        public void AddFlag(string name, object value = null)
+        public void AddFlag([NotNull] string name, [CanBeNull] object value = null)
         {
             _flagInformations.Add(new FlagInformation(name, value));
 
@@ -75,7 +65,7 @@ namespace FSOManagement.Profiles
             UpdateCommandLine();
         }
 
-        public bool RemoveFlag(string name)
+        public bool RemoveFlag([NotNull] string name)
         {
             var eventArgs =
                 _flagInformations.Where(info => info.Name == name).Select(info => new FlagChangedEventArgs(name, false, info.Value)).ToList();
@@ -88,7 +78,7 @@ namespace FSOManagement.Profiles
             return result;
         }
 
-        public void SetFlag(string name, bool present = true)
+        public void SetFlag([NotNull] string name, bool present = true)
         {
             if (present)
             {
@@ -100,6 +90,18 @@ namespace FSOManagement.Profiles
             }
         }
 
+        #endregion
+
+        private void OnFlagChanged([NotNull] FlagChangedEventArgs args)
+        {
+            var handler = FlagChanged;
+            if (handler != null)
+            {
+                handler(this, args);
+            }
+        }
+
+        [NotNull]
         private IEnumerable<string> GetCommandlineFragments()
         {
             foreach (var flagInformation in _flagInformations)
@@ -129,7 +131,7 @@ namespace FSOManagement.Profiles
         }
 
         [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        private void OnPropertyChanged([NotNull, CallerMemberName] string propertyName = null)
         {
             var handler = PropertyChanged;
             if (handler != null)

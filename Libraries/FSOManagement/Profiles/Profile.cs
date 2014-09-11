@@ -13,7 +13,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using FSOManagement.Annotations;
-using FSOManagement.Implementations;
 using FSOManagement.Interfaces;
 using FSOManagement.Profiles.Keys;
 using FSOManagement.Util;
@@ -47,17 +46,19 @@ namespace FSOManagement.Profiles
             OnCreated();
         }
 
-        public Profile(string name) : this()
+        public Profile([NotNull] string name) : this()
         {
             _name = name;
         }
 
+        [CanBeNull]
         internal Modification SelectedModification
         {
             get { return GetValue(General.SelectedModification); }
             set { SetValue(General.SelectedModification, value); }
         }
 
+        [NotNull]
         internal SortedSet<FlagInformation> CommandLineOptions
         {
             get { return GetValue(General.CommandLineOptions); }
@@ -66,7 +67,7 @@ namespace FSOManagement.Profiles
 
         #region IDeserializationCallback Members
 
-        public void OnDeserialization(object sender)
+        public void OnDeserialization([CanBeNull] object sender)
         {
             if (_settingsDictionary != null)
             {
@@ -318,7 +319,7 @@ namespace FSOManagement.Profiles
         }
 
         #endregion
-        
+
         private void OnCreated()
         {
             _modActivationManager = new ModActivationManager(this);
@@ -330,7 +331,7 @@ namespace FSOManagement.Profiles
             this.WhenAny(x => x.SelectedExecutable, val => CanLaunch(val.Value)).BindTo(this, x => x.CanLaunchExecutable);
         }
 
-        private static bool CanLaunch(Executable value)
+        private static bool CanLaunch([CanBeNull] Executable value)
         {
             if (value == null)
             {
@@ -345,12 +346,13 @@ namespace FSOManagement.Profiles
             return true;
         }
 
-        private static string JoinCommandLine(params string[] parts)
+        [NotNull]
+        private static string JoinCommandLine([NotNull] params string[] parts)
         {
             return string.Join(" ", parts.Where(str => !string.IsNullOrEmpty(str)));
         }
 
-        private TVal GetValue<TVal>(IConfigurationKey<TVal> key)
+        private TVal GetValue<TVal>([NotNull] IConfigurationKey<TVal> key)
         {
             if (_settingsDictionary == null)
             {
@@ -371,7 +373,7 @@ namespace FSOManagement.Profiles
             return default(TVal);
         }
 
-        private void SetValue<TVal>(IConfigurationKey<TVal> key, TVal value, [CallerMemberName] string propertyName = null)
+        private void SetValue<TVal>([NotNull] IConfigurationKey<TVal> key, TVal value, [NotNull, CallerMemberName] string propertyName = null)
         {
             if (_settingsDictionary == null)
             {
@@ -383,7 +385,7 @@ namespace FSOManagement.Profiles
         }
 
         [NotifyPropertyChangedInvocator]
-        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        private void OnPropertyChanged([CanBeNull, CallerMemberName] string propertyName = null)
         {
             var handler = PropertyChanged;
             if (handler != null)
