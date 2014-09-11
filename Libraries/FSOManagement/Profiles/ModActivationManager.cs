@@ -32,7 +32,8 @@ namespace FSOManagement.Profiles
             _parentProfile = profile;
 
             _parentProfile.WhenAny(x => x.SelectedTotalConversion, x => x.SelectedModification,
-                (val1, val2) => GetModification(val1.Value.ModManager.Modifications, val2.Value)).BindTo(this, x => x.ActiveMod);
+                (val1, val2) => val1.Value == null ? null : GetModification(val1.Value.ModManager.Modifications, val2.Value))
+                .BindTo(this, x => x.ActiveMod);
 
             this.WhenAny(x => x.ActiveMod, val => val.Value == null ? null : val.Value.ModFolderPath)
                 .BindTo(_parentProfile, x => x.SelectedModification);
