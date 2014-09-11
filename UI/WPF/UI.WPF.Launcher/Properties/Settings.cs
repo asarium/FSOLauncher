@@ -41,7 +41,7 @@ namespace UI.WPF.Launcher.Properties
             set { this["Width"] = value; }
         }
 
-        [UserScopedSetting(), DebuggerNonUserCode(), DefaultSettingValue("800")]
+        [UserScopedSetting(), DebuggerNonUserCode(), DefaultSettingValue("865")]
         public int Height
         {
             get { return ((int) (this["Height"])); }
