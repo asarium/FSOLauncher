@@ -89,24 +89,55 @@ namespace UI.WPF.Modules.Mods.ViewModels
 
         private void OnActiveModChanged(Modification activeMod)
         {
-            if (activeMod == null)
+            if (ModificationsView == null)
+            {
                 return;
+            }
+
+            if (activeMod == null)
+            {
+                // If the active mod is null, activate the first mod and deactivate the others.
+                var first = ModificationsView.Cast<ModViewModel>().FirstOrDefault();
+
+                if (first != null)
+                {
+                    first.IsActiveMod = true;
+                }
+
+                ModificationsView.Cast<ModViewModel>().Skip(1).Apply(mod => mod.IsActiveMod = false);
+
+                return;
+            }
 
             ModificationsView.Cast<ModViewModel>().Apply(view => view.IsActiveMod = view.Mod == activeMod);
         }
 
         private void OnPrimaryModificationsChanges(IEnumerable<Modification> modifications)
         {
-            if (modifications == null)
+            if (ModificationsView == null)
+            {
                 return;
+            }
+
+            if (modifications == null)
+            {
+                return;
+            }
 
             ModificationsView.Cast<ModViewModel>().Apply(view => view.IsPrimaryMod = modifications.Any(mod => mod == view.Mod));
         }
 
         private void OnSecondaryModificationsChanges(IEnumerable<Modification> modifications)
         {
-            if (modifications == null)
+            if (ModificationsView == null)
+            {
                 return;
+            }
+
+            if (modifications == null)
+            {
+                return;
+            }
 
             ModificationsView.Cast<ModViewModel>().Apply(view => view.IsSecondaryMod = modifications.Any(mod => mod == view.Mod));
         }
