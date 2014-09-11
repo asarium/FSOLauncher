@@ -40,7 +40,10 @@
                             <CheckBox IsChecked="{Binding Enabled, Mode=TwoWay}" HorizontalAlignment="Center"
                                       Width="20" VerticalAlignment="Center" />
                             <TextBlock Text="{Binding DisplayString}" HorizontalAlignment="Stretch"
-                                       VerticalAlignment="Center" Margin="5,0,0,0" />
+                                       VerticalAlignment="Center" Margin="5,0,0,0" Cursor="Hand">
+                                <TextBlock.InputBindings>
+                                    <MouseBinding Command="{Binding MoreInformationCommand}" MouseAction="LeftDoubleClick" />
+                                </TextBlock.InputBindings></TextBlock>
                         </StackPanel>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>

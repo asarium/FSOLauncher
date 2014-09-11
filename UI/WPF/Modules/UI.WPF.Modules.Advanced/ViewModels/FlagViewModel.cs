@@ -1,9 +1,14 @@
 ﻿#region Usings
 
+using System;
+using System.Diagnostics;
+using System.Windows.Input;
 using Caliburn.Micro;
 using FSOManagement;
+using FSOManagement.Annotations;
 using FSOManagement.Interfaces;
 using FSOManagement.Profiles;
+using ReactiveUI;
 
 #endregion
 
@@ -21,6 +26,21 @@ namespace UI.WPF.Modules.Advanced.ViewModels
         {
             _flag = flag;
             _flagManager = flagManager;
+
+            var cmd = ReactiveCommand.Create(this.WhenAny(x => x.Flag.WebURL, val => !string.IsNullOrEmpty(val.Value)));
+            cmd.Subscribe(_ =>
+            {
+                Uri temp;
+                var isValid = Uri.TryCreate(flag.WebURL, UriKind.Absolute, out temp) &&
+                              (temp.Scheme == Uri.UriSchemeHttp || temp.Scheme == Uri.UriSchemeHttps);
+
+                if (isValid)
+                {
+                    Process.Start(flag.WebURL);
+                }
+            });
+
+            MoreInformationCommand = cmd;
         }
 
         public string Type
@@ -53,6 +73,9 @@ namespace UI.WPF.Modules.Advanced.ViewModels
                 _flagManager.SetFlag(_flag.Name, value);
             }
         }
+
+        [NotNull]
+        public ICommand MoreInformationCommand { get; private set; }
 
         /// <summary>
         ///     Same as Enabled but does not set the flag in the FlagManager
