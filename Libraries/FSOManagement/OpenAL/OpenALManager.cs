@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using FSOManagement.Annotations;
 using FSOManagement.Util.DLLLoader;
 
 #endregion
@@ -31,7 +32,8 @@ namespace FSOManagement.OpenAL
         {
         }
 
-        private static IDynamicLibraryLoader LoadOpenALLibrary(string searchPath)
+        [NotNull]
+        private static IDynamicLibraryLoader LoadOpenALLibrary([CanBeNull] string searchPath)
         {
             IDynamicLibraryLoader loader;
 
@@ -45,7 +47,7 @@ namespace FSOManagement.OpenAL
             }
 
             // First try to load the library from the search path
-            if (
+            if (searchPath != null &&
                 LibraryNames.Select(libraryName => Path.Combine(searchPath, libraryName + "." + loader.LibraryExtension))
                     .FirstOrDefault(path => loader.LoadLibrary(path)) != null)
             {
