@@ -145,7 +145,7 @@ namespace UI.WPF.Launcher
             SDLJoystick.Init();
             SDLVideo.Init();
 
-            var timer = new DispatcherTimer {Interval = TimeSpan.FromMilliseconds(100)};
+            var timer = new DispatcherTimer {Interval = TimeSpan.FromMilliseconds(1000)};
             timer.Tick += SDLUpdate;
 
             timer.Start();
