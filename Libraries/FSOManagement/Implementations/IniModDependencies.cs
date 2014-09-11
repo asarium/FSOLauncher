@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using FSOManagement.Annotations;
 using FSOManagement.Interfaces;
 using FSOManagement.Util;
 using IniParser.Model;
@@ -13,24 +14,24 @@ namespace FSOManagement.Implementations
 {
     public class IniModDependencies : IModDependencies
     {
-        private readonly string _name;
-
         private List<string> _primaryList;
 
         private List<string> _secondaryList;
 
-        public IniModDependencies(string name)
+        public IniModDependencies([NotNull] KeyDataCollection keyDataCollection)
         {
-            _name = name;
+            InitializeFromIniData(keyDataCollection);
         }
 
         #region IModDependencies Members
 
+        [NotNull]
         public IEnumerable<string> PrimaryDependencies
         {
             get { return _primaryList ?? Enumerable.Empty<string>(); }
         }
 
+        [NotNull]
         public IEnumerable<string> SecondayDependencies
         {
             get { return _secondaryList ?? Enumerable.Empty<string>(); }
@@ -38,7 +39,7 @@ namespace FSOManagement.Implementations
 
         #endregion
 
-        internal void InitializeFromIniData(KeyDataCollection data)
+        private void InitializeFromIniData([NotNull] KeyDataCollection data)
         {
             string primaryList;
             string secondaryList;

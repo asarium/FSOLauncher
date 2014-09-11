@@ -9,6 +9,7 @@ using System.Runtime.CompilerServices;
 using FSOManagement.Annotations;
 using FSOManagement.Interfaces;
 using FSOManagement.Util;
+using ReactiveUI;
 
 #endregion
 
@@ -16,22 +17,40 @@ namespace FSOManagement.Profiles
 {
     public class ModActivationManager : IModActivationManager
     {
-        [field: NonSerialized]
         private readonly Profile _parentProfile;
 
         private Modification _activeMod;
 
         private string _commandLine;
 
-        private IList<Modification> _primaryModifications;
+        private IEnumerable<Modification> _primaryModifications = Enumerable.Empty<Modification>();
 
-        private IList<Modification> _secondaryModifications;
+        private IEnumerable<Modification> _secondaryModifications = Enumerable.Empty<Modification>();
 
-        public ModActivationManager(Profile profile)
+        public ModActivationManager([NotNull] Profile profile)
         {
             _parentProfile = profile;
+
+            _parentProfile.WhenAny(x => x.SelectedTotalConversion, x => x.SelectedModification,
+                (val1, val2) => GetModification(val1.Value.ModManager.Modifications, val2.Value)).BindTo(this, x => x.ActiveMod);
+
+            this.WhenAny(x => x.ActiveMod, val => val.Value == null ? null : val.Value.ModFolderPath)
+                .BindTo(_parentProfile, x => x.SelectedModification);
+
+            this.WhenAnyValue(x => x.ActiveMod.Dependencies).Subscribe(deps =>
+            {
+                PrimaryModifications = deps.PrimaryDependencies.Select(ResolveModification).ToList();
+
+                SecondaryModifications = deps.SecondayDependencies.Select(ResolveModification).ToList();
+            });
+
+            this.WhenAny(x => x.ActiveMod, x => x.PrimaryModifications, x => x.SecondaryModifications,
+                (val1, val2, val3) => GetCommandLine(val1.Value, val2.Value, val3.Value)).BindTo(this, x => x.CommandLine);
         }
 
+        #region IModActivationManager Members
+
+        [NotNull]
         public string CommandLine
         {
             get { return _commandLine; }
@@ -46,16 +65,37 @@ namespace FSOManagement.Profiles
             }
         }
 
+        [NotNull]
         public IEnumerable<Modification> PrimaryModifications
         {
             get { return _primaryModifications; }
+            private set
+            {
+                if (Equals(value, _primaryModifications))
+                {
+                    return;
+                }
+                _primaryModifications = value;
+                OnPropertyChanged();
+            }
         }
 
+        [NotNull]
         public IEnumerable<Modification> SecondaryModifications
         {
             get { return _secondaryModifications; }
+            private set
+            {
+                if (Equals(value, _secondaryModifications))
+                {
+                    return;
+                }
+                _secondaryModifications = value;
+                OnPropertyChanged();
+            }
         }
 
+        [CanBeNull]
         public Modification ActiveMod
         {
             get { return _activeMod; }
@@ -67,31 +107,33 @@ namespace FSOManagement.Profiles
                 }
                 _activeMod = value;
                 OnPropertyChanged();
-
-                _parentProfile.SelectedModification = value;
-
-                RefreshModLists();
             }
         }
-
-        #region INotifyPropertyChanged Members
 
         [field: NonSerialized]
         public event PropertyChangedEventHandler PropertyChanged;
 
         #endregion
 
-        private void RefreshModLists()
+        [CanBeNull]
+        private static Modification GetModification([NotNull] IEnumerable<Modification> modifications, [CanBeNull] string modFolder)
         {
-            _primaryModifications = ActiveMod.Dependencies.PrimaryDependencies.Select(ResolveModification).ToList();
+            if (modFolder == null)
+            {
+                return null;
+            }
 
-            _secondaryModifications = ActiveMod.Dependencies.SecondayDependencies.Select(ResolveModification).ToList();
-
-            UpdateCommandLine();
+            return modifications.FirstOrDefault(mod => Utils.NormalizePath(mod.ModFolderPath) == Utils.NormalizePath(modFolder));
         }
 
-        private string GetModArgument(Modification mod)
+        [NotNull]
+        private string GetModArgument([NotNull] Modification mod)
         {
+            if (_parentProfile.SelectedTotalConversion == null)
+            {
+                return mod.FolderName;
+            }
+
             var rootPath = _parentProfile.SelectedTotalConversion.RootFolder.EnsureEndsWith(Path.DirectorySeparatorChar);
             var modPath = mod.ModFolderPath.EnsureEndsWith(Path.DirectorySeparatorChar);
 
@@ -111,30 +153,46 @@ namespace FSOManagement.Profiles
             return Uri.UnescapeDataString(relativePath);
         }
 
-        private IEnumerable<string> GetCommandLineFragments()
+        [NotNull]
+        private IEnumerable<string> GetCommandLineFragments([CanBeNull] Modification mod, [NotNull] IEnumerable<Modification> primary,
+            [NotNull] IEnumerable<Modification> secondary)
         {
-            if (Utils.NormalizePath(ActiveMod.ModFolderPath) == Utils.NormalizePath(_parentProfile.SelectedTotalConversion.RootFolder))
+            if (mod == null)
+            {
+                yield break;
+            }
+
+            if (_parentProfile.SelectedTotalConversion == null)
+            {
+                yield return GetModArgument(mod);
+
+                yield break;
+            }
+
+            if (Utils.NormalizePath(mod.ModFolderPath) == Utils.NormalizePath(_parentProfile.SelectedTotalConversion.RootFolder))
             {
                 // No arguments when the mod is the root.
                 yield break;
             }
 
-            foreach (var arg in PrimaryModifications.Select(GetModArgument))
+            foreach (var arg in primary.Select(GetModArgument))
             {
                 yield return arg;
             }
 
-            yield return GetModArgument(ActiveMod);
+            yield return GetModArgument(mod);
 
-            foreach (var arg in SecondaryModifications.Select(GetModArgument))
+            foreach (var arg in secondary.Select(GetModArgument))
             {
                 yield return arg;
             }
         }
 
-        private void UpdateCommandLine()
+        [NotNull]
+        private string GetCommandLine([CanBeNull] Modification mod, [NotNull] IEnumerable<Modification> primary,
+            [NotNull] IEnumerable<Modification> secondary)
         {
-            var fragments = GetCommandLineFragments();
+            var fragments = GetCommandLineFragments(mod, primary, secondary);
 
             var fragmentString = string.Join(",", fragments);
 
@@ -143,11 +201,17 @@ namespace FSOManagement.Profiles
                 fragmentString = string.Format("\"{0}\"", fragmentString);
             }
 
-            CommandLine = fragmentString.Length > 0 ? string.Format("-mod {0}", fragmentString) : "";
+            return fragmentString.Length > 0 ? string.Format("-mod {0}", fragmentString) : "";
         }
 
-        private Modification ResolveModification(string path)
+        [CanBeNull]
+        private Modification ResolveModification([NotNull] string path)
         {
+            if (_parentProfile.SelectedTotalConversion == null)
+            {
+                return null;
+            }
+
             var modPath = Path.GetFullPath(Path.Combine(_parentProfile.SelectedTotalConversion.RootFolder, path));
 
             return
@@ -156,7 +220,7 @@ namespace FSOManagement.Profiles
         }
 
         [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        protected virtual void OnPropertyChanged([CanBeNull, CallerMemberName] string propertyName = null)
         {
             var handler = PropertyChanged;
             if (handler != null)

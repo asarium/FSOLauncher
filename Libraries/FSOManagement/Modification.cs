@@ -309,9 +309,7 @@ namespace FSOManagement
 
             if (iniData.Sections.ContainsSection("multimod"))
             {
-                var iniDependencies = new IniModDependencies(FolderName);
-
-                iniDependencies.InitializeFromIniData(iniData["multimod"]);
+                var iniDependencies = new IniModDependencies(iniData["multimod"]);
 
                 Dependencies = iniDependencies;
             }

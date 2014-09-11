@@ -52,10 +52,10 @@ namespace FSOManagement.Profiles
         }
 
         [CanBeNull]
-        internal Modification SelectedModification
+        internal string SelectedModification
         {
-            get { return GetValue(General.SelectedModification); }
-            set { SetValue(General.SelectedModification, value); }
+            get { return GetValue(General.SelectedModificationFolder); }
+            set { SetValue(General.SelectedModificationFolder, value); }
         }
 
         [NotNull]
@@ -77,8 +77,6 @@ namespace FSOManagement.Profiles
             }
 
             OnCreated();
-
-            ModActivationManager.ActiveMod = SelectedModification;
         }
 
         #endregion

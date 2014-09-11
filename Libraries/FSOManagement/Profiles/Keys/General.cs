@@ -19,8 +19,8 @@ namespace FSOManagement.Profiles.Keys
 
         public static readonly IConfigurationKey<int> VoiceVolume = new DefaultConfigurationKey<int>("SpeechVoiceVolume", 100);
 
-        internal static readonly IConfigurationKey<Modification> SelectedModification =
-            new DefaultConfigurationKey<Modification>("SelectedModification");
+        internal static readonly IConfigurationKey<string> SelectedModificationFolder =
+            new DefaultConfigurationKey<string>("SelectedModificationFolder");
 
         internal static readonly IConfigurationKey<SortedSet<FlagInformation>> CommandLineOptions =
             new DefaultConfigurationKey<SortedSet<FlagInformation>>("CommandLineOptions");
