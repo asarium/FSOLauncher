@@ -55,8 +55,8 @@
                    Height="1" />
 
         <GroupBox Margin="3" Grid.Row="2" Header="Custom options">
-            <TextBox TextWrapping="Wrap" VerticalAlignment="Top"
-                     Text="{Binding ProfileManager.CurrentProfile.ExtraCommandLine, Mode=TwoWay}" />
+            <TextBox TextWrapping="NoWrap" VerticalAlignment="Top"
+                     Text="{Binding ProfileManager.CurrentProfile.ExtraCommandLine, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
         </GroupBox>
 
         <GroupBox Margin="3" Grid.Row="3" Header="Current commandline">
