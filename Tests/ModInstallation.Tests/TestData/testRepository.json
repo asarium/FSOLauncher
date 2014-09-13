@@ -1,0 +1,186 @@
+﻿{
+   "generated" : 1409428735.93665,
+   "mods" : [
+      {
+         "id" : "FSO",
+         "version" : "3.7.2-rc4",
+         "logo" : "http://www.fsoinstaller.com/files/installer/java/FS2.bmp",
+         "packages" : [
+            {
+               "status" : "required",
+               "notes" : "Windows builds for FreeSpace 2 Open, compiled with SSE optimizations.",
+               "environment" : [
+                  {
+                     "os" : "windows",
+                     "type" : "os"
+                  },
+                  {
+                     "feature" : "sse",
+                     "type" : "cpu_feature"
+                  }
+               ],
+               "dependencies" : [],
+               "files" : {
+                  "fs2_open_3.7.2_RC4_SSE.7z" : {
+                     "is_archive" : true,
+                     "urls" : [
+                        "http://swc.fs2downloads.com/builds/WIN/fs2_open_3.7.2_RC4_SSE.7z",
+                        "http://scp.fsmods.net/builds/WIN/fs2_open_3.7.2_RC4_SSE.7z",
+                        "http://scp.indiegames.us/builds/WIN/fs2_open_3.7.2_RC4_SSE.7z"
+                     ],
+                     "dest" : "",
+                     "contents" : {
+                        "fred2_open_3_7_2_RC4_SSE.exe" : "7de9615d5b212e2489dd59833bdbf8f5",
+                        "fred2_open_3_7_2_RC4_SSE-DEBUG.exe" : "bc0d622342b6ecda22ffa17187097b26",
+                        "fs2_open_3_7_2_RC4_SSE-DEBUG.exe" : "24057ff0d1ba3360e6ba164641b45727",
+                        "fs2_open_3_7_2_RC4_SSE-DEBUG.map" : "d687df1a222ca0d8951819444a059a18",
+                        "fs2_open_3_7_2_RC4_SSE-DEBUG.pdb" : "ccdd1b98d18580f6c0170954af92e9dd",
+                        "fred2_open_3_7_2_RC4_SSE-DEBUG.pdb" : "1a764e4eac166a792bfe026a4d0db5ae",
+                        "fred2_open_3_7_2_RC4_SSE-DEBUG.map" : "5a0797ebe00c8144716105e3e6be9d6a",
+                        "fs2_open_3_7_2_RC4_SSE.exe" : "da4a73536061ede4e5e659b1e6bbb704"
+                     },
+                     "md5sum" : "70ecb06d9bf8a447d3a93d212628de37"
+                  },
+                  "Launcher55g.zip" : {
+                     "md5sum" : "20bdf9dc2f225c30961df672be438e37",
+                     "contents" : {
+                        "Launcher.exe" : "798f7da18e3ce3a7caaa9c4aec2d3072"
+                     },
+                     "dest" : "",
+                     "urls" : [
+                        "http://swc.fs2downloads.com/files/Launcher55g.zip",
+                        "http://scp.fsmods.net/builds/Launcher55g.zip",
+                        "http://scp.indiegames.us/builds/Launcher55g.zip"
+                     ],
+                     "is_archive" : true
+                  }
+               },
+               "name" : "Windows SSE"
+            },
+            {
+               "status" : "required",
+               "notes" : "Windows builds for FreeSpace 2 Open, compiled with SSE2 optimizations.",
+               "dependencies" : [],
+               "environment" : [
+                  {
+                     "os" : "windows",
+                     "type" : "os"
+                  },
+                  {
+                     "type" : "cpu_feature",
+                     "feature" : "sse2"
+                  }
+               ],
+               "name" : "Windows SSE2",
+               "files" : {
+                  "fs2_open_3.7.2_RC4.7z" : {
+                     "md5sum" : "a865d781aad15e8503a8bf4e0d9546e0",
+                     "contents" : {
+                        "fred2_open_3_7_2_RC4-DEBUG.map" : "10e17002485c8b4e074cd7a833668f95",
+                        "fs2_open_3_7_2_RC4.exe" : "2166833b7cf3f795316ed0fc28fe7efd",
+                        "fs2_open_3_7_2_RC4-DEBUG.pdb" : "be9e90a78812527df9a18e00f8710aea",
+                        "fred2_open_3_7_2_RC4.exe" : "f2968bb9dcc30bc7893637f08e54de16",
+                        "fred2_open_3_7_2_RC4-DEBUG.pdb" : "89cdc982273b3ecba95f4134bff0c477",
+                        "fred2_open_3_7_2_RC4-DEBUG.exe" : "0ce97a2b8fda1b9b99a0fcbff57cd5d9",
+                        "fs2_open_3_7_2_RC4-DEBUG.map" : "df19268d1680729c327b87e006221424",
+                        "fs2_open_3_7_2_RC4-DEBUG.exe" : "ac71a1eb4815fe514829b3b6de1c5f8c"
+                     },
+                     "dest" : "",
+                     "urls" : [
+                        "http://swc.fs2downloads.com/builds/WIN/fs2_open_3.7.2_RC4.7z",
+                        "http://scp.fsmods.net/builds/WIN/fs2_open_3.7.2_RC4.7z",
+                        "http://scp.indiegames.us/builds/WIN/fs2_open_3.7.2_RC4.7z"
+                     ],
+                     "is_archive" : true
+                  },
+                  "Launcher55g.zip" : {
+                     "urls" : [
+                        "http://swc.fs2downloads.com/files/Launcher55g.zip",
+                        "http://scp.fsmods.net/builds/Launcher55g.zip",
+                        "http://scp.indiegames.us/builds/Launcher55g.zip"
+                     ],
+                     "dest" : "",
+                     "is_archive" : true,
+                     "md5sum" : "20bdf9dc2f225c30961df672be438e37",
+                     "contents" : {
+                        "Launcher.exe" : "798f7da18e3ce3a7caaa9c4aec2d3072"
+                     }
+                  }
+               }
+            },
+            {
+               "status" : "required",
+               "notes" : "Linux builds for FreeSpace 2 Open.",
+               "files" : {
+                  "fs2_open_3.7.2_RC4.tar.bz2" : {
+                     "dest" : "",
+                     "urls" : [
+                        "http://swc.fs2downloads.com/builds/LINUX/fs2_open_3.7.2_RC4.tar.bz2",
+                        "http://scp.fsmods.net/builds/LINUX/fs2_open_3.7.2_RC4.tar.bz2",
+                        "http://scp.indiegames.us/builds/LINUX/fs2_open_3.7.2_RC4.tar.bz2"
+                     ],
+                     "is_archive" : true,
+                     "md5sum" : "5fd897dd72ec0c76eb7eea8377aeffcf",
+                     "contents" : {
+                        "fs2_open_3.7.2_RC4_DEBUG" : "3f3db65b0f4fadd54a5fa1b269894abf",
+                        "fs2_open_3.7.2_RC4" : "027cf0ffa7a96bbfb5239293feada1f3"
+                     }
+                  }
+               },
+               "name" : "Linux",
+               "dependencies" : [],
+               "environment" : [
+                  {
+                     "type" : "os",
+                     "os" : "linux"
+                  }
+               ]
+            },
+            {
+               "status" : "required",
+               "notes" : "",
+               "dependencies" : [],
+               "environment" : [],
+               "files" : {
+                  "mod.ini" : {
+                     "contents" : {},
+                     "md5sum" : "d0576b36ef22b599186f67876e9b3aec",
+                     "is_archive" : false,
+                     "dest" : "",
+                     "urls" : [
+                        "http://www.fsoinstaller.com/files/installer/java/mod.ini"
+                     ]
+                  },
+                  "scptrackir.zip" : {
+                     "md5sum" : "b611edc87ef30ce57133b9721db01b59",
+                     "contents" : {
+                        "scptrackir.dll" : "6617fd0f9421ca6594cf2c1eebb20381"
+                     },
+                     "urls" : [
+                        "http://scp.indiegames.us/builds/scptrackir.zip"
+                     ],
+                     "dest" : "",
+                     "is_archive" : true
+                  },
+                  "FS2.bmp" : {
+                     "is_archive" : false,
+                     "dest" : "",
+                     "urls" : [
+                        "http://www.fsoinstaller.com/files/installer/java/FS2.bmp"
+                     ],
+                     "contents" : {},
+                     "md5sum" : "faa4c82b1aa0d3cf5427207e10150711"
+                  }
+               },
+               "name" : "Common files"
+            }
+         ],
+         "title" : "FreeSpace Open",
+         "description" : "Recent builds of FreeSpace Open (the engine)",
+         "submods" : [],
+         "notes" : "",
+         "actions" : [],
+         "folder" : ""
+      }
+   ]
+}

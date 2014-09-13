@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{589ECBC2-CDFB-42AA-A9DF-35D804464711}</ProjectGuid>
+    <ProjectGuid>{2DFA1DEB-F4FC-4A4F-8D26-8319A8993BD9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SDLGlue</RootNamespace>
-    <AssemblyName>SDLGlue</AssemblyName>
+    <RootNamespace>ModInstallation.Tests</RootNamespace>
+    <AssemblyName>ModInstallation.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -20,7 +20,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -29,11 +28,17 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Caliburn.Micro">
-      <HintPath>..\..\packages\Caliburn.Micro.Core.2.0.0\lib\net45\Caliburn.Micro.dll</HintPath>
+    <Reference Include="Moq">
+      <HintPath>..\..\packages\Moq.4.2.1402.2112\lib\net40\Moq.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="Semver, Version=1.1.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\semver.1.1.2\lib\net45\Semver.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -44,28 +49,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\Global\GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="Native\LPUtf8StrMarshaler.cs" />
-    <Compile Include="Native\SDL2.cs" />
-    <Compile Include="Native\SDLContants.cs" />
+    <Compile Include="Implementations\AbstractJsonRepositoryTests.cs" />
+    <Compile Include="Implementations\DefaultModManagerTests.cs" />
+    <Compile Include="Implementations\Mods\DefaultModDependencyTests.cs" />
+    <Compile Include="Implementations\Mods\MD5FileVerifierTests.cs" />
+    <Compile Include="Implementations\Mods\VersionConstraintTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SDLCpuFeatures.cs" />
-    <Compile Include="SDLDisplayMode.cs" />
-    <Compile Include="SDLJoystick.cs" />
-    <Compile Include="SDLLibrary.cs" />
-    <Compile Include="SDLVideo.cs" />
-    <Compile Include="SDLVideoDisplay.cs" />
+    <Compile Include="TestClasses\TestRepository.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Libs\x64\README-SDL.txt" />
-    <EmbeddedResource Include="Libs\x64\SDL2.dll" />
-    <EmbeddedResource Include="Libs\x86\README-SDL.txt" />
-    <EmbeddedResource Include="Libs\x86\SDL2.dll" />
+    <None Include="packages.config" />
+    <EmbeddedResource Include="TestData\testRepository.json" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="SDL2-CS.dll.config" />
+    <ProjectReference Include="..\..\Libraries\ModInstallation\ModInstallation.csproj">
+      <Project>{6219DDE3-F989-412B-8368-3EEB6B0D0C00}</Project>
+      <Name>ModInstallation</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="TestData\random.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
