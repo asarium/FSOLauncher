@@ -1,0 +1,56 @@
+﻿{
+  "mods": [
+    {
+      "id": "test1",
+      "version": "2.0",
+      "packages": [
+        {
+          "name": "package3",
+          "status": "required",
+          "files": {},
+          "dependencies": [
+            {
+              "id": "test1",
+              "version": "==2.0",
+              "packages": [
+                "package4"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "package4",
+          "status": "optional",
+          "files": {},
+          "dependencies": []
+        }
+      ]
+    },
+    {
+      "id": "test1",
+      "version": "1.0",
+      "packages": [
+        {
+          "name": "package1",
+          "status": "required",
+          "files": {},
+          "dependencies": [
+            {
+              "id": "test1",
+              "version": "==1.0",
+              "packages": [
+                "package2"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "package2",
+          "status": "optional",
+          "files": {},
+          "dependencies": []
+        }
+      ]
+    }
+  ]
+}

@@ -32,24 +32,29 @@ namespace ModInstallation.Implementations.Mods
         #endregion
 
         [CanBeNull]
-        public static DefaultPackage InitializeFromData([NotNull] IModification parent, [NotNull] Package package, [CanBeNull] IErrorHandler errorHandler = null)
+        public static DefaultPackage InitializeFromData([NotNull] IModification parent, [NotNull] Package package,
+            [CanBeNull] IErrorHandler errorHandler = null)
         {
             var newInstance = new DefaultPackage
             {
+                ContainingModification = parent,
                 Notes = package.notes,
                 Name = package.name,
                 Status = package.status,
                 Files = package.files.Values.Select(info => DefaultFileInformation.InitializeFromData(info, errorHandler)).ToList(),
+                Dependencies = package.dependencies.Select(DefaultModDependency.InitializeFromData)
             };
 
             if (package.environment != null)
+            {
                 newInstance.EnvironmentConstraints = package.environment.Select(GetEnvironmentContraint).ToList();
+            }
 
             return newInstance;
         }
 
         [NotNull]
-        private static IEnvironmentConstraint GetEnvironmentContraint([NotNull] EnvironmentConstraint env)
+        public static IEnvironmentConstraint GetEnvironmentContraint([NotNull] EnvironmentConstraint env)
         {
             switch (env.type)
             {

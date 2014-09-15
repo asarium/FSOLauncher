@@ -24,7 +24,12 @@ namespace ModInstallation.Implementations.Mods
 
         public bool VersionMatches(SemVersion version)
         {
-            throw new NotImplementedException();
+            if (_versionConstraints == null)
+            {
+                return true;
+            }
+
+            return _versionConstraints.All(constraint => constraint.VersionMatches(version));
         }
 
         #endregion

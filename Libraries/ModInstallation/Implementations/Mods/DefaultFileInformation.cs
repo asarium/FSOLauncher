@@ -25,6 +25,14 @@ namespace ModInstallation.Implementations.Mods
         [CanBeNull]
         public static DefaultFileInformation InitializeFromData([NotNull] FileInformation fileInfo, [CanBeNull] IErrorHandler errorHandler = null)
         {
+            if (fileInfo.urls == null)
+            {
+                if (errorHandler != null)
+                    errorHandler.HandleError(fileInfo, "URL element must be present!");
+                
+                return null;
+            }
+
             var newInstance = new DefaultFileInformation {Destination = fileInfo.dest};
 
             if (!string.IsNullOrEmpty(fileInfo.md5sum))

@@ -1,7 +1,10 @@
-﻿using System.Collections;
+﻿#region Usings
+
 using System.Collections.Generic;
 using ModInstallation.Annotations;
 using Semver;
+
+#endregion
 
 namespace ModInstallation.Interfaces.Mods
 {

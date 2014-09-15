@@ -55,10 +55,8 @@
     </Compile>
     <Compile Include="ExecutableTests.cs" />
     <Compile Include="Implementations\WindowsSpeechHandlerTests.cs" />
-    <Compile Include="ModificationTests.cs" />
     <Compile Include="Profiles\ProfileTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TotalConversionTests.cs" />
     <Compile Include="Util\SerializationAssert.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -69,6 +67,9 @@
       <Project>{73342923-20EE-4F2C-B9AB-9A03341F782A}</Project>
       <Name>FSOManagement</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
