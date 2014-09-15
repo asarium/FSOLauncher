@@ -1,8 +1,5 @@
 ﻿#region Usings
 
-using System;
-using System.Linq;
-using FSOManagement.OpenAL;
 using NUnit.Framework;
 
 #endregion
@@ -12,7 +9,6 @@ namespace FSOManagement.Tests
     [TestFixture]
     public class ExecutableTests
     {
-
         [Test]
         public void TestGetFromPath()
         {
@@ -112,7 +108,7 @@ namespace FSOManagement.Tests
                 Assert.AreEqual(2, exe.Release);
                 Assert.AreEqual(-1, exe.Revision);
 
-                CollectionAssert.AreEqual(new[] { "RC3" }, exe.AdditionalTags);
+                CollectionAssert.AreEqual(new[] {"RC3"}, exe.AdditionalTags);
             }
         }
     }

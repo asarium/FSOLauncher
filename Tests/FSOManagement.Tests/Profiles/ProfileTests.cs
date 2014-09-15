@@ -1,21 +1,16 @@
-﻿using System.IO;
+﻿#region Usings
+
 using FSOManagement.Profiles;
 using FSOManagement.Tests.Util;
 using NUnit.Framework;
+
+#endregion
 
 namespace FSOManagement.Tests.Profiles
 {
     [TestFixture]
     public class ProfileTests
     {
-        [Test]
-        public void TestSerializable()
-        {
-            var profile = new Profile("Test");
-
-            SerializationAssert.IsSerializable(profile);
-        }
-
         [Test]
         public void TestClone()
         {
@@ -49,6 +44,14 @@ namespace FSOManagement.Tests.Profiles
 
                 Assert.AreNotSame(profile, clone);
             }
+        }
+
+        [Test]
+        public void TestSerializable()
+        {
+            var profile = new Profile("Test");
+
+            SerializationAssert.IsSerializable(profile);
         }
     }
 }

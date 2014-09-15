@@ -53,38 +53,23 @@ namespace ModInstallation.Tests.Implementations.Mods
         [Test]
         public void TestVersionMatches()
         {
-            var dependency = DefaultModDependency.InitializeFromData(new Dependency()
-            {
-                version = ">1.0,<2.0"
-            });
+            var dependency = DefaultModDependency.InitializeFromData(new Dependency() {version = ">1.0,<2.0"});
             Assert.IsTrue(dependency.VersionMatches(new SemVersion(1, 1)));
             Assert.IsFalse(dependency.VersionMatches(new SemVersion(1)));
             Assert.IsFalse(dependency.VersionMatches(new SemVersion(2)));
-            
-            dependency = DefaultModDependency.InitializeFromData(new Dependency()
-            {
-                version = "*"
-            });
+
+            dependency = DefaultModDependency.InitializeFromData(new Dependency() {version = "*"});
             Assert.IsTrue(dependency.VersionMatches(new SemVersion(1)));
 
-            dependency = DefaultModDependency.InitializeFromData(new Dependency()
-            {
-                version = "1.0"
-            });
+            dependency = DefaultModDependency.InitializeFromData(new Dependency() {version = "1.0"});
             Assert.IsTrue(dependency.VersionMatches(new SemVersion(1)));
             Assert.IsFalse(dependency.VersionMatches(new SemVersion(2)));
 
-            dependency = DefaultModDependency.InitializeFromData(new Dependency()
-            {
-                version = "==1.0"
-            });
+            dependency = DefaultModDependency.InitializeFromData(new Dependency() {version = "==1.0"});
             Assert.IsTrue(dependency.VersionMatches(new SemVersion(1)));
             Assert.IsFalse(dependency.VersionMatches(new SemVersion(2)));
 
-            dependency = DefaultModDependency.InitializeFromData(new Dependency()
-            {
-                version = "!=1.0"
-            });
+            dependency = DefaultModDependency.InitializeFromData(new Dependency() {version = "!=1.0"});
             Assert.IsFalse(dependency.VersionMatches(new SemVersion(1)));
             Assert.IsTrue(dependency.VersionMatches(new SemVersion(2)));
         }

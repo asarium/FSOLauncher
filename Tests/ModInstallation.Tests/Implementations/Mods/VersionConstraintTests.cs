@@ -1,6 +1,10 @@
-﻿using ModInstallation.Implementations.Mods;
+﻿#region Usings
+
+using ModInstallation.Implementations.Mods;
 using NUnit.Framework;
 using Semver;
+
+#endregion
 
 namespace ModInstallation.Tests.Implementations.Mods
 {
@@ -28,7 +32,7 @@ namespace ModInstallation.Tests.Implementations.Mods
 
             Assert.IsTrue(constraint.VersionMatches(new SemVersion(2)));
             Assert.IsTrue(constraint.VersionMatches(new SemVersion(1)));
-            Assert.IsFalse(constraint.VersionMatches(new SemVersion(0,9)));
+            Assert.IsFalse(constraint.VersionMatches(new SemVersion(0, 9)));
 
             constraint = new VersionConstraint(ConstraintType.LessThan, new SemVersion(3));
 

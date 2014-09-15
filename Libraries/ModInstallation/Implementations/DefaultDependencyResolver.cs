@@ -105,7 +105,6 @@ namespace ModInstallation.Implementations
 
             var result = new List<IPackage>();
 
-            // The graph can only contain one node without incoming edges and that is the root node
             var openSet = new HashSet<DependencyNode>(graph.Nodes.Where(n => !graph.IncomingEdges(n).Any()));
 
             while (openSet.Count > 0)

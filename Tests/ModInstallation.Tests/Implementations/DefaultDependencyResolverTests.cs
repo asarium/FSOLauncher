@@ -37,45 +37,6 @@ namespace ModInstallation.Tests.Implementations
             throw new InvalidOperationException();
         }
 
-        [NotNull,Test]
-        public async Task TestResolveDependencies()
-        {
-            var testData = await GenerateTestMods("data5.json");
-
-            var testPackage = testData.First().Packages.First();
-
-            var dependencyResolver = new DefaultDependencyResolver();
-            var result = dependencyResolver.ResolveDependencies(testPackage, testData, null);
-
-            var resultList = result as IList<IPackage> ?? result.ToList();
-
-            CollectionAssert.IsNotEmpty(resultList);
-            Assert.AreEqual(4, resultList.Count);
-
-            Assert.AreEqual("test1", resultList[0].ContainingModification.Id);
-            Assert.AreEqual("package3", resultList[0].Name);
-
-            Assert.AreEqual("test2", resultList[1].ContainingModification.Id);
-            Assert.AreEqual("package1", resultList[1].Name);
-
-            Assert.AreEqual("test2", resultList[2].ContainingModification.Id);
-            Assert.AreEqual("package2", resultList[2].Name);
-
-            Assert.AreEqual("test3", resultList[3].ContainingModification.Id);
-            Assert.AreEqual("package1", resultList[3].Name);
-        }
-
-        [NotNull, Test]
-        public async Task TestResolveDependenciesCyclic()
-        {
-            var testData = await GenerateTestMods("data6.json");
-
-            var testPackage = testData.First().Packages.First();
-            
-            var dependencyResolver = new DefaultDependencyResolver();
-            Assert.Throws<InvalidOperationException>(() => dependencyResolver.ResolveDependencies(testPackage, testData, null));
-        }
-
         [NotNull, Test]
         public async Task TestGetPackageDependenciesErrors()
         {
@@ -169,6 +130,45 @@ namespace ModInstallation.Tests.Implementations
 
             var dependency = dependPackages.First();
             Assert.AreEqual("package2", dependency.Name);
+        }
+
+        [NotNull, Test]
+        public async Task TestResolveDependencies()
+        {
+            var testData = await GenerateTestMods("data5.json");
+
+            var testPackage = testData.First().Packages.First();
+
+            var dependencyResolver = new DefaultDependencyResolver();
+            var result = dependencyResolver.ResolveDependencies(testPackage, testData, null);
+
+            var resultList = result as IList<IPackage> ?? result.ToList();
+
+            CollectionAssert.IsNotEmpty(resultList);
+            Assert.AreEqual(4, resultList.Count);
+
+            Assert.AreEqual("test1", resultList[0].ContainingModification.Id);
+            Assert.AreEqual("package3", resultList[0].Name);
+
+            Assert.AreEqual("test2", resultList[1].ContainingModification.Id);
+            Assert.AreEqual("package1", resultList[1].Name);
+
+            Assert.AreEqual("test2", resultList[2].ContainingModification.Id);
+            Assert.AreEqual("package2", resultList[2].Name);
+
+            Assert.AreEqual("test3", resultList[3].ContainingModification.Id);
+            Assert.AreEqual("package1", resultList[3].Name);
+        }
+
+        [NotNull, Test]
+        public async Task TestResolveDependenciesCyclic()
+        {
+            var testData = await GenerateTestMods("data6.json");
+
+            var testPackage = testData.First().Packages.First();
+
+            var dependencyResolver = new DefaultDependencyResolver();
+            Assert.Throws<InvalidOperationException>(() => dependencyResolver.ResolveDependencies(testPackage, testData, null));
         }
     }
 }

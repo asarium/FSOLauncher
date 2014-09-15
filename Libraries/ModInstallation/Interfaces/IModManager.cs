@@ -14,7 +14,10 @@ namespace ModInstallation.Interfaces
     public interface IModManager
     {
         [CanBeNull]
-        IEnumerable<IModification> Modifications { get; }
+        IEnumerable<IModification> RemoteModifications { get; }
+
+        [CanBeNull]
+        IEnumerable<IModification> LocalModifications { get; }
 
         [NotNull]
         Task RetrieveInformationAsync([NotNull] IProgress<string> progressReporter, CancellationToken token);

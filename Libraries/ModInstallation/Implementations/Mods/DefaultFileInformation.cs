@@ -44,7 +44,7 @@ namespace ModInstallation.Implementations.Mods
             foreach (var url in fileInfo.urls)
             {
                 Uri outUri;
-                if (!Uri.TryCreate(url, UriKind.Absolute, out outUri))
+                if (!Uri.TryCreate(url, UriKind.Absolute, out outUri) || !outUri.IsFile)
                 {
                     if (errorHandler != null)
                     {

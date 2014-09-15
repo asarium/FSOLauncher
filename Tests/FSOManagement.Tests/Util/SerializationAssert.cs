@@ -1,6 +1,10 @@
-﻿using System.IO;
+﻿#region Usings
+
+using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using NUnit.Framework;
+
+#endregion
 
 namespace FSOManagement.Tests.Util
 {

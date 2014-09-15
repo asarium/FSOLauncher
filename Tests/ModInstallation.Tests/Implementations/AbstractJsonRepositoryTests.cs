@@ -21,7 +21,7 @@ namespace ModInstallation.Tests.Implementations
             Assert.AreEqual("Test", repo.Name);
         }
 
-        [NotNull,Test]
+        [NotNull, Test]
         public async Task TestRetrieveRepositoryInformationAsync()
         {
             var repo = new TestRepository("Test");

@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="Implementations\AbstractJsonRepositoryTests.cs" />
     <Compile Include="Implementations\DefaultDependencyResolverTests.cs" />
+    <Compile Include="Implementations\DefaultFileDownloaderTests.cs" />
     <Compile Include="Implementations\DefaultModManagerTests.cs" />
     <Compile Include="Implementations\Mods\DefaultModDependencyTests.cs" />
     <Compile Include="Implementations\Mods\DefaultPackageTests.cs" />

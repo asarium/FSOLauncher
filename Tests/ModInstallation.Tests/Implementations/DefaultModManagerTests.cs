@@ -24,12 +24,12 @@ namespace ModInstallation.Tests.Implementations
 
             await modManager.RetrieveInformationAsync(new Progress<string>(), CancellationToken.None);
 
-            Assert.IsNotNull(modManager.Modifications);
+            Assert.IsNotNull(modManager.RemoteModifications);
 
-            CollectionAssert.IsNotEmpty(modManager.Modifications);
-            Assert.AreEqual(1, modManager.Modifications.Count());
+            CollectionAssert.IsNotEmpty(modManager.RemoteModifications);
+            Assert.AreEqual(1, modManager.RemoteModifications.Count());
 
-            Assert.AreEqual("FSO", modManager.Modifications.First().Id);
+            Assert.AreEqual("FSO", modManager.RemoteModifications.First().Id);
         }
     }
 }

@@ -18,7 +18,7 @@ namespace ModInstallation.Implementations
 
         #region IModManager Members
 
-        public IEnumerable<IModification> Modifications
+        public IEnumerable<IModification> RemoteModifications
         {
             get
             {
@@ -26,6 +26,8 @@ namespace ModInstallation.Implementations
                     _repositories.Where(modRepository => modRepository.Modifications != null).SelectMany(modRepository => modRepository.Modifications);
             }
         }
+
+        public IEnumerable<IModification> LocalModifications { get; private set; }
 
         public async Task RetrieveInformationAsync(IProgress<string> progressReporter, CancellationToken token)
         {
