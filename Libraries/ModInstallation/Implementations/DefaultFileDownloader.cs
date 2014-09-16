@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Flurl.Http;
 using ModInstallation.Annotations;
 using ModInstallation.Exceptions;
 using ModInstallation.Interfaces;
@@ -18,21 +19,43 @@ namespace ModInstallation.Implementations
 {
     internal class DefaultDownloadProgress : IDownloadProgress
     {
+        private DefaultDownloadProgress()
+        {
+        }
+
         #region IDownloadProgress Members
 
-        public Uri CurrentUri { get; set; }
+        public Uri CurrentUri { get; private set; }
 
-        public long CurrentBytes { get; set; }
+        public long CurrentBytes { get; private set; }
 
-        public long TotalBytes { get; set; }
+        public long TotalBytes { get; private set; }
 
-        public double Speed { get; set; }
+        public double Speed { get; private set; }
 
-        public bool VerifyingFile { get; set; }
+        public bool VerifyingFile { get; private set; }
 
-        public double VerificationProgress { get; set; }
+        public double VerificationProgress { get; private set; }
 
         #endregion
+
+        [NotNull]
+        public static DefaultDownloadProgress Connecting([NotNull] Uri uri)
+        {
+            return new DefaultDownloadProgress {CurrentUri = uri, TotalBytes = -1};
+        }
+
+        [NotNull]
+        public static DefaultDownloadProgress Downloading([NotNull] Uri uri, long current, long total, double speed)
+        {
+            return new DefaultDownloadProgress {CurrentUri = uri, TotalBytes = total, CurrentBytes = current, Speed = speed};
+        }
+
+        [NotNull]
+        public static DefaultDownloadProgress Verify(double progress)
+        {
+            return new DefaultDownloadProgress {VerifyingFile = true, VerificationProgress = progress};
+        }
     }
 
     public class DefaultFileDownloader : IFileDownloader
@@ -56,21 +79,28 @@ namespace ModInstallation.Implementations
         public async Task<FileInfo> DownloadFileAsync(IFileInformation fileInfo, IProgress<IDownloadProgress> progressReporter,
             CancellationToken cancellationToken)
         {
-            using (var client = new HttpClient())
+            foreach (var uri in fileInfo.DownloadUris)
             {
-                foreach (var uri in fileInfo.DownloadUris)
-                {
-                    var progressStatus = new DefaultDownloadProgress {CurrentUri = uri, CurrentBytes = 0, Speed = 0, TotalBytes = 0};
-                    progressReporter.Report(progressStatus);
+                progressReporter.Report(DefaultDownloadProgress.Connecting(uri));
 
-                    using (var response = await client.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead, cancellationToken))
+                try
+                {
+                    var flurlClient = new FlurlClient(uri.AbsoluteUri);
+                    using (
+                        var response = await flurlClient.HttpClient.GetAsync(uri.AbsoluteUri, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
+                        )
                     {
+                        if (cancellationToken.IsCancellationRequested)
+                        {
+                            return null;
+                        }
+
                         if (!response.IsSuccessStatusCode)
                         {
                             continue;
                         }
 
-                        var outputFilePath = await DownloadFile(progressReporter, cancellationToken, response, progressStatus, uri);
+                        var outputFilePath = await DownloadFile(progressReporter, cancellationToken, response, uri);
 
                         if (fileInfo.FileVerifiers == null)
                         {
@@ -82,6 +112,10 @@ namespace ModInstallation.Implementations
                         return new FileInfo(outputFilePath);
                     }
                 }
+                catch (HttpRequestException)
+                {
+                    // Ignore exception, probably a timeout...
+                }
             }
 
             throw new InvalidOperationException("All file downloads failed!");
@@ -91,21 +125,23 @@ namespace ModInstallation.Implementations
 
         [NotNull]
         private async Task<string> DownloadFile([NotNull] IProgress<IDownloadProgress> progressReporter, CancellationToken cancellationToken,
-            [NotNull] HttpResponseMessage response, [NotNull] DefaultDownloadProgress progressStatus, [NotNull] Uri uri)
+            [NotNull] HttpResponseMessage response, [NotNull] Uri uri)
         {
             var buffer = new byte[BufferSize];
             var length = response.Content.Headers.ContentLength;
 
-            long currentPosition = 0;
-            progressStatus.CurrentBytes = currentPosition;
-
-            progressStatus.TotalBytes = length.HasValue ? length.Value : 0;
-            progressStatus.Speed = 0;
+            var currentPosition = 0L;
+            var total = length.HasValue ? length.Value : 0;
 
             var outputFilePath = GetFileOutputPath(Path.GetFileName(uri.LocalPath));
-            progressReporter.Report(progressStatus);
+            progressReporter.Report(DefaultDownloadProgress.Downloading(uri, currentPosition, total, 0.0));
 
             Directory.CreateDirectory(Path.GetDirectoryName(outputFilePath));
+
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return outputFilePath;
+            }
 
             using (var fileStream = File.Open(outputFilePath, FileMode.Create, FileAccess.Write))
             {
@@ -119,15 +155,17 @@ namespace ModInstallation.Implementations
                     {
                         await fileStream.WriteAsync(buffer, 0, bytesRead, cancellationToken);
 
+                        if (cancellationToken.IsCancellationRequested)
+                        {
+                            return outputFilePath;
+                        }
+
                         var elapsed = stopwatch.Elapsed.TotalSeconds;
                         stopwatch.Restart();
 
-                        progressStatus.Speed = bytesRead / elapsed;
-
                         currentPosition += bytesRead;
-                        progressStatus.CurrentBytes = currentPosition;
 
-                        progressReporter.Report(progressStatus);
+                        progressReporter.Report(DefaultDownloadProgress.Downloading(uri, currentPosition, total, bytesRead / elapsed));
                     }
                 }
             }
@@ -141,17 +179,12 @@ namespace ModInstallation.Implementations
         {
             Debug.Assert(fileInfo.FileVerifiers != null);
 
-            var verificationProgress = new DefaultDownloadProgress {VerifyingFile = true, VerificationProgress = 0.0};
-
             var verifierCountInv = 1.0 / fileInfo.FileVerifiers.Count();
             var completed = 0;
             foreach (var verifier in fileInfo.FileVerifiers)
             {
-                var verificationHandler = new Progress<double>(p =>
-                {
-                    verificationProgress.VerificationProgress = completed * verifierCountInv + p;
-                    progressReporter.Report(verificationProgress);
-                });
+                var verificationHandler =
+                    new Progress<double>(p => progressReporter.Report(DefaultDownloadProgress.Verify(completed * verifierCountInv + p)));
 
                 if (!await verifier.VerifyFilePathAsync(outputFilePath, cancellationToken, verificationHandler))
                 {
