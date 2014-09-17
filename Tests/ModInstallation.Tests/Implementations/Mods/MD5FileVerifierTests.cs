@@ -23,6 +23,15 @@ namespace ModInstallation.Tests.Implementations.Mods
         {
             var assembly = Assembly.GetExecutingAssembly();
 
+            var dirPath = Path.GetDirectoryName(_outPath);
+            if (dirPath != null)
+            {
+                if (!Directory.Exists(dirPath))
+                {
+                    Directory.CreateDirectory(dirPath);
+                }
+            }
+
             using (var stream = assembly.GetManifestResourceStream("ModInstallation.Tests.TestData.random.txt"))
             {
                 if (stream == null)
@@ -48,7 +57,7 @@ namespace ModInstallation.Tests.Implementations.Mods
 
         #endregion
 
-        private readonly string _outPath = Path.Combine(Path.GetTempPath(), "random.txt");
+        private readonly string _outPath = Path.Combine(TestContext.CurrentContext.WorkDirectory, TestContext.CurrentContext.Test.Name, "random.txt");
 
         [NotNull, Test]
         public async Task TestVerifyFilePathAsync()
