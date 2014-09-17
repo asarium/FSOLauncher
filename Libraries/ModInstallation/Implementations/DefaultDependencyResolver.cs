@@ -6,6 +6,7 @@ using System.Linq;
 using ModInstallation.Annotations;
 using ModInstallation.Interfaces;
 using ModInstallation.Interfaces.Mods;
+using ModInstallation.Util;
 
 #endregion
 
@@ -205,14 +206,14 @@ namespace ModInstallation.Implementations
                 if (!modDependency.PackageNames.Any())
                 {
                     // If no packages were specified, depend on the required packages
-                    packages = matchedMod.Packages.Where(p => p.Status == PackageStatus.Required);
+                    packages = matchedMod.Packages.Where(p => p.Status == PackageStatus.Required && p.EnvironmentSatisfied());
                 }
                 else
                 {
                     var list = new List<IPackage>();
                     foreach (var packageName in dependency.PackageNames)
                     {
-                        var p = matchedMod.Packages.FirstOrDefault(pack => pack.Name == packageName);
+                        var p = matchedMod.Packages.FirstOrDefault(pack => pack.Name == packageName && pack.EnvironmentSatisfied());
 
                         if (p != null)
                         {

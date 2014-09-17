@@ -89,6 +89,7 @@
     <Compile Include="Interfaces\Mods\IPackage.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Util\PackageExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
