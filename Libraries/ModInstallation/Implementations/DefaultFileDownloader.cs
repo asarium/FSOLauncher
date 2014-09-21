@@ -17,7 +17,7 @@ using ModInstallation.Interfaces.Mods;
 
 namespace ModInstallation.Implementations
 {
-    internal class DefaultDownloadProgress : IDownloadProgress
+    public class DefaultDownloadProgress : IDownloadProgress
     {
         private DefaultDownloadProgress()
         {
@@ -198,7 +198,7 @@ namespace ModInstallation.Implementations
         [NotNull]
         private string GetFileOutputPath([NotNull] string filename)
         {
-            return Path.Combine(_downloadRoot, string.Format("{0:yyyy-MM-dd}", DateTime.Today), filename);
+            return Path.Combine(_downloadRoot, filename);
         }
     }
 }

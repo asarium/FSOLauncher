@@ -43,6 +43,9 @@
     <Reference Include="Semver">
       <HintPath>..\..\packages\semver.1.1.2\lib\net45\Semver.dll</HintPath>
     </Reference>
+    <Reference Include="SharpCompress">
+      <HintPath>..\..\packages\sharpcompress.0.10.3\lib\net40\SharpCompress.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Net.Http" />
@@ -67,6 +70,9 @@
     <Compile Include="Implementations\DefaultDependencyResolver.cs" />
     <Compile Include="Implementations\DefaultModManager.cs" />
     <Compile Include="Implementations\DefaultFileDownloader.cs" />
+    <Compile Include="Implementations\DefaultPackageInstaller.cs" />
+    <Compile Include="Implementations\Extractors\DefaultExtractionProgress.cs" />
+    <Compile Include="Implementations\Extractors\SharpCompressExtractor.cs" />
     <Compile Include="Implementations\Mods\CpuFeatureEnvironmentConstraint.cs" />
     <Compile Include="Implementations\Mods\DefaultFileInformation.cs" />
     <Compile Include="Implementations\Mods\DefaultModDependency.cs" />
@@ -75,6 +81,10 @@
     <Compile Include="Implementations\Mods\MD5FileVerifier.cs" />
     <Compile Include="Implementations\Mods\OsEnvironmentConstraint.cs" />
     <Compile Include="Implementations\Mods\VersionConstraint.cs" />
+    <Compile Include="Implementations\Util\DownloadProgressTranslator.cs" />
+    <Compile Include="Implementations\Util\ExtractionProgressTranslator.cs" />
+    <Compile Include="Implementations\Util\InstallationProgress.cs" />
+    <Compile Include="Interfaces\IArchiveExtractor.cs" />
     <Compile Include="Interfaces\IDependencyResolver.cs" />
     <Compile Include="Interfaces\IFileDownloader.cs" />
     <Compile Include="Interfaces\IPackageInstaller.cs" />
@@ -89,6 +99,7 @@
     <Compile Include="Interfaces\Mods\IPackage.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Util\Extensions.cs" />
     <Compile Include="Util\PackageExtensions.cs" />
   </ItemGroup>
   <ItemGroup>

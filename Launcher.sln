@@ -41,6 +41,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModInstallation", "Librarie
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModInstallation.Tests", "Tests\ModInstallation.Tests\ModInstallation.Tests.csproj", "{2DFA1DEB-F4FC-4A4F-8D26-8319A8993BD9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModInstallation.Windows", "Libraries\ModInstallation.Windows\ModInstallation.Windows.csproj", "{93358CAD-81C8-4B1F-A494-05EA168E3427}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModInstallation.Windows.Tests", "Tests\ModInstallation.Windows.Tests\ModInstallation.Windows.Tests.csproj", "{1A6DBECC-9129-4DE6-9441-9E784F4D03C9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -103,6 +107,14 @@ Global
 		{2DFA1DEB-F4FC-4A4F-8D26-8319A8993BD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2DFA1DEB-F4FC-4A4F-8D26-8319A8993BD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2DFA1DEB-F4FC-4A4F-8D26-8319A8993BD9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93358CAD-81C8-4B1F-A494-05EA168E3427}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93358CAD-81C8-4B1F-A494-05EA168E3427}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93358CAD-81C8-4B1F-A494-05EA168E3427}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93358CAD-81C8-4B1F-A494-05EA168E3427}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A6DBECC-9129-4DE6-9441-9E784F4D03C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A6DBECC-9129-4DE6-9441-9E784F4D03C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A6DBECC-9129-4DE6-9441-9E784F4D03C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A6DBECC-9129-4DE6-9441-9E784F4D03C9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -124,5 +136,7 @@ Global
 		{85DDB6E7-BF9F-447C-8BB9-60081222A130} = {8B2856F4-0E20-4248-861D-FD9D7EC6BEB8}
 		{6219DDE3-F989-412B-8368-3EEB6B0D0C00} = {246565A1-F140-4E42-B0EA-EF65C9387D22}
 		{2DFA1DEB-F4FC-4A4F-8D26-8319A8993BD9} = {F78C8A15-7646-4BE5-9EF4-0DF764892006}
+		{93358CAD-81C8-4B1F-A494-05EA168E3427} = {246565A1-F140-4E42-B0EA-EF65C9387D22}
+		{1A6DBECC-9129-4DE6-9441-9E784F4D03C9} = {F78C8A15-7646-4BE5-9EF4-0DF764892006}
 	EndGlobalSection
 EndGlobal
