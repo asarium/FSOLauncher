@@ -31,16 +31,5 @@ namespace ModInstallation.Tests.Implementations.Extractors
 
             FileAssert.AreEqual(testFile, new FileInfo(Path.Combine(outDir, testFile.Name)));
         }
-
-        [NotNull, Test]
-        public async Task TestExtractArchiveAsync2()
-        {
-            var instance = new SharpCompressExtractor();
-
-            await
-                instance.ExtractArchiveAsync(@"F:\Downloads\Spiele\FreeSpace\Exes\fs2_open_3.7.2_RC4_SSE.7z",
-                    @"F:\Downloads\Spiele\FreeSpace\Exes\test",
-                    new Progress<IExtractionProgress>(p => Console.WriteLine("{0}: {1}", p.FileName, p.OverallProgress)), CancellationToken.None);
-        }
     }
 }

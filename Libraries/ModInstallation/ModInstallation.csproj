@@ -84,6 +84,7 @@
     <Compile Include="Implementations\Util\DownloadProgressTranslator.cs" />
     <Compile Include="Implementations\Util\ExtractionProgressTranslator.cs" />
     <Compile Include="Implementations\Util\InstallationProgress.cs" />
+    <Compile Include="Implementations\WebJsonRepository.cs" />
     <Compile Include="Interfaces\IArchiveExtractor.cs" />
     <Compile Include="Interfaces\IDependencyResolver.cs" />
     <Compile Include="Interfaces\IFileDownloader.cs" />

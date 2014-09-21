@@ -17,6 +17,7 @@ using UI.WPF.Launcher.Properties;
 using UI.WPF.Modules.Advanced;
 using UI.WPF.Modules.General;
 using UI.WPF.Modules.Implementations;
+using UI.WPF.Modules.Installation;
 using UI.WPF.Modules.Mods;
 using UI.WPF.Modules.Update;
 
@@ -130,7 +131,8 @@ namespace UI.WPF.Launcher
                 typeof(GeneralTabModule).Assembly,
                 typeof(AdvancedTabModule).Assembly,
                 typeof(ModTabModule).Assembly,
-                typeof(UpdateModule).Assembly
+                typeof(UpdateModule).Assembly,
+                typeof(InstallationModule).Assembly
             };
         }
 

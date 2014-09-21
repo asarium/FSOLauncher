@@ -212,9 +212,17 @@
       <Project>{73342923-20ee-4f2c-b9ab-9a03341f782a}</Project>
       <Name>FSOManagement</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\ModInstallation\ModInstallation.csproj">
+      <Project>{6219dde3-f989-412b-8368-3eeb6b0d0c00}</Project>
+      <Name>ModInstallation</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Libraries\SDLGlue\SDLGlue.csproj">
       <Project>{589ecbc2-cdfb-42aa-a9df-35d804464711}</Project>
       <Name>SDLGlue</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Tests\ModInstallation.Tests\ModInstallation.Tests.csproj">
+      <Project>{2dfa1deb-f4fc-4a4f-8d26-8319a8993bd9}</Project>
+      <Name>ModInstallation.Tests</Name>
     </ProjectReference>
     <ProjectReference Include="..\Modules\UI.WPF.Modules.Advanced\UI.WPF.Modules.Advanced.csproj">
       <Project>{7636EC3E-D47C-435C-AA51-F8981727A82E}</Project>
@@ -227,6 +235,10 @@
     <ProjectReference Include="..\Modules\UI.WPF.Modules.Implementations\UI.WPF.Modules.Implementations.csproj">
       <Project>{53F7EA48-F66A-4E2C-AAFD-8E4764B8DB06}</Project>
       <Name>UI.WPF.Modules.Implementations</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Modules\UI.WPF.Modules.Installation\UI.WPF.Modules.Installation.csproj">
+      <Project>{d0f8ee93-8a70-4f69-9c31-e8b132833aac}</Project>
+      <Name>UI.WPF.Modules.Installation</Name>
     </ProjectReference>
     <ProjectReference Include="..\Modules\UI.WPF.Modules.Mods\UI.WPF.Modules.Mods.csproj">
       <Project>{638DA46F-90D8-43FD-8090-2AF8598D53DB}</Project>

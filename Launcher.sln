@@ -45,6 +45,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModInstallation.Windows", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModInstallation.Windows.Tests", "Tests\ModInstallation.Windows.Tests\ModInstallation.Windows.Tests.csproj", "{1A6DBECC-9129-4DE6-9441-9E784F4D03C9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UI.WPF.Modules.Installation", "UI\WPF\Modules\UI.WPF.Modules.Installation\UI.WPF.Modules.Installation.csproj", "{D0F8EE93-8A70-4F69-9C31-E8B132833AAC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -115,6 +117,10 @@ Global
 		{1A6DBECC-9129-4DE6-9441-9E784F4D03C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A6DBECC-9129-4DE6-9441-9E784F4D03C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A6DBECC-9129-4DE6-9441-9E784F4D03C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0F8EE93-8A70-4F69-9C31-E8B132833AAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0F8EE93-8A70-4F69-9C31-E8B132833AAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0F8EE93-8A70-4F69-9C31-E8B132833AAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0F8EE93-8A70-4F69-9C31-E8B132833AAC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -138,5 +144,6 @@ Global
 		{2DFA1DEB-F4FC-4A4F-8D26-8319A8993BD9} = {F78C8A15-7646-4BE5-9EF4-0DF764892006}
 		{93358CAD-81C8-4B1F-A494-05EA168E3427} = {246565A1-F140-4E42-B0EA-EF65C9387D22}
 		{1A6DBECC-9129-4DE6-9441-9E784F4D03C9} = {F78C8A15-7646-4BE5-9EF4-0DF764892006}
+		{D0F8EE93-8A70-4F69-9C31-E8B132833AAC} = {8B2856F4-0E20-4248-861D-FD9D7EC6BEB8}
 	EndGlobalSection
 EndGlobal
