@@ -5,6 +5,7 @@ using System.Linq;
 using ModInstallation.Annotations;
 using ModInstallation.Implementations.DataClasses;
 using ModInstallation.Interfaces.Mods;
+using ModInstallation.Util;
 using Semver;
 
 #endregion
@@ -32,7 +33,10 @@ namespace ModInstallation.Implementations.Mods
         {
             var newInstance = new DefaultModification {Id = mod.id, Title = mod.title, Description = mod.description};
 
-            newInstance.Packages = mod.packages.Select(pack => DefaultPackage.InitializeFromData(newInstance, pack, errorHandler)).ToList();
+            newInstance.Packages =
+                mod.packages.Select(pack => DefaultPackage.InitializeFromData(newInstance, pack, errorHandler))
+                    .Where(p => p.EnvironmentSatisfied())
+                    .ToList();
 
             SemVersion version;
             if (SemVersion.TryParse(mod.version, out version))
