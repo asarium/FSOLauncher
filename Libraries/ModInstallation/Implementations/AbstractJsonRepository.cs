@@ -11,13 +11,14 @@ using ModInstallation.Implementations.DataClasses;
 using ModInstallation.Implementations.Mods;
 using ModInstallation.Interfaces;
 using ModInstallation.Interfaces.Mods;
+using ModInstallation.Util;
 using Newtonsoft.Json;
 
 #endregion
 
 namespace ModInstallation.Implementations
 {
-    public abstract class AbstractJsonRepository : IModRepository
+    public abstract class AbstractJsonRepository : PropertyChangeBase, IModRepository
     {
         private readonly JsonSerializer _jsonSerializer;
 
