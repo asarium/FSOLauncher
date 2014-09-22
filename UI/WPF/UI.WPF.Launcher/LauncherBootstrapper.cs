@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Threading;
 using Caliburn.Micro;
+using ModInstallation.Interfaces;
 using Ookii.Dialogs.Wpf;
 using SDLGlue;
 using UI.WPF.Launcher.Common.Interfaces;
@@ -132,7 +133,10 @@ namespace UI.WPF.Launcher
                 typeof(AdvancedTabModule).Assembly,
                 typeof(ModTabModule).Assembly,
                 typeof(UpdateModule).Assembly,
-                typeof(InstallationModule).Assembly
+                typeof(InstallationModule).Assembly,
+
+                // Libraries
+                typeof(IModManager).Assembly
             };
         }
 

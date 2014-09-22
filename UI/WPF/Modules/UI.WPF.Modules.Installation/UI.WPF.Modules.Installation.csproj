@@ -11,6 +11,7 @@
     <AssemblyName>UI.WPF.Modules.Installation</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <ExpressionBlendVersion>12.0.50716.0</ExpressionBlendVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -33,6 +34,9 @@
     <Reference Include="Caliburn.Micro, Version=2.0.1.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\packages\Caliburn.Micro.Core.2.0.1\lib\net45\Caliburn.Micro.dll</HintPath>
+    </Reference>
+    <Reference Include="MahApps.Metro">
+      <HintPath>..\..\..\..\packages\MahApps.Metro.0.15.0-ALPHA29\lib\net45\MahApps.Metro.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -80,11 +84,15 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\InstallationTabViewModel.cs" />
     <Compile Include="ViewModels\Mods\ModViewModel.cs" />
+    <Compile Include="ViewModels\Mods\PackageViewModel.cs" />
     <Compile Include="Views\InstallationTabView.xaml.cs">
       <DependentUpon>InstallationTabView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ModInformationControl.xaml.cs">
       <DependentUpon>ModInformationControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PackageInformationControl.xaml.cs">
+      <DependentUpon>PackageInformationControl.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -96,17 +104,30 @@
       <Project>{ECBE6F2B-423C-47BC-AA36-26CD3B5E8F81}</Project>
       <Name>UI.WPF.Launcher.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\UI.WPF.Modules.Mods\UI.WPF.Modules.Mods.csproj">
+      <Project>{638DA46F-90D8-43FD-8090-2AF8598D53DB}</Project>
+      <Name>UI.WPF.Modules.Mods</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Page Include="Properties\DesignTimeResources.xaml" Condition="'$(DesignTime)'=='true' OR ('$(SolutionPath)'!='' AND Exists('$(SolutionPath)') AND '$(BuildingInsideVisualStudio)'!='true' AND '$(BuildingInsideExpressionBlend)'!='true')">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <ContainsDesignTimeResources>true</ContainsDesignTimeResources>
+    </Page>
     <Page Include="Views\InstallationTabView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ModInformationControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\PackageInformationControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

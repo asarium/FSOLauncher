@@ -20,6 +20,8 @@ namespace UI.WPF.Modules.Installation.ViewModels
     [Export(typeof(ILauncherTab)), ExportMetadata("Priority", 3)]
     public sealed class InstallationTabViewModel : Screen, ILauncherTab
     {
+        private bool _hasManagerStatusMessage;
+
         private string _managerStatusMessage;
 
         private IEnumerable<ModViewModel> _modificationViewModels;
@@ -35,7 +37,22 @@ namespace UI.WPF.Modules.Installation.ViewModels
             this.WhenAny(x => x.ManagerStatusMessage, val => !string.IsNullOrEmpty(val.Value)).BindTo(this, x => x.HasManagerStatusMessage);
         }
 
-        public bool HasManagerStatusMessage { get; private set; }
+        [NotNull, Import]
+        public IDependencyResolver DependencyResolver { get; private set; }
+
+        public bool HasManagerStatusMessage
+        {
+            get { return _hasManagerStatusMessage; }
+            private set
+            {
+                if (value.Equals(_hasManagerStatusMessage))
+                {
+                    return;
+                }
+                _hasManagerStatusMessage = value;
+                NotifyOfPropertyChange();
+            }
+        }
 
         [CanBeNull]
         public string ManagerStatusMessage
@@ -73,13 +90,13 @@ namespace UI.WPF.Modules.Installation.ViewModels
         [NotNull, Import]
         private IInteractionService InteractionService { get; set; }
 
-        private async void UpdateMods([NotNull] IInteractionService interactionService)
+        private async void UpdateMods()
         {
             await ModManager.RetrieveInformationAsync(new Progress<string>(msg => ManagerStatusMessage = msg), CancellationToken.None);
 
             if (ModManager.RemoteModifications != null)
             {
-                ModificationViewModels = ModManager.RemoteModifications.CreateDerivedCollection(mod => new ModViewModel(mod));
+                ModificationViewModels = ModManager.RemoteModifications.CreateDerivedCollection(mod => new ModViewModel(mod, this));
             }
             else
             {
@@ -93,7 +110,7 @@ namespace UI.WPF.Modules.Installation.ViewModels
         {
             base.OnActivate();
 
-            UpdateMods(InteractionService);
+            UpdateMods();
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿#region Usings
 
+using System.Collections.Generic;
 using ModInstallation.Annotations;
 using ModInstallation.Interfaces.Mods;
 using ReactiveUI;
@@ -15,11 +16,15 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
 
         private bool _hasDescription;
 
-        public ModViewModel([NotNull] IModification mod)
+        private IEnumerable<PackageViewModel> _packages;
+
+        public ModViewModel([NotNull] IModification mod, [NotNull] InstallationTabViewModel installationTabViewModel)
         {
             _mod = mod;
 
             mod.WhenAny(x => x.Description, val => !string.IsNullOrEmpty(val.Value)).BindTo(this, x => x.HasDescription);
+
+            Packages = mod.Packages.CreateDerivedCollection(p => new PackageViewModel(p, installationTabViewModel));
         }
 
         public bool HasDescription
@@ -33,6 +38,13 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
         {
             get { return _mod; }
             private set { RaiseAndSetIfPropertyChanged(ref _mod, value); }
+        }
+
+        [NotNull]
+        public IEnumerable<PackageViewModel> Packages
+        {
+            get { return _packages; }
+            private set { RaiseAndSetIfPropertyChanged(ref _packages, value); }
         }
     }
 }

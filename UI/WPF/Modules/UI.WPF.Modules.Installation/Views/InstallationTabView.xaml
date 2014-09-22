@@ -5,17 +5,19 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewModels="clr-namespace:UI.WPF.Modules.Installation.ViewModels"
              xmlns:mods="clr-namespace:ModInstallation.Interfaces.Mods;assembly=ModInstallation"
-             xmlns:views="clr-namespace:UI.WPF.Modules.Installation.Views" mc:Ignorable="d"
+             xmlns:views="clr-namespace:UI.WPF.Modules.Installation.Views"
+             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:mods1="clr-namespace:UI.WPF.Modules.Installation.ViewModels.Mods" mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModels:InstallationTabViewModel}" d:DesignHeight="300"
              d:DesignWidth="300">
-	<UserControl.Resources>
-		<BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-	</UserControl.Resources>
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </UserControl.Resources>
     <Grid>
         <Grid ZIndex="1">
             <ItemsControl ItemsSource="{Binding ModificationViewModels}">
                 <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="mods:IModification">
+                    <DataTemplate DataType="mods1:ModViewModel">
                         <Grid>
                             <views:ModInformationControl />
                         </Grid>
@@ -32,7 +34,8 @@
                                 Padding="{TemplateBinding Control.Padding}"
                                 BorderBrush="{TemplateBinding Border.BorderBrush}"
                                 Background="{TemplateBinding Panel.Background}" SnapsToDevicePixels="True">
-                            <ScrollViewer Padding="{TemplateBinding Control.Padding}" Focusable="False">
+                            <ScrollViewer Padding="{TemplateBinding Control.Padding}" Focusable="False"
+                                          VerticalScrollBarVisibility="Auto">
                                 <ItemsPresenter SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
                             </ScrollViewer>
                         </Border>
@@ -40,7 +43,19 @@
                 </ItemsControl.Template>
             </ItemsControl>
         </Grid>
-        <Grid ZIndex="2" Visibility="{Binding HasManagerStatusMessage, Converter={StaticResource BooleanToVisibilityConverter}}">
+        <Grid ZIndex="2"
+              Visibility="{Binding HasManagerStatusMessage, Converter={StaticResource BooleanToVisibilityConverter}}"
+              Background="{DynamicResource WhiteBrush}" Opacity="0.5">
+            <Grid VerticalAlignment="Center" HorizontalAlignment="Center" Opacity="1.0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <controls:ProgressRing IsActive="{Binding HasManagerStatusMessage}" />
+                <TextBlock Text="{Binding ManagerStatusMessage}" VerticalAlignment="Center"
+                           HorizontalAlignment="Center" Margin="5" Grid.Row="1" FontSize="14.667" FontWeight="Bold"
+                           TextWrapping="Wrap" TextAlignment="Center" />
+            </Grid>
         </Grid>
     </Grid>
 </UserControl>
