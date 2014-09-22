@@ -38,12 +38,12 @@ namespace ModInstallation.Implementations.Mods
         [NotNull]
         public static DefaultModDependency InitializeFromData([NotNull] Dependency dep)
         {
-            var newInstance = new DefaultModDependency {ModId = dep.id, _versionConstraints = ParseVersionString(dep.version).ToList()};
-
-            if (dep.packages != null)
+            var newInstance = new DefaultModDependency
             {
-                newInstance.PackageNames = dep.packages.ToList();
-            }
+                ModId = dep.id,
+                _versionConstraints = ParseVersionString(dep.version).ToList(),
+                PackageNames = dep.packages != null ? dep.packages.ToList() : Enumerable.Empty<string>()
+            };
 
             return newInstance;
         }
