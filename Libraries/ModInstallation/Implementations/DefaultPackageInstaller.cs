@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -28,6 +29,7 @@ namespace ModInstallation.Implementations
         #endregion
     }
 
+    [Export(typeof(IPackageInstaller))]
     public class DefaultPackageInstaller : IPackageInstaller
     {
         private readonly IArchiveExtractor _extractor;

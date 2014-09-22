@@ -1,6 +1,7 @@
 ﻿#region Usings
 
 using System;
+using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -58,6 +59,7 @@ namespace ModInstallation.Implementations
         }
     }
 
+    [Export(typeof(IFileDownloader))]
     public class DefaultFileDownloader : IFileDownloader
     {
         private const long BufferSize = 81920L;

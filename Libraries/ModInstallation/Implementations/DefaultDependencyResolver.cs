@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Linq;
 using ModInstallation.Annotations;
 using ModInstallation.Interfaces;
@@ -95,6 +96,7 @@ namespace ModInstallation.Implementations
         }
     }
 
+    [Export(typeof(IDependencyResolver))]
     public class DefaultDependencyResolver : IDependencyResolver
     {
         #region IDependencyResolver Members

@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ using ModInstallation.Util;
 
 namespace ModInstallation.Implementations
 {
+    [Export(typeof(IModManager))]
     public class DefaultModManager : PropertyChangeBase, IModManager
     {
         private readonly List<IModRepository> _repositories = new List<IModRepository>();
