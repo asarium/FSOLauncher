@@ -38,8 +38,6 @@ namespace ModInstallation.Tests.Implementations
             Assert.IsTrue(fsoMod.Version == "3.7.2-rc4");
             Assert.AreEqual("FreeSpace Open", fsoMod.Title);
             Assert.AreEqual("Recent builds of FreeSpace Open (the engine)", fsoMod.Description);
-
-            Assert.AreEqual(4, fsoMod.Packages.Count());
         }
     }
 }

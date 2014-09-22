@@ -52,7 +52,10 @@ namespace ModInstallation.Tests.Implementations
 
             var progressMock = new Mock<IProgress<IDownloadProgress>>();
 
-            var instance = new DefaultFileDownloader(Path.Combine(TestContext.CurrentContext.WorkDirectory, TestContext.CurrentContext.Test.FullName));
+            var instance = new DefaultFileDownloader
+            {
+                DownloadDirectory = Path.Combine(TestContext.CurrentContext.WorkDirectory, TestContext.CurrentContext.Test.FullName)
+            };
 
             using (var httpTest = new HttpTest())
             {
@@ -78,7 +81,10 @@ namespace ModInstallation.Tests.Implementations
 
             var progressMock = new Mock<IProgress<IDownloadProgress>>();
 
-            var instance = new DefaultFileDownloader(Path.Combine(TestContext.CurrentContext.WorkDirectory, TestContext.CurrentContext.Test.FullName));
+            var instance = new DefaultFileDownloader
+            {
+                DownloadDirectory = Path.Combine(TestContext.CurrentContext.WorkDirectory, TestContext.CurrentContext.Test.FullName)
+            };
 
             using (var httpTest = new HttpTest())
             {
@@ -104,7 +110,10 @@ namespace ModInstallation.Tests.Implementations
 
             var progressMock = new Mock<IProgress<IDownloadProgress>>();
 
-            var instance = new DefaultFileDownloader(Path.Combine(TestContext.CurrentContext.WorkDirectory, TestContext.CurrentContext.Test.FullName));
+            var instance = new DefaultFileDownloader
+            {
+                DownloadDirectory = Path.Combine(TestContext.CurrentContext.WorkDirectory, TestContext.CurrentContext.Test.FullName)
+            };
 
             using (var httpTest = new HttpTest())
             {
@@ -132,7 +141,10 @@ namespace ModInstallation.Tests.Implementations
 
             var progressMock = new Mock<IProgress<IDownloadProgress>>();
 
-            var instance = new DefaultFileDownloader(Path.Combine(TestContext.CurrentContext.WorkDirectory, TestContext.CurrentContext.Test.FullName));
+            var instance = new DefaultFileDownloader
+            {
+                DownloadDirectory = Path.Combine(TestContext.CurrentContext.WorkDirectory, TestContext.CurrentContext.Test.FullName)
+            };
 
             using (var httpTest = new HttpTest())
             {
@@ -163,7 +175,10 @@ namespace ModInstallation.Tests.Implementations
 
             var progressMock = new Mock<IProgress<IDownloadProgress>>();
 
-            var instance = new DefaultFileDownloader(Path.Combine(TestContext.CurrentContext.WorkDirectory, TestContext.CurrentContext.Test.FullName));
+            var instance = new DefaultFileDownloader
+            {
+                DownloadDirectory = Path.Combine(TestContext.CurrentContext.WorkDirectory, TestContext.CurrentContext.Test.FullName)
+            };
 
             using (var httpTest = new HttpTest())
             {

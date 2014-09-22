@@ -215,6 +215,10 @@
       <Project>{73342923-20ee-4f2c-b9ab-9a03341f782a}</Project>
       <Name>FSOManagement</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\ModInstallation.Windows\ModInstallation.Windows.csproj">
+      <Project>{93358CAD-81C8-4B1F-A494-05EA168E3427}</Project>
+      <Name>ModInstallation.Windows</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Libraries\ModInstallation\ModInstallation.csproj">
       <Project>{6219dde3-f989-412b-8368-3eeb6b0d0c00}</Project>
       <Name>ModInstallation</Name>

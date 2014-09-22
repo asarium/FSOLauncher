@@ -7,7 +7,7 @@ namespace ModInstallation.Implementations.Util
 {
     public class DownloadProgressTranslator : IProgress<IDownloadProgress>
     {
-        private const double SmoothingFactor = 0.7;
+        private const double SmoothingFactor = 0.2;
 
         private readonly IProgress<IInstallationProgress> _outputProgress;
 
@@ -51,13 +51,22 @@ namespace ModInstallation.Implementations.Util
             var currentSpeed = SmoothingFactor * value.Speed + (1 - SmoothingFactor) * _previousSpeed;
             _previousSpeed = currentSpeed;
 
-            var remaining = value.TotalBytes - value.CurrentBytes;
-            var remainingTime = TimeSpan.FromSeconds(remaining / currentSpeed);
+            string message;
+            if (currentSpeed < 0.1)
+            {
+                message = string.Format("{0} of {1} (0B/s)", value.CurrentBytes.HumanReadableByteCount(true),
+                    value.TotalBytes.HumanReadableByteCount(true));
+            }
+            else
+            {
+                var remaining = value.TotalBytes - value.CurrentBytes;
+                var remainingTime = TimeSpan.FromSeconds(remaining / currentSpeed);
 
-            var remainingTimeString = remainingTime.ToString(remainingTime.Hours > 0 ? "h\\:mm\\:ss" : "m\\:ss");
+                var remainingTimeString = remainingTime.ToString(remainingTime.Hours > 0 ? "h\\:mm\\:ss" : "m\\:ss");
 
-            var message = string.Format("{0} of {1} ({2}/s) {3} remaining", value.CurrentBytes.HumanReadableByteCount(true),
-                value.TotalBytes.HumanReadableByteCount(true), ((long)currentSpeed).HumanReadableByteCount(true), remainingTimeString);
+                message = string.Format("{0} of {1} ({2}/s) {3} remaining", value.CurrentBytes.HumanReadableByteCount(true),
+                    value.TotalBytes.HumanReadableByteCount(true), ((long)currentSpeed).HumanReadableByteCount(true), remainingTimeString);
+            }
 
             var downloadProgress = (double) value.CurrentBytes / value.TotalBytes;
 

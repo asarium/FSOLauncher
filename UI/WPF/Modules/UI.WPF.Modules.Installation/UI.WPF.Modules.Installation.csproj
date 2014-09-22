@@ -96,6 +96,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Libraries\FSOManagement\FSOManagement.csproj">
+      <Project>{73342923-20EE-4F2C-B9AB-9A03341F782A}</Project>
+      <Name>FSOManagement</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Libraries\ModInstallation\ModInstallation.csproj">
       <Project>{6219DDE3-F989-412B-8368-3EEB6B0D0C00}</Project>
       <Name>ModInstallation</Name>

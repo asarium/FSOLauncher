@@ -15,6 +15,10 @@
     </UserControl.Resources>
     <Grid>
         <Grid ZIndex="1">
+        	<Grid.RowDefinitions>
+        		<RowDefinition Height="*"/>
+        		<RowDefinition Height="Auto"/>
+        	</Grid.RowDefinitions>
             <ItemsControl ItemsSource="{Binding ModificationViewModels}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="mods1:ModViewModel">
@@ -42,6 +46,7 @@
                     </ControlTemplate>
                 </ItemsControl.Template>
             </ItemsControl>
+            <Button Content="Install" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Grid.Row="1" Margin="5" Command="{Binding InstallModsCommand}"/>
         </Grid>
         <Grid ZIndex="2"
               Visibility="{Binding HasManagerStatusMessage, Converter={StaticResource BooleanToVisibilityConverter}}"

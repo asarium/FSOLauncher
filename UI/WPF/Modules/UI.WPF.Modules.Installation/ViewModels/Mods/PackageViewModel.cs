@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ModInstallation.Annotations;
+using ModInstallation.Interfaces;
 using ModInstallation.Interfaces.Mods;
 using ReactiveUI;
 using UI.WPF.Launcher.Common.Classes;
@@ -20,12 +21,31 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
 
         private bool _selected;
 
+        private string _operationMessage;
+
+        private double _operationProgress;
+
         public PackageViewModel([NotNull] IPackage package, [NotNull] InstallationTabViewModel installationTabViewModel)
         {
             _installationTabViewModel = installationTabViewModel;
             Package = package;
 
+            ProgressReporter = new Progress<IInstallationProgress>(ProgressHandler);
+
             this.WhenAnyValue(x => x.Selected).Subscribe(SelectedChanged);
+        }
+
+        [CanBeNull]
+        public string OperationMessage
+        {
+            get { return _operationMessage; }
+            private set { RaiseAndSetIfPropertyChanged(ref _operationMessage, value); }
+        }
+
+        public double OperationProgress
+        {
+            get { return _operationProgress; }
+            private set { RaiseAndSetIfPropertyChanged(ref _operationProgress, value); }
         }
 
         [NotNull]
@@ -41,6 +61,15 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
         {
             get { return _selected; }
             set { RaiseAndSetIfPropertyChanged(ref _selected, value); }
+        }
+
+        [NotNull]
+        public IProgress<IInstallationProgress> ProgressReporter { get; private set; }
+
+        private void ProgressHandler([NotNull] IInstallationProgress installationProgress)
+        {
+            OperationMessage = installationProgress.Message;
+            OperationProgress = installationProgress.OverallProgress;
         }
 
         private void SelectedChanged(bool selected)
@@ -62,7 +91,9 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
                 var packageViewModel = packageViewModelList.FirstOrDefault(p => Equals(p.Package, dependency));
 
                 if (packageViewModel != null && ! ReferenceEquals(this, packageViewModel))
+                {
                     packageViewModel.Selected = true;
+                }
             }
         }
 

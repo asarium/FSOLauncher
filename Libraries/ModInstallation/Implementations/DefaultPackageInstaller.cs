@@ -37,16 +37,26 @@ namespace ModInstallation.Implementations
         [NotNull]
         private readonly IFileDownloader _fileDownloader;
 
-        private readonly string _installationDir;
+        private string _installationDirectory;
 
-        public DefaultPackageInstaller([NotNull] string installationDir, [NotNull] IFileDownloader downloader, [NotNull] IArchiveExtractor extractor)
+        [ImportingConstructor]
+        public DefaultPackageInstaller([NotNull] IFileDownloader downloader, [NotNull] IArchiveExtractor extractor)
         {
-            _installationDir = installationDir;
             _extractor = extractor;
             _fileDownloader = downloader;
         }
 
         #region IPackageInstaller Members
+
+        public string InstallationDirectory
+        {
+            get { return _installationDirectory; }
+            set
+            {
+                _installationDirectory = value;
+                _fileDownloader.DownloadDirectory = Path.Combine(_installationDirectory, "downloads");
+            }
+        }
 
         public async Task InstallPackageAsync(IPackage package, IProgress<IInstallationProgress> progressReporter, CancellationToken token)
         {
@@ -64,7 +74,7 @@ namespace ModInstallation.Implementations
                 return;
             }
 
-            var installationProgress = new InstallationProgress(progressReporter);
+            var installationProgress = new InstallationProgress(progressReporter) {Total = fileList.Count};
 
             foreach (var fileInformation in fileList)
             {
@@ -109,7 +119,7 @@ namespace ModInstallation.Implementations
         private async Task InstallFile([NotNull] IPackage package, [NotNull] FileInfo downloadedFile,
             [NotNull] IProgress<IInstallationProgress> delegatingProgress, CancellationToken token)
         {
-            var installationDirectory = Path.Combine(_installationDir, package.ContainingModification.Id,
+            var installationDirectory = Path.Combine(InstallationDirectory, package.ContainingModification.Id,
                 package.ContainingModification.Version.ToString());
 
             if (_extractor.IsArchive(downloadedFile.FullName))
@@ -120,6 +130,11 @@ namespace ModInstallation.Implementations
             }
             else
             {
+                if (downloadedFile.DirectoryName != null && !Directory.Exists(downloadedFile.DirectoryName))
+                {
+                    Directory.CreateDirectory(downloadedFile.DirectoryName);
+                }
+
                 File.Move(downloadedFile.FullName, Path.Combine(installationDirectory, downloadedFile.Name));
             }
         }

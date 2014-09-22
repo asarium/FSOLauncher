@@ -1,32 +1,37 @@
-﻿<UserControl
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<UserControl xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mods="clr-namespace:UI.WPF.Modules.Installation.ViewModels.Mods" xmlns:Custom="http://metro.mahapps.com/winfx/xaml/controls" x:Class="UI.WPF.Modules.Installation.Views.PackageInformationControl"
-             mc:Ignorable="d"
+             xmlns:mods="clr-namespace:UI.WPF.Modules.Installation.ViewModels.Mods"
+             xmlns:Custom="http://metro.mahapps.com/winfx/xaml/controls"
+             x:Class="UI.WPF.Modules.Installation.Views.PackageInformationControl" mc:Ignorable="d"
              d:DataContext="{d:DesignInstance {x:Type mods:PackageViewModel}}" d:DesignHeight="300" d:DesignWidth="300">
-	<UserControl.Resources>
-		<BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-	</UserControl.Resources>
-	<Grid>
-		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="Auto"/>
-			<ColumnDefinition/>
-		</Grid.ColumnDefinitions>
-		<Grid.RowDefinitions>
-			<RowDefinition Height="Auto" />
-			<RowDefinition Height="Auto" />
-		</Grid.RowDefinitions>
-		<CheckBox Content="" VerticalAlignment="Center" Margin="2,5,0,5" HorizontalAlignment="Center" Width="17" IsChecked="{Binding Selected, Mode=TwoWay}"/>
-		<TextBlock Text="{Binding Package.Name}" Margin="2,5,5,5" Grid.Column="1" />
-		<Grid Grid.Row="1" Margin="2,2,2,-2" Visibility="{Binding Installing, Converter={StaticResource BooleanToVisibilityConverter}}" Grid.ColumnSpan="2">
-			<Grid.RowDefinitions>
-				<RowDefinition Height="Auto"/>
-				<RowDefinition Height="Auto"/>
-			</Grid.RowDefinitions>
-			<TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top"/>
-			<Custom:MetroProgressBar VerticalAlignment="Center" BorderThickness="0,2" Height="10" Grid.Row="1"/>
-		</Grid>
-	</Grid>
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <CheckBox Content="" VerticalAlignment="Center" Margin="2,5,0,5" HorizontalAlignment="Center"
+                  IsChecked="{Binding Selected, Mode=TwoWay}" />
+        <TextBlock Text="{Binding Package.Name}" Margin="2,5,5,5" Grid.Row="0" Grid.Column="1" />
+        <Grid Grid.Row="1" Margin="2,2,2,2"
+              Visibility="{Binding Installing, Converter={StaticResource BooleanToVisibilityConverter}}"
+              Grid.ColumnSpan="2" Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top"
+                       Text="{Binding OperationMessage}" />
+            <Custom:MetroProgressBar VerticalAlignment="Center" BorderThickness="0,2" Height="10" Grid.Row="1"
+                                     Minimum="0.0" Maximum="1.0" Value="{Binding OperationProgress}" />
+        </Grid>
+    </Grid>
 </UserControl>

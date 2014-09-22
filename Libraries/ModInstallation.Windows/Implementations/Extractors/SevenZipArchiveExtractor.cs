@@ -66,7 +66,7 @@ namespace ModInstallation.Windows.Implementations.Extractors
         {
             var ext = Path.GetExtension(filePath);
 
-            return ext == "7z" || ext == "rar" || ext == "zip" || ext == "tar.gz";
+            return ext == ".7z" || ext == ".rar" || ext == ".zip" || ext == ".tar.gz";
         }
 
         #endregion

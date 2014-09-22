@@ -64,23 +64,18 @@ namespace ModInstallation.Implementations
     {
         private const long BufferSize = 81920L;
 
-        private readonly string _downloadRoot;
-
-        public DefaultFileDownloader([NotNull] string downloadRoot)
-        {
-            _downloadRoot = downloadRoot;
-
-            if (!Directory.Exists(downloadRoot))
-            {
-                Directory.CreateDirectory(downloadRoot);
-            }
-        }
+        public string DownloadDirectory { get; set; }
 
         #region IFileDownloader Members
 
         public async Task<FileInfo> DownloadFileAsync(IFileInformation fileInfo, IProgress<IDownloadProgress> progressReporter,
             CancellationToken cancellationToken)
         {
+            if (!Directory.Exists(DownloadDirectory))
+            {
+                Directory.CreateDirectory(DownloadDirectory);
+            }
+
             foreach (var uri in fileInfo.DownloadUris)
             {
                 progressReporter.Report(DefaultDownloadProgress.Connecting(uri));
@@ -200,7 +195,7 @@ namespace ModInstallation.Implementations
         [NotNull]
         private string GetFileOutputPath([NotNull] string filename)
         {
-            return Path.Combine(_downloadRoot, filename);
+            return Path.Combine(DownloadDirectory, filename);
         }
     }
 }

@@ -13,6 +13,9 @@ namespace ModInstallation.Interfaces
     public interface IPackageInstaller
     {
         [NotNull]
+        string InstallationDirectory { get; set; }
+
+        [NotNull]
         Task InstallPackageAsync([NotNull] IPackage package, [NotNull] IProgress<IInstallationProgress> progressReporter, CancellationToken token);
     }
 

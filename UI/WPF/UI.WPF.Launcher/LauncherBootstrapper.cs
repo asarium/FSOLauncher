@@ -11,6 +11,7 @@ using System.Windows;
 using System.Windows.Threading;
 using Caliburn.Micro;
 using ModInstallation.Interfaces;
+using ModInstallation.Windows.Implementations.Extractors;
 using Ookii.Dialogs.Wpf;
 using SDLGlue;
 using UI.WPF.Launcher.Common.Interfaces;
@@ -46,6 +47,7 @@ namespace UI.WPF.Launcher
             var batch = new CompositionBatch();
 
             batch.AddExportedValue<IEventAggregator>(new EventAggregator());
+            batch.AddExportedValue<IArchiveExtractor>(new SevenZipArchiveExtractor());
             batch.AddExportedValue(_container);
 
             _container.Compose(batch);

@@ -30,6 +30,9 @@ namespace ModInstallation.Interfaces
     public interface IFileDownloader
     {
         [NotNull]
+        string DownloadDirectory { get; set; }
+
+        [NotNull]
         Task<FileInfo> DownloadFileAsync([NotNull] IFileInformation package, [NotNull] IProgress<IDownloadProgress> progressReporter,
             CancellationToken cancellationToken);
     }
