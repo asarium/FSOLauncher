@@ -12,7 +12,7 @@ using Semver;
 
 namespace ModInstallation.Implementations.Mods
 {
-    public class DefaultModification : IModification
+    public class DefaultModification : PropertyChangeBase, IModification
     {
         #region IModification Members
 

@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 using ModInstallation.Annotations;
@@ -11,7 +12,7 @@ using ModInstallation.Interfaces.Mods;
 
 namespace ModInstallation.Interfaces
 {
-    public interface IModRepository
+    public interface IModRepository : INotifyPropertyChanged
     {
         [NotNull]
         string Name { get; }

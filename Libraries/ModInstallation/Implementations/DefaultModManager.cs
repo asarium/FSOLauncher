@@ -7,25 +7,19 @@ using System.Threading;
 using System.Threading.Tasks;
 using ModInstallation.Interfaces;
 using ModInstallation.Interfaces.Mods;
+using ModInstallation.Util;
 
 #endregion
 
 namespace ModInstallation.Implementations
 {
-    public class DefaultModManager : IModManager
+    public class DefaultModManager : PropertyChangeBase, IModManager
     {
         private readonly List<IModRepository> _repositories = new List<IModRepository>();
 
         #region IModManager Members
 
-        public IEnumerable<IModification> RemoteModifications
-        {
-            get
-            {
-                return
-                    _repositories.Where(modRepository => modRepository.Modifications != null).SelectMany(modRepository => modRepository.Modifications);
-            }
-        }
+        public IEnumerable<IModification> RemoteModifications { get; private set; }
 
         public IEnumerable<IModification> LocalModifications { get; private set; }
 
@@ -46,6 +40,11 @@ namespace ModInstallation.Implementations
 
                 await modRepository.RetrieveRepositoryInformationAsync(reporter, token);
             }
+
+            RemoteModifications =
+                _repositories.Where(modRepository => modRepository.Modifications != null)
+                    .SelectMany(modRepository => modRepository.Modifications)
+                    .ToList();
         }
 
         public void AddModRepository(IModRepository repo)

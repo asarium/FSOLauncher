@@ -1,6 +1,7 @@
 ﻿#region Usings
 
 using System.Collections.Generic;
+using System.ComponentModel;
 using ModInstallation.Annotations;
 using Semver;
 
@@ -8,7 +9,7 @@ using Semver;
 
 namespace ModInstallation.Interfaces.Mods
 {
-    public interface IModDependency
+    public interface IModDependency : INotifyPropertyChanged
     {
         [NotNull]
         IEnumerable<string> PackageNames { get; }

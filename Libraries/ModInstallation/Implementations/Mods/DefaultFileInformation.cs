@@ -5,12 +5,13 @@ using System.Collections.Generic;
 using ModInstallation.Annotations;
 using ModInstallation.Implementations.DataClasses;
 using ModInstallation.Interfaces.Mods;
+using ModInstallation.Util;
 
 #endregion
 
 namespace ModInstallation.Implementations.Mods
 {
-    public class DefaultFileInformation : IFileInformation
+    public class DefaultFileInformation : PropertyChangeBase, IFileInformation
     {
         #region IFileInformation Members
 

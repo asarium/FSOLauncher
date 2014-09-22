@@ -6,13 +6,14 @@ using System.Linq;
 using ModInstallation.Annotations;
 using ModInstallation.Implementations.DataClasses;
 using ModInstallation.Interfaces.Mods;
+using ModInstallation.Util;
 using Semver;
 
 #endregion
 
 namespace ModInstallation.Implementations.Mods
 {
-    public class DefaultModDependency : IModDependency
+    public class DefaultModDependency : PropertyChangeBase, IModDependency
     {
         private List<VersionConstraint> _versionConstraints;
 

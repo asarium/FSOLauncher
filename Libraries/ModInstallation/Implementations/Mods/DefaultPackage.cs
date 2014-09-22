@@ -6,12 +6,13 @@ using System.Linq;
 using ModInstallation.Annotations;
 using ModInstallation.Implementations.DataClasses;
 using ModInstallation.Interfaces.Mods;
+using ModInstallation.Util;
 
 #endregion
 
 namespace ModInstallation.Implementations.Mods
 {
-    public class DefaultPackage : IPackage
+    public class DefaultPackage : PropertyChangeBase, IPackage
     {
         #region IPackage Members
 

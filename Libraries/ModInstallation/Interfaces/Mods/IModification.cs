@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using ModInstallation.Annotations;
 using Semver;
 
 namespace ModInstallation.Interfaces.Mods
 {
-    public interface IModification
+    public interface IModification : INotifyPropertyChanged
     {
         [NotNull]
         string Title { get; }
