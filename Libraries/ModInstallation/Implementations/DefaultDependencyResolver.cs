@@ -208,14 +208,14 @@ namespace ModInstallation.Implementations
                 if (!modDependency.PackageNames.Any())
                 {
                     // If no packages were specified, depend on the required packages
-                    packages = matchedMod.Packages.Where(p => p.Status == PackageStatus.Required && p.EnvironmentSatisfied());
+                    packages = matchedMod.Packages.Where(p => p.Status == PackageStatus.Required);
                 }
                 else
                 {
                     var list = new List<IPackage>();
                     foreach (var packageName in dependency.PackageNames)
                     {
-                        var p = matchedMod.Packages.FirstOrDefault(pack => pack.Name == packageName && pack.EnvironmentSatisfied());
+                        var p = matchedMod.Packages.FirstOrDefault(pack => pack.Name == packageName);
 
                         if (p != null)
                         {
