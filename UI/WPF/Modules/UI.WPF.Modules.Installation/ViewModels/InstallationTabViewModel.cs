@@ -12,7 +12,6 @@ using Caliburn.Micro;
 using ModInstallation.Annotations;
 using ModInstallation.Implementations;
 using ModInstallation.Interfaces;
-using ModInstallation.Interfaces.Mods;
 using ReactiveUI;
 using UI.WPF.Launcher.Common.Interfaces;
 using UI.WPF.Launcher.Common.Services;
@@ -31,15 +30,6 @@ namespace UI.WPF.Modules.Installation.ViewModels
 
         private IEnumerable<ModViewModel> _modificationViewModels;
 
-        [NotNull]
-        public ICommand InstallModsCommand { get; private set; }
-
-        [NotNull,Import]
-        private IProfileManager ProfileManager { get; set; }
-
-        [NotNull,Import]
-        public IPackageInstaller PackageInstaller { get; private set; }
-
         [ImportingConstructor]
         public InstallationTabViewModel()
         {
@@ -54,31 +44,13 @@ namespace UI.WPF.Modules.Installation.ViewModels
         }
 
         [NotNull]
-        private async Task InstallMods()
-        {
-            if (ProfileManager.CurrentProfile == null)
-                return;
+        public ICommand InstallModsCommand { get; private set; }
 
-            if (ProfileManager.CurrentProfile.SelectedTotalConversion == null)
-                return;
+        [NotNull, Import]
+        private IProfileManager ProfileManager { get; set; }
 
-            PackageInstaller.InstallationDirectory = Path.Combine(ProfileManager.CurrentProfile.SelectedTotalConversion.RootFolder, "mods");
-
-            var packageViewModels = ModificationViewModels.SelectMany(mod => mod.Packages).Where(pack => pack.Selected);
-
-            await Task.WhenAll(InstallAllMods(packageViewModels, CancellationToken.None));
-        }
-
-        [NotNull]
-        private IEnumerable<Task> InstallAllMods([NotNull] IEnumerable<PackageViewModel> viewModels, CancellationToken token)
-        {
-            foreach (var packageViewModel in viewModels)
-            {
-                packageViewModel.Installing = true;
-
-                yield return PackageInstaller.InstallPackageAsync(packageViewModel.Package, packageViewModel.ProgressReporter, token);
-            }
-        }
+        [NotNull, Import]
+        public IPackageInstaller PackageInstaller { private get; set; }
 
         [NotNull, Import]
         public IDependencyResolver DependencyResolver { get; private set; }
@@ -132,6 +104,42 @@ namespace UI.WPF.Modules.Installation.ViewModels
 
         [NotNull, Import]
         private IInteractionService InteractionService { get; set; }
+
+        [NotNull]
+        private async Task InstallMods()
+        {
+            if (ProfileManager.CurrentProfile == null)
+            {
+                return;
+            }
+
+            if (ProfileManager.CurrentProfile.SelectedTotalConversion == null)
+            {
+                return;
+            }
+
+            PackageInstaller.InstallationDirectory = Path.Combine(ProfileManager.CurrentProfile.SelectedTotalConversion.RootFolder, "mods");
+
+            var packageViewModels = ModificationViewModels.SelectMany(mod => mod.Packages).Where(pack => pack.Selected);
+
+            var installTasks = InstallAllMods(packageViewModels, CancellationToken.None);
+
+            await Task.WhenAll(installTasks);
+        }
+
+        [NotNull]
+        private IEnumerable<Task> InstallAllMods([NotNull] IEnumerable<PackageViewModel> viewModels, CancellationToken token)
+        {
+            foreach (var packageViewModel in viewModels)
+            {
+                var model = packageViewModel;
+                model.Installing = true;
+
+                yield return
+                    PackageInstaller.InstallPackageAsync(model.Package, model.ProgressReporter, token)
+                        .ContinueWith(task => { model.Installing = false; }, token);
+            }
+        }
 
         private async void UpdateMods()
         {

@@ -64,9 +64,9 @@ namespace ModInstallation.Implementations
     {
         private const long BufferSize = 81920L;
 
-        public string DownloadDirectory { get; set; }
-
         #region IFileDownloader Members
+
+        public string DownloadDirectory { get; set; }
 
         public async Task<FileInfo> DownloadFileAsync(IFileInformation fileInfo, IProgress<IDownloadProgress> progressReporter,
             CancellationToken cancellationToken)
@@ -84,8 +84,8 @@ namespace ModInstallation.Implementations
                 {
                     var flurlClient = new FlurlClient(uri.AbsoluteUri);
                     using (
-                        var response = await flurlClient.HttpClient.GetAsync(uri.AbsoluteUri, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
-                        )
+                        var response =
+                            await flurlClient.HttpClient.GetAsync(uri.AbsoluteUri, HttpCompletionOption.ResponseHeadersRead, cancellationToken))
                     {
                         if (cancellationToken.IsCancellationRequested)
                         {
@@ -148,6 +148,7 @@ namespace ModInstallation.Implementations
                     stopwatch.Start();
 
                     int bytesRead;
+                    long lastReport = 0;
                     while ((bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, cancellationToken)) > 0)
                     {
                         await fileStream.WriteAsync(buffer, 0, bytesRead, cancellationToken);
@@ -157,12 +158,21 @@ namespace ModInstallation.Implementations
                             return outputFilePath;
                         }
 
-                        var elapsed = stopwatch.Elapsed.TotalSeconds;
-                        stopwatch.Restart();
-
                         currentPosition += bytesRead;
 
-                        progressReporter.Report(DefaultDownloadProgress.Downloading(uri, currentPosition, total, bytesRead / elapsed));
+                        var elapsed = stopwatch.Elapsed.TotalSeconds;
+
+                        if (!(elapsed > 0.1))
+                        {
+                            continue;
+                        }
+
+                        stopwatch.Restart();
+
+                        progressReporter.Report(DefaultDownloadProgress.Downloading(uri, currentPosition, total,
+                            (currentPosition - lastReport) / elapsed));
+
+                        lastReport = currentPosition;
                     }
                 }
             }
