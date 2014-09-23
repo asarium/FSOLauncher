@@ -51,7 +51,7 @@ namespace ModInstallation.Tests.Implementations.Util
 
             Assert.NotNull(testProgress);
             Assert.NotNull(testProgress.Message);
-            Assert.AreEqual("0 B of 1,0 MB (175 B/s) 1:39:51 remaining", testProgress.Message);
+            Assert.AreEqual("0 B of 1,0 MB (50 B/s) 5:49:31 remaining", testProgress.Message);
             Assert.AreEqual(0.0, testProgress.OverallProgress, 0.001);
             Assert.AreEqual(0.0, testProgress.SubProgress, 0.001);
             
@@ -59,7 +59,7 @@ namespace ModInstallation.Tests.Implementations.Util
 
             Assert.NotNull(testProgress);
             Assert.NotNull(testProgress.Message);
-            Assert.AreEqual("524,3 kB of 1,0 MB (1,5 kB/s) 6:00 remaining", testProgress.Message);
+            Assert.AreEqual("524,3 kB of 1,0 MB (440 B/s) 19:51 remaining", testProgress.Message);
             Assert.AreEqual(0.4, testProgress.OverallProgress, 0.001);
             Assert.AreEqual(0.5, testProgress.SubProgress, 0.001);
         }
