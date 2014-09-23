@@ -45,6 +45,8 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
                     TokenSource.Cancel();
                 }
             });
+
+            CancelCommand = cancelCommand;
         }
 
         [CanBeNull]
