@@ -122,6 +122,8 @@ namespace ModInstallation.Implementations
             var installationDirectory = Path.Combine(InstallationDirectory, package.ContainingModification.Id,
                 package.ContainingModification.Version.ToString());
 
+            token.ThrowIfCancellationRequested();
+
             if (_extractor.IsArchive(downloadedFile.FullName))
             {
                 await

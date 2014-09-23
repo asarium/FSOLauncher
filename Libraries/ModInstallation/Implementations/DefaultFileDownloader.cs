@@ -47,10 +47,7 @@ namespace ModInstallation.Implementations
                 {
                     using (var response = await WebClient.GetAsync(uri, cancellationToken))
                     {
-                        if (cancellationToken.IsCancellationRequested)
-                        {
-                            return null;
-                        }
+                        cancellationToken.ThrowIfCancellationRequested();
 
                         var intStatus = (int) response.StatusCode;
                         if (intStatus < 200 || intStatus >= 300)
@@ -60,13 +57,28 @@ namespace ModInstallation.Implementations
                         }
 
                         var outputFilePath = await DownloadFile(progressReporter, cancellationToken, response, uri);
+                        if (outputFilePath == null)
+                        {
+                            return null;
+                        }
 
                         if (fileInfo.FileVerifiers == null)
                         {
                             return new FileInfo(outputFilePath);
                         }
 
-                        await VerifyDownloadedFile(fileInfo, progressReporter, cancellationToken, outputFilePath);
+                        try
+                        {
+                            await VerifyDownloadedFile(fileInfo, progressReporter, cancellationToken, outputFilePath);
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            if (File.Exists(outputFilePath))
+                            {
+                                File.Delete(outputFilePath);
+                            }
+                            throw;
+                        }
 
                         return new FileInfo(outputFilePath);
                     }
@@ -97,47 +109,53 @@ namespace ModInstallation.Implementations
 
             Directory.CreateDirectory(Path.GetDirectoryName(outputFilePath));
 
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return outputFilePath;
-            }
+            cancellationToken.ThrowIfCancellationRequested();
 
-            using (var fileStream = File.Open(outputFilePath, FileMode.Create, FileAccess.Write))
+            try
             {
-                using (var stream = await response.OpenStreamAsync())
+                using (var fileStream = File.Open(outputFilePath, FileMode.Create, FileAccess.Write))
                 {
-                    var stopwatch = new Stopwatch();
-                    stopwatch.Start();
-
-                    int bytesRead;
-                    long lastReport = 0;
-                    while ((bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, cancellationToken)) > 0)
+                    using (var stream = await response.OpenStreamAsync())
                     {
-                        await fileStream.WriteAsync(buffer, 0, bytesRead, cancellationToken);
+                        var stopwatch = new Stopwatch();
+                        stopwatch.Start();
 
-                        if (cancellationToken.IsCancellationRequested)
+                        int bytesRead;
+                        long lastReport = 0;
+                        while ((bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, cancellationToken)) > 0)
                         {
-                            return outputFilePath;
+                            await fileStream.WriteAsync(buffer, 0, bytesRead, cancellationToken);
+
+                            cancellationToken.ThrowIfCancellationRequested();
+
+                            currentPosition += bytesRead;
+
+                            var elapsed = stopwatch.Elapsed.TotalSeconds;
+
+                            // Only update 10 times per second
+                            if (elapsed < 0.1)
+                            {
+                                continue;
+                            }
+
+                            stopwatch.Restart();
+
+                            progressReporter.Report(DefaultDownloadProgress.Downloading(uri, currentPosition, total,
+                                (currentPosition - lastReport) / elapsed));
+
+                            lastReport = currentPosition;
                         }
-
-                        currentPosition += bytesRead;
-
-                        var elapsed = stopwatch.Elapsed.TotalSeconds;
-
-                        // Only update 10 times per second
-                        if (elapsed < 0.1)
-                        {
-                            continue;
-                        }
-
-                        stopwatch.Restart();
-
-                        progressReporter.Report(DefaultDownloadProgress.Downloading(uri, currentPosition, total,
-                            (currentPosition - lastReport) / elapsed));
-
-                        lastReport = currentPosition;
                     }
                 }
+            }
+            catch (OperationCanceledException)
+            {
+                if (File.Exists(outputFilePath))
+                {
+                    File.Delete(outputFilePath); // Delete the downloaded file
+                }
+
+                throw;
             }
 
             return outputFilePath;
@@ -153,6 +171,8 @@ namespace ModInstallation.Implementations
             var completed = 0;
             foreach (var verifier in fileInfo.FileVerifiers)
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 var verificationHandler =
                     new Progress<double>(p => progressReporter.Report(DefaultDownloadProgress.Verify(completed * verifierCountInv + p)));
 
