@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Threading;
+using Akavache;
 using Caliburn.Micro;
 using ModInstallation.Interfaces;
 using ModInstallation.Windows.Implementations.Extractors;
@@ -158,6 +159,9 @@ namespace UI.WPF.Launcher
 
             timer.Start();
 
+            BlobCache.EnsureInitialized();
+            BlobCache.ApplicationName = "FSOLauncher";
+
             DisplayRootViewFor<IShellViewModel>();
         }
 
@@ -168,6 +172,8 @@ namespace UI.WPF.Launcher
 
         protected override void OnExit(object sender, EventArgs e)
         {
+            BlobCache.Shutdown().Wait();
+
             Settings.Default.Save();
 
             SDLVideo.Quit();
