@@ -32,15 +32,8 @@ namespace ModInstallation.Implementations
             foreach (var modRepository in _repositories)
             {
                 progressReporter.Report(string.Format("Retrieving information from repository '{0}'.", modRepository.Name));
-
-                var repository = modRepository;
-
-                var reporter =
-                    new Progress<string>(
-                        message =>
-                            progressReporter.Report(string.Format("Retrieving information from repository '{0}': {1}", repository.Name, message)));
-
-                await modRepository.RetrieveRepositoryInformationAsync(reporter, token);
+                
+                await modRepository.RetrieveRepositoryInformationAsync(progressReporter, token);
             }
 
             RemoteModifications =
