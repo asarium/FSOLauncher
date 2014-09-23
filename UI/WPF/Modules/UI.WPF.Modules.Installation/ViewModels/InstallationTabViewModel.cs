@@ -122,23 +122,9 @@ namespace UI.WPF.Modules.Installation.ViewModels
 
             var packageViewModels = ModificationViewModels.SelectMany(mod => mod.Packages).Where(pack => pack.Selected);
 
-            var installTasks = InstallAllMods(packageViewModels, CancellationToken.None);
+            var installTasks = packageViewModels.Select(packageViewModel => packageViewModel.Install(PackageInstaller));
 
             await Task.WhenAll(installTasks);
-        }
-
-        [NotNull]
-        private IEnumerable<Task> InstallAllMods([NotNull] IEnumerable<PackageViewModel> viewModels, CancellationToken token)
-        {
-            foreach (var packageViewModel in viewModels)
-            {
-                var model = packageViewModel;
-                model.Installing = true;
-
-                yield return
-                    PackageInstaller.InstallPackageAsync(model.Package, model.ProgressReporter, token)
-                        .ContinueWith(task => { model.Installing = false; }, token);
-            }
         }
 
         private async void UpdateMods()

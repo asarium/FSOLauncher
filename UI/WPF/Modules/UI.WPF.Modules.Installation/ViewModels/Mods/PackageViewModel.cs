@@ -3,6 +3,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Input;
 using ModInstallation.Annotations;
 using ModInstallation.Interfaces;
 using ModInstallation.Interfaces.Mods;
@@ -19,11 +22,11 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
 
         private bool _installing;
 
-        private bool _selected;
-
         private string _operationMessage;
 
         private double _operationProgress;
+
+        private bool _selected;
 
         public PackageViewModel([NotNull] IPackage package, [NotNull] InstallationTabViewModel installationTabViewModel)
         {
@@ -33,6 +36,15 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
             ProgressReporter = new Progress<IInstallationProgress>(ProgressHandler);
 
             this.WhenAnyValue(x => x.Selected).Subscribe(SelectedChanged);
+
+            var cancelCommand = ReactiveCommand.Create(this.WhenAnyValue(x => x.Installing));
+            cancelCommand.Subscribe(_ =>
+            {
+                if (TokenSource != null)
+                {
+                    TokenSource.Cancel();
+                }
+            });
         }
 
         [CanBeNull]
@@ -47,6 +59,12 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
             get { return _operationProgress; }
             private set { RaiseAndSetIfPropertyChanged(ref _operationProgress, value); }
         }
+
+        [NotNull]
+        public ICommand CancelCommand { get; private set; }
+
+        [CanBeNull]
+        public CancellationTokenSource TokenSource { get; private set; }
 
         [NotNull]
         public IPackage Package { get; private set; }
@@ -70,6 +88,35 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
         {
             OperationMessage = installationProgress.Message;
             OperationProgress = installationProgress.OverallProgress;
+        }
+
+        [NotNull]
+        public async Task Install([NotNull] IPackageInstaller installer)
+        {
+            if (Installing)
+            {
+                return;
+            }
+
+            if (TokenSource != null)
+            {
+                TokenSource.Dispose();
+            }
+
+            TokenSource = new CancellationTokenSource();
+
+            Installing = true;
+            try
+            {
+                await installer.InstallPackageAsync(Package, ProgressReporter, TokenSource.Token);
+            }
+            catch (OperationCanceledException)
+            {
+            }
+            finally
+            {
+                Installing = false;
+            }
         }
 
         private void SelectedChanged(bool selected)
