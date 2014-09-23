@@ -1,27 +1,44 @@
-﻿using System;
-using System.ComponentModel.Composition;
+﻿#region Usings
+
+using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Flurl.Http;
 using ModInstallation.Annotations;
-using ModInstallation.Interfaces;
+using ModInstallation.Interfaces.Net;
+
+#endregion
 
 namespace ModInstallation.Implementations
 {
-    [Export(typeof(IModRepository))]
     public class WebJsonRepository : AbstractJsonRepository
     {
-        private readonly string _location;
+        private readonly Uri _location;
 
-        public WebJsonRepository([NotNull] string name, [NotNull] string location) : base(name)
+        public WebJsonRepository([NotNull] string location) : base(location)
         {
-            _location = location;
+            if (!Uri.TryCreate(location, UriKind.Absolute, out _location))
+            {
+                throw new ArgumentException(string.Format("Invalid URL: {0}", location));
+            }
         }
 
-        protected override Task<string> GetRepositoryJsonAsync(IProgress<string> reporter, CancellationToken token)
+        [NotNull]
+        public IWebClient WebClient { private get; set; }
+
+        protected override async Task<string> GetRepositoryJsonAsync(IProgress<string> reporter, CancellationToken token)
         {
             reporter.Report(string.Format("Retrieving information from " + _location));
-            return _location.GetStringAsync();
+            using (var response = await WebClient.GetAsync(_location, token, TimeSpan.FromHours(3)))
+            {
+                using (var stream = await response.OpenStreamAsync())
+                {
+                    using (var reader = new StreamReader(stream))
+                    {
+                        return await reader.ReadToEndAsync();
+                    }
+                }
+            }
         }
     }
 }

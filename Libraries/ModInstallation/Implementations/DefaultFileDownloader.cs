@@ -8,61 +8,24 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Flurl.Http;
 using ModInstallation.Annotations;
 using ModInstallation.Exceptions;
+using ModInstallation.Implementations.Util;
 using ModInstallation.Interfaces;
 using ModInstallation.Interfaces.Mods;
+using ModInstallation.Interfaces.Net;
 
 #endregion
 
 namespace ModInstallation.Implementations
 {
-    public class DefaultDownloadProgress : IDownloadProgress
-    {
-        private DefaultDownloadProgress()
-        {
-        }
-
-        #region IDownloadProgress Members
-
-        public Uri CurrentUri { get; private set; }
-
-        public long CurrentBytes { get; private set; }
-
-        public long TotalBytes { get; private set; }
-
-        public double Speed { get; private set; }
-
-        public bool VerifyingFile { get; private set; }
-
-        public double VerificationProgress { get; private set; }
-
-        #endregion
-
-        [NotNull]
-        public static DefaultDownloadProgress Connecting([NotNull] Uri uri)
-        {
-            return new DefaultDownloadProgress {CurrentUri = uri, TotalBytes = -1};
-        }
-
-        [NotNull]
-        public static DefaultDownloadProgress Downloading([NotNull] Uri uri, long current, long total, double speed)
-        {
-            return new DefaultDownloadProgress {CurrentUri = uri, TotalBytes = total, CurrentBytes = current, Speed = speed};
-        }
-
-        [NotNull]
-        public static DefaultDownloadProgress Verify(double progress)
-        {
-            return new DefaultDownloadProgress {VerifyingFile = true, VerificationProgress = progress};
-        }
-    }
-
     [Export(typeof(IFileDownloader))]
     public class DefaultFileDownloader : IFileDownloader
     {
         private const long BufferSize = 81920L;
+
+        [NotNull, Import]
+        public IWebClient WebClient { private get; set; }
 
         #region IFileDownloader Members
 
@@ -82,18 +45,17 @@ namespace ModInstallation.Implementations
 
                 try
                 {
-                    var flurlClient = new FlurlClient(uri.AbsoluteUri);
-                    using (
-                        var response =
-                            await flurlClient.HttpClient.GetAsync(uri.AbsoluteUri, HttpCompletionOption.ResponseHeadersRead, cancellationToken))
+                    using (var response = await WebClient.GetAsync(uri, cancellationToken))
                     {
                         if (cancellationToken.IsCancellationRequested)
                         {
                             return null;
                         }
 
-                        if (!response.IsSuccessStatusCode)
+                        var intStatus = (int) response.StatusCode;
+                        if (intStatus < 200 || intStatus >= 300)
                         {
+                            // Not successfull
                             continue;
                         }
 
@@ -122,10 +84,10 @@ namespace ModInstallation.Implementations
 
         [NotNull]
         private async Task<string> DownloadFile([NotNull] IProgress<IDownloadProgress> progressReporter, CancellationToken cancellationToken,
-            [NotNull] HttpResponseMessage response, [NotNull] Uri uri)
+            [NotNull] IResponse response, [NotNull] Uri uri)
         {
             var buffer = new byte[BufferSize];
-            var length = response.Content.Headers.ContentLength;
+            var length = response.Length;
 
             var currentPosition = 0L;
             var total = length.HasValue ? length.Value : 0;
@@ -142,7 +104,7 @@ namespace ModInstallation.Implementations
 
             using (var fileStream = File.Open(outputFilePath, FileMode.Create, FileAccess.Write))
             {
-                using (var stream = await response.Content.ReadAsStreamAsync())
+                using (var stream = await response.OpenStreamAsync())
                 {
                     var stopwatch = new Stopwatch();
                     stopwatch.Start();
@@ -162,7 +124,8 @@ namespace ModInstallation.Implementations
 
                         var elapsed = stopwatch.Elapsed.TotalSeconds;
 
-                        if (!(elapsed > 0.1))
+                        // Only update 10 times per second
+                        if (elapsed < 0.1)
                         {
                             continue;
                         }

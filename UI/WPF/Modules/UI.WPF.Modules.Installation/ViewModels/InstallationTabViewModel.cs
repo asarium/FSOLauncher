@@ -31,12 +31,12 @@ namespace UI.WPF.Modules.Installation.ViewModels
         private IEnumerable<ModViewModel> _modificationViewModels;
 
         [ImportingConstructor]
-        public InstallationTabViewModel()
+        public InstallationTabViewModel([NotNull] IRepositoryFactory repositoryFactory)
         {
             DisplayName = "Update/Install mods";
 
             ModManager = new DefaultModManager();
-            ModManager.AddModRepository(new WebJsonRepository("Default", "http://dev.tproxy.de/fs2/all.json"));
+            ModManager.AddModRepository(repositoryFactory.ConstructRepository("http://dev.tproxy.de/fs2/all.json"));
 
             InstallModsCommand = ReactiveCommand.CreateAsyncTask(_ => InstallMods());
 

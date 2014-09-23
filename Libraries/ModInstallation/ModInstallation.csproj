@@ -30,12 +30,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Flurl">
-      <HintPath>..\..\packages\Flurl.1.0.2\lib\portable-net40+sl50+win+wpa81+wp80+MonoAndroid10+MonoTouch10\Flurl.dll</HintPath>
-    </Reference>
-    <Reference Include="Flurl.Http">
-      <HintPath>..\..\packages\Flurl.Http.0.2.4\lib\net45\Flurl.Http.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Newtonsoft.Json.6.0.5\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -82,14 +76,19 @@
     <Compile Include="Implementations\Mods\MD5FileVerifier.cs" />
     <Compile Include="Implementations\Mods\OsEnvironmentConstraint.cs" />
     <Compile Include="Implementations\Mods\VersionConstraint.cs" />
+    <Compile Include="Implementations\Net\HttpResponse.cs" />
+    <Compile Include="Implementations\Net\HttpWebClient.cs" />
+    <Compile Include="Implementations\Util\DefaultDownloadProgress.cs" />
     <Compile Include="Implementations\Util\DownloadProgressTranslator.cs" />
     <Compile Include="Implementations\Util\ExtractionProgressTranslator.cs" />
     <Compile Include="Implementations\Util\InstallationProgress.cs" />
     <Compile Include="Implementations\WebJsonRepository.cs" />
+    <Compile Include="Implementations\WebRepositoryFactory.cs" />
     <Compile Include="Interfaces\IArchiveExtractor.cs" />
     <Compile Include="Interfaces\IDependencyResolver.cs" />
     <Compile Include="Interfaces\IFileDownloader.cs" />
     <Compile Include="Interfaces\IPackageInstaller.cs" />
+    <Compile Include="Interfaces\IRepositoryFactory.cs" />
     <Compile Include="Interfaces\Mods\IEnvironmentConstraint.cs" />
     <Compile Include="Interfaces\Mods\IErrorHandler.cs" />
     <Compile Include="Interfaces\Mods\IFileInformation.cs" />
@@ -99,6 +98,8 @@
     <Compile Include="Interfaces\IModManager.cs" />
     <Compile Include="Interfaces\IModRepository.cs" />
     <Compile Include="Interfaces\Mods\IPackage.cs" />
+    <Compile Include="Interfaces\Net\IResponse.cs" />
+    <Compile Include="Interfaces\Net\IWebClient.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\Extensions.cs" />
@@ -114,6 +115,7 @@
       <Name>SDLGlue</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

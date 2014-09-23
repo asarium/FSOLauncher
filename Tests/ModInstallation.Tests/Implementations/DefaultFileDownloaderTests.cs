@@ -4,14 +4,15 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Flurl.Http.Testing;
 using ModInstallation.Annotations;
 using ModInstallation.Exceptions;
 using ModInstallation.Implementations;
 using ModInstallation.Interfaces;
 using ModInstallation.Interfaces.Mods;
+using ModInstallation.Tests.TestClasses;
 using ModInstallation.Tests.Util;
 using Moq;
 using NUnit.Framework;
@@ -57,14 +58,14 @@ namespace ModInstallation.Tests.Implementations
                 DownloadDirectory = Path.Combine(TestContext.CurrentContext.WorkDirectory, TestContext.CurrentContext.Test.FullName)
             };
 
-            using (var httpTest = new HttpTest())
-            {
-                httpTest.RespondWith(200, "TestContent");
+            var testClient = new TestWebClient();
+            instance.WebClient = testClient;
 
-                var outFile = await instance.DownloadFileAsync(fileInfoMock.Object, progressMock.Object, CancellationToken.None);
+            testClient.RespondWith(HttpStatusCode.OK, "TestContent");
 
-                await AssertEx.FileContent(outFile.FullName, "TestContent");
-            }
+            var outFile = await instance.DownloadFileAsync(fileInfoMock.Object, progressMock.Object, CancellationToken.None);
+
+            await AssertEx.FileContent(outFile.FullName, "TestContent");
 
             // Verify that the connection status was fired
             progressMock.Verify(x => x.Report(It.Is<IDownloadProgress>(val => val.TotalBytes < 0)), Times.Once);
@@ -86,14 +87,14 @@ namespace ModInstallation.Tests.Implementations
                 DownloadDirectory = Path.Combine(TestContext.CurrentContext.WorkDirectory, TestContext.CurrentContext.Test.FullName)
             };
 
-            using (var httpTest = new HttpTest())
-            {
-                httpTest.RespondWith(404, "Not found!").RespondWith(200, "TestContent");
+            var testClient = new TestWebClient();
+            instance.WebClient = testClient;
 
-                var outFile = await instance.DownloadFileAsync(fileInfoMock.Object, progressMock.Object, CancellationToken.None);
+            testClient.RespondWith(404, "Not found!").RespondWith(200, "TestContent");
 
-                await AssertEx.FileContent(outFile.FullName, "TestContent");
-            }
+            var outFile = await instance.DownloadFileAsync(fileInfoMock.Object, progressMock.Object, CancellationToken.None);
+
+            await AssertEx.FileContent(outFile.FullName, "TestContent");
 
             // Verify that the connection status was fired
             progressMock.Verify(x => x.Report(It.Is<IDownloadProgress>(val => val.TotalBytes < 0)), Times.Exactly(2));
@@ -115,14 +116,14 @@ namespace ModInstallation.Tests.Implementations
                 DownloadDirectory = Path.Combine(TestContext.CurrentContext.WorkDirectory, TestContext.CurrentContext.Test.FullName)
             };
 
-            using (var httpTest = new HttpTest())
-            {
-                httpTest.SimulateTimeout().SimulateTimeout();
+            var testClient = new TestWebClient();
+            instance.WebClient = testClient;
 
-                await
-                    AssertEx.ThrowsAsync<InvalidOperationException>(
-                        async () => await instance.DownloadFileAsync(fileInfoMock.Object, progressMock.Object, CancellationToken.None));
-            }
+            testClient.SimulateTimeout().SimulateTimeout();
+
+            await
+                AssertEx.ThrowsAsync<InvalidOperationException>(
+                    async () => await instance.DownloadFileAsync(fileInfoMock.Object, progressMock.Object, CancellationToken.None));
 
             // Verify that the connection status was fired
             progressMock.Verify(x => x.Report(It.Is<IDownloadProgress>(val => val.TotalBytes < 0)), Times.Exactly(2));
@@ -146,14 +147,14 @@ namespace ModInstallation.Tests.Implementations
                 DownloadDirectory = Path.Combine(TestContext.CurrentContext.WorkDirectory, TestContext.CurrentContext.Test.FullName)
             };
 
-            using (var httpTest = new HttpTest())
-            {
-                httpTest.RespondWith(200, "TestContent");
+            var testClient = new TestWebClient();
+            instance.WebClient = testClient;
 
-                await
-                    AssertEx.ThrowsAsync<FileVerificationFailedException>(
-                        () => instance.DownloadFileAsync(fileInfoMock.Object, progressMock.Object, CancellationToken.None));
-            }
+            testClient.RespondWith(200, "TestContent");
+
+            await
+                AssertEx.ThrowsAsync<FileVerificationFailedException>(
+                    () => instance.DownloadFileAsync(fileInfoMock.Object, progressMock.Object, CancellationToken.None));
 
             // Verify that the connection status was fired
             progressMock.Verify(x => x.Report(It.Is<IDownloadProgress>(val => val.TotalBytes < 0)), Times.Once);
@@ -180,14 +181,15 @@ namespace ModInstallation.Tests.Implementations
                 DownloadDirectory = Path.Combine(TestContext.CurrentContext.WorkDirectory, TestContext.CurrentContext.Test.FullName)
             };
 
-            using (var httpTest = new HttpTest())
-            {
-                httpTest.RespondWith(200, "TestContent");
+            var testClient = new TestWebClient();
+            instance.WebClient = testClient;
 
-                var outFile = await instance.DownloadFileAsync(fileInfoMock.Object, progressMock.Object, CancellationToken.None);
+            testClient.RespondWith(200, "TestContent");
 
-                await AssertEx.FileContent(outFile.FullName, "TestContent");
-            }
+            var outFile = await instance.DownloadFileAsync(fileInfoMock.Object, progressMock.Object, CancellationToken.None);
+
+            await AssertEx.FileContent(outFile.FullName, "TestContent");
+
 
             // Verify that the connection status was fired
             progressMock.Verify(x => x.Report(It.Is<IDownloadProgress>(val => val.TotalBytes < 0)), Times.Once);
