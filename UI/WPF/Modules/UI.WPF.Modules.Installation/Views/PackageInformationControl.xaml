@@ -5,7 +5,8 @@
              xmlns:mods="clr-namespace:UI.WPF.Modules.Installation.ViewModels.Mods"
              xmlns:Custom="http://metro.mahapps.com/winfx/xaml/controls"
              x:Class="UI.WPF.Modules.Installation.Views.PackageInformationControl" mc:Ignorable="d"
-             d:DataContext="{d:DesignInstance {x:Type mods:PackageViewModel}}" d:DesignHeight="300" d:DesignWidth="300">
+             d:DataContext="{d:DesignData /SampleData/PackageInstallation.xaml}" d:DesignHeight="300"
+             d:DesignWidth="300">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </UserControl.Resources>
@@ -24,14 +25,30 @@
         <Grid Grid.Row="1" Margin="2,2,2,2"
               Visibility="{Binding Installing, Converter={StaticResource BooleanToVisibilityConverter}}"
               Grid.ColumnSpan="2" Grid.Column="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top"
+            <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Center"
                        Text="{Binding OperationMessage}" />
-            <Custom:MetroProgressBar VerticalAlignment="Center" BorderThickness="0,2" Height="10" Grid.Row="1"
-                                     Minimum="0.0" Maximum="1.0" Value="{Binding OperationProgress}" />
+            <Custom:MetroProgressBar VerticalAlignment="Center" BorderThickness="0,2" Height="Auto" Grid.Row="1"
+                                     Minimum="0.0" Maximum="1.0" Value="{Binding OperationProgress}" Grid.Column="0" />
+
+            <Button HorizontalAlignment="Left" Margin="3" Grid.Row="0" Grid.Column="1"
+                    Command="{Binding CancelCommand}" ToolTip="Cancel installation" Grid.RowSpan="2"
+                    VerticalAlignment="Center" Width="40" Style="{DynamicResource MetroCircleButtonStyle}" Height="40">
+                <Rectangle
+                    Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"
+                    HorizontalAlignment="Left" Height="18" Width="18">
+                    <Rectangle.OpacityMask>
+                        <VisualBrush Stretch="Fill" Visual="{DynamicResource appbar_cancel}" />
+                    </Rectangle.OpacityMask>
+                </Rectangle>
+            </Button>
         </Grid>
     </Grid>
 </UserControl>
