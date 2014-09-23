@@ -7,7 +7,7 @@ namespace ModInstallation.Implementations.Util
 {
     public class DownloadProgressTranslator : IProgress<IDownloadProgress>
     {
-        private const double SmoothingFactor = 0.2;
+        private const double SmoothingFactor = 0.05;
 
         private readonly IProgress<IInstallationProgress> _outputProgress;
 
