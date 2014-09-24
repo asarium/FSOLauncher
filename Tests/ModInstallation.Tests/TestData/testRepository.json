@@ -11,11 +11,11 @@
                "notes" : "Windows builds for FreeSpace 2 Open, compiled with SSE optimizations.",
                "environment" : [
                   {
-                     "os" : "windows",
+                     "value" : "windows",
                      "type" : "os"
                   },
                   {
-                     "feature" : "sse",
+                     "value" : "sse",
                      "type" : "cpu_feature"
                   }
                ],
@@ -63,12 +63,12 @@
                "dependencies" : [],
                "environment" : [
                   {
-                     "os" : "windows",
+                     "value" : "windows",
                      "type" : "os"
                   },
                   {
                      "type" : "cpu_feature",
-                     "feature" : "sse2"
+                     "value" : "sse2"
                   }
                ],
                "name" : "Windows SSE2",
@@ -132,7 +132,7 @@
                "environment" : [
                   {
                      "type" : "os",
-                     "os" : "linux"
+                     "value" : "linux"
                   }
                ]
             },

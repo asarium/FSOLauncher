@@ -15,10 +15,10 @@ namespace ModInstallation.Tests.Implementations.Mods
         public void TestGetEnvironmentContraint()
         {
             Assert.IsInstanceOf<CpuFeatureEnvironmentConstraint>(
-                DefaultPackage.GetEnvironmentContraint(new EnvironmentConstraint() {type = EnvironmentType.Cpu_feature, feature = FeatureType.AVX}));
+                DefaultPackage.GetEnvironmentContraint(new EnvironmentConstraint() {type = EnvironmentType.Cpu_feature, value = ValueTypes.AVX}));
 
             Assert.IsInstanceOf<OsEnvironmentConstraint>(
-                DefaultPackage.GetEnvironmentContraint(new EnvironmentConstraint() {type = EnvironmentType.Os, os = OsType.Macos}));
+                DefaultPackage.GetEnvironmentContraint(new EnvironmentConstraint() { type = EnvironmentType.Os, value = ValueTypes.Macos }));
         }
     }
 }

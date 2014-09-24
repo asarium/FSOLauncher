@@ -60,11 +60,43 @@ namespace ModInstallation.Implementations.Mods
             switch (env.type)
             {
                 case EnvironmentType.Cpu_feature:
-                    return new CpuFeatureEnvironmentConstraint(env.feature);
+                    return new CpuFeatureEnvironmentConstraint(GetFeatureType(env.value));
                 case EnvironmentType.Os:
-                    return new OsEnvironmentConstraint(env.os);
+                    return new OsEnvironmentConstraint(GetOsType(env.value));
                 default:
                     throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private static FeatureType GetFeatureType(ValueTypes value)
+        {
+            switch (value)
+            {
+                case ValueTypes.None:
+                    return FeatureType.None;
+                case ValueTypes.SSE:
+                    return FeatureType.SSE;
+                case ValueTypes.SSE2:
+                    return FeatureType.SSE2;
+                case ValueTypes.AVX:
+                    return FeatureType.AVX;
+                default:
+                    throw new ArgumentOutOfRangeException("value");
+            }
+        }
+
+        private static OsType GetOsType(ValueTypes value)
+        {
+            switch (value)
+            {
+                case ValueTypes.Windows:
+                    return OsType.Windows;
+                case ValueTypes.Linux:
+                    return OsType.Linux;
+                case ValueTypes.Macos:
+                    return OsType.Macos;
+                default:
+                    throw new ArgumentOutOfRangeException("value");
             }
         }
     }
