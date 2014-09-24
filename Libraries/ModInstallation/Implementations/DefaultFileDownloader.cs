@@ -65,6 +65,8 @@ namespace ModInstallation.Implementations
 
             await _downloadSemaphore.WaitAsync(cancellationToken);
 
+            cancellationToken.ThrowIfCancellationRequested();
+
             try
             {
                 if (!Directory.Exists(DownloadDirectory))
