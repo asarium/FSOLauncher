@@ -137,7 +137,20 @@ namespace ModInstallation.Implementations
                     Directory.CreateDirectory(downloadedFile.DirectoryName);
                 }
 
-                File.Move(downloadedFile.FullName, Path.Combine(installationDirectory, downloadedFile.Name));
+                try
+                {
+                    var fileName = Path.Combine(installationDirectory, downloadedFile.Name);
+                    if (File.Exists(fileName))
+                    {
+                        File.Delete(fileName);
+                    }
+                    File.Move(downloadedFile.FullName, fileName);
+                }
+                catch (IOException)
+                {
+                    // Make sure not to crash the application if this fails
+                    //TODO: Add some logging here
+                }
             }
         }
     }
