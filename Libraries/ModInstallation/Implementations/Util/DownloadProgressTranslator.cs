@@ -26,6 +26,17 @@ namespace ModInstallation.Implementations.Util
             const double downloadProgressPart = 0.8;
             const double verifyingProgressPart = 1 - downloadProgressPart;
 
+            if (value.WaitingForSlot)
+            {
+                _outputProgress.Report(new DefaultInstallationProgress
+                {
+                    Message = "Waiting for download slot...",
+                    OverallProgress = 0.0,
+                    SubProgress = -1.0f
+                });
+                return;
+            }
+
             if (value.VerifyingFile)
             {
                 _outputProgress.Report(new DefaultInstallationProgress

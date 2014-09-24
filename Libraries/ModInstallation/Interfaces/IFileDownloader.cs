@@ -25,12 +25,16 @@ namespace ModInstallation.Interfaces
         bool VerifyingFile { get; }
 
         double VerificationProgress { get; }
+
+        bool WaitingForSlot { get; }
     }
 
     public interface IFileDownloader
     {
         [NotNull]
         string DownloadDirectory { get; set; }
+
+        int MaxConcurrentDownloads { get; set; }
 
         [NotNull]
         Task<FileInfo> DownloadFileAsync([NotNull] IFileInformation package, [NotNull] IProgress<IDownloadProgress> progressReporter,

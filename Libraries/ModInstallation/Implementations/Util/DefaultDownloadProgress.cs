@@ -1,6 +1,10 @@
+#region Usings
+
 using System;
 using ModInstallation.Annotations;
 using ModInstallation.Interfaces;
+
+#endregion
 
 namespace ModInstallation.Implementations.Util
 {
@@ -24,12 +28,20 @@ namespace ModInstallation.Implementations.Util
 
         public double VerificationProgress { get; private set; }
 
+        public bool WaitingForSlot { get; private set; }
+
         #endregion
 
         [NotNull]
         public static DefaultDownloadProgress Connecting([NotNull] Uri uri)
         {
             return new DefaultDownloadProgress {CurrentUri = uri, TotalBytes = -1};
+        }
+
+        [NotNull]
+        public static DefaultDownloadProgress Waiting()
+        {
+            return new DefaultDownloadProgress {WaitingForSlot = true};
         }
 
         [NotNull]

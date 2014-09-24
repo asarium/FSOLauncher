@@ -34,6 +34,23 @@ namespace ModInstallation.Tests.Implementations.Util
             Assert.AreEqual(0.0, testProgress.OverallProgress, 0.001);
             Assert.AreEqual(-1.0, testProgress.SubProgress, 0.001);
         }
+        [Test]
+        public void TestReportWaiting()
+        {
+            IInstallationProgress testProgress = null;
+
+            var mainProgressMock = new Mock<IProgress<IInstallationProgress>>();
+            mainProgressMock.Setup(x => x.Report(It.IsAny<IInstallationProgress>())).Callback((IInstallationProgress p) => testProgress = p);
+
+            var testInstance = new DownloadProgressTranslator(mainProgressMock.Object);
+
+            testInstance.Report(DefaultDownloadProgress.Waiting());
+
+            Assert.NotNull(testProgress);
+            Assert.NotNull(testProgress.Message);
+            Assert.AreEqual(0.0, testProgress.OverallProgress, 0.001);
+            Assert.AreEqual(-1.0, testProgress.SubProgress, 0.001);
+        }
         
         [Test]
         public void TestReportDownloading()
