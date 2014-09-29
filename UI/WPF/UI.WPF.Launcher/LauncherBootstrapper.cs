@@ -4,16 +4,17 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Threading;
+using System.Xml;
 using Akavache;
 using Caliburn.Micro;
 using ModInstallation.Interfaces;
 using ModInstallation.Windows.Implementations.Extractors;
-using Ookii.Dialogs.Wpf;
+using NLog;
+using NLog.Config;
 using SDLGlue;
 using UI.WPF.Launcher.Common.Interfaces;
 using UI.WPF.Launcher.Properties;
@@ -23,6 +24,7 @@ using UI.WPF.Modules.Implementations;
 using UI.WPF.Modules.Installation;
 using UI.WPF.Modules.Mods;
 using UI.WPF.Modules.Update;
+using LogManager = NLog.LogManager;
 
 #endregion
 
@@ -31,6 +33,8 @@ namespace UI.WPF.Launcher
     public class LauncherBootstrapper : BootstrapperBase
     {
         private CompositionContainer _container;
+
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
 #if !DEBUG
         private bool _unhandledExceptionCaught;
@@ -57,8 +61,9 @@ namespace UI.WPF.Launcher
         protected override void OnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
             // Only handle exceptions in non-debug mode so the debugger can break at the location where the exception was generated
+            logger.Fatal("Unhandled exception!", e.Exception);
 #if !DEBUG
-            // Only ever allow one window to open.
+    // Only ever allow one window to open.
             if (_unhandledExceptionCaught)
             {
                 return;
@@ -127,7 +132,7 @@ namespace UI.WPF.Launcher
         {
             return new[]
             {
-                // ApplicationMain assembly
+// ApplicationMain assembly
                 typeof(LauncherBootstrapper).Assembly,
 
                 // Modules follow
@@ -139,7 +144,7 @@ namespace UI.WPF.Launcher
                 typeof(InstallationModule).Assembly,
 
                 // Libraries
-                typeof(IModManager).Assembly
+                typeof(IRemoteModManager).Assembly
             };
         }
 
@@ -150,11 +155,18 @@ namespace UI.WPF.Launcher
 
         protected override void OnStartup(object sender, StartupEventArgs e)
         {
+            InitializeNLog();
+
+            logger.Info("Starting application");
+
             SDLLibrary.Init(SDLLibrary.InitMode.Joystick | SDLLibrary.InitMode.Video);
             SDLJoystick.Init();
             SDLVideo.Init();
 
-            var timer = new DispatcherTimer {Interval = TimeSpan.FromMilliseconds(1000)};
+            var timer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(1000)
+            };
             timer.Tick += SDLUpdate;
 
             timer.Start();
@@ -163,6 +175,24 @@ namespace UI.WPF.Launcher
             BlobCache.ApplicationName = "FSOLauncher";
 
             DisplayRootViewFor<IShellViewModel>();
+        }
+
+        private static void InitializeNLog()
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+
+            using (var stream = assembly.GetManifestResourceStream("UI.WPF.Launcher.NLog.config"))
+            {
+                if (stream == null)
+                {
+                    return;
+                }
+
+                using (var reader = XmlReader.Create(stream))
+                {
+                    LogManager.Configuration = new XmlLoggingConfiguration(reader, "NLog.config");
+                }
+            }
         }
 
         private static void SDLUpdate(object sender, EventArgs eventArgs)
