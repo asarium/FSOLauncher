@@ -42,8 +42,11 @@ namespace ModInstallation.Implementations.Mods
                 Notes = package.notes,
                 Name = package.name,
                 Status = package.status,
-                Files = package.files.Values.Select(info => DefaultFileInformation.InitializeFromData(info, errorHandler)).ToList(),
-                Dependencies = package.dependencies.Select(DefaultModDependency.InitializeFromData)
+                Files = package.files.Select(info => DefaultFileInformation.InitializeFromData(info, errorHandler)).ToList(),
+                Dependencies =
+                    package.dependencies != null
+                        ? package.dependencies.Select(DefaultModDependency.InitializeFromData)
+                        : Enumerable.Empty<IModDependency>()
             };
 
             if (package.environment != null)

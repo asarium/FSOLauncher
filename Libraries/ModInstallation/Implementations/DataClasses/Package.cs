@@ -23,11 +23,11 @@ namespace ModInstallation.Implementations.DataClasses
         [JsonConverter(typeof(StringEnumConverter))]
         public PackageStatus status { get; set; }
 
-        [NotNull]
+        [CanBeNull]
         public IEnumerable<Dependency> dependencies { get; set; }
 
         [NotNull]
-        public IDictionary<string, FileInformation> files { get; set; }
+        public IEnumerable<FileInformation> files { get; set; }
 
         [CanBeNull]
         public IEnumerable<EnvironmentConstraint> environment { get; set; }
