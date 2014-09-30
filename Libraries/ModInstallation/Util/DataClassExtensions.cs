@@ -35,7 +35,7 @@ namespace ModInstallation.Util
                 name = package.Name,
                 notes = package.Notes,
                 status = package.Status,
-                files = new Dictionary<string, FileInformation>()
+                files = Enumerable.Empty<FileInformation>()
             };
         }
 
