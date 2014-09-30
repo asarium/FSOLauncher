@@ -119,8 +119,7 @@ namespace ModInstallation.Implementations
         private async Task InstallFile([NotNull] IPackage package, [NotNull] FileInfo downloadedFile,
             [NotNull] IProgress<IInstallationProgress> delegatingProgress, CancellationToken token)
         {
-            var installationDirectory = Path.Combine(InstallationDirectory, package.ContainingModification.Id,
-                package.ContainingModification.Version.ToString());
+            var installationDirectory = GetInstallationDirectory(package);
 
             token.ThrowIfCancellationRequested();
 
@@ -152,6 +151,13 @@ namespace ModInstallation.Implementations
                     //TODO: Add some logging here
                 }
             }
+        }
+
+        [NotNull]
+        private string GetInstallationDirectory([NotNull] IPackage package)
+        {
+            return Path.Combine(InstallationDirectory, "packages", package.ContainingModification.Id,
+                package.ContainingModification.Version.ToString());
         }
     }
 }

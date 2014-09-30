@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Caliburn.Micro;
 using ModInstallation.Annotations;
-using ModInstallation.Implementations;
 using ModInstallation.Interfaces;
 using ReactiveUI;
 using UI.WPF.Launcher.Common.Interfaces;
@@ -31,26 +30,42 @@ namespace UI.WPF.Modules.Installation.ViewModels
         private IEnumerable<ModViewModel> _modificationViewModels;
 
         [ImportingConstructor]
-        public InstallationTabViewModel([NotNull] IRepositoryFactory repositoryFactory)
+        public InstallationTabViewModel([NotNull] IRepositoryFactory repositoryFactory, [NotNull] IRemoteModManager remoteManager,
+            [NotNull] ILocalModManager localManager, [NotNull] IProfileManager profileManager, [NotNull] IPackageInstaller packageInstaller)
         {
             DisplayName = "Update/Install mods";
 
-            ModManager = new DefaultModManager();
-            ModManager.AddModRepository(repositoryFactory.ConstructRepository("http://dev.tproxy.de/fs2/all.json"));
+            ProfileManager = profileManager;
+
+            RemoteModManager = remoteManager;
+            RemoteModManager.AddModRepository(repositoryFactory.ConstructRepository("http://dev.tproxy.de/fs2/all.json"));
+
+            LocalModManager = localManager;
+
+            PackageInstaller = packageInstaller;
 
             InstallModsCommand = ReactiveCommand.CreateAsyncTask(_ => InstallMods());
 
             this.WhenAny(x => x.ManagerStatusMessage, val => !string.IsNullOrEmpty(val.Value)).BindTo(this, x => x.HasManagerStatusMessage);
+
+            ProfileManager.WhenAnyValue(x => x.CurrentProfile.SelectedTotalConversion.RootFolder).Subscribe(rootFolder =>
+            {
+                PackageInstaller.InstallationDirectory = Path.Combine(rootFolder, "mods");
+                LocalModManager.PackageDirectory = Path.Combine(rootFolder, "mods", "packages");
+            });
         }
+
+        [NotNull]
+        public ILocalModManager LocalModManager { get; private set; }
 
         [NotNull]
         public ICommand InstallModsCommand { get; private set; }
 
-        [NotNull, Import]
+        [NotNull]
         private IProfileManager ProfileManager { get; set; }
 
-        [NotNull, Import]
-        public IPackageInstaller PackageInstaller { private get; set; }
+        [NotNull]
+        private IPackageInstaller PackageInstaller { get; set; }
 
         [NotNull, Import]
         public IDependencyResolver DependencyResolver { get; private set; }
@@ -85,7 +100,7 @@ namespace UI.WPF.Modules.Installation.ViewModels
         }
 
         [NotNull]
-        public IModManager ModManager { get; private set; }
+        public IRemoteModManager RemoteModManager { get; private set; }
 
         [NotNull]
         public IEnumerable<ModViewModel> ModificationViewModels
@@ -118,8 +133,6 @@ namespace UI.WPF.Modules.Installation.ViewModels
                 return;
             }
 
-            PackageInstaller.InstallationDirectory = Path.Combine(ProfileManager.CurrentProfile.SelectedTotalConversion.RootFolder, "mods");
-
             var packageViewModels = ModificationViewModels.SelectMany(mod => mod.Packages).Where(pack => pack.Selected);
 
             var installTasks = packageViewModels.Select(packageViewModel => packageViewModel.Install(PackageInstaller));
@@ -129,11 +142,11 @@ namespace UI.WPF.Modules.Installation.ViewModels
 
         private async void UpdateMods()
         {
-            await ModManager.RetrieveInformationAsync(new Progress<string>(msg => ManagerStatusMessage = msg), CancellationToken.None);
+            await RemoteModManager.RetrieveInformationAsync(new Progress<string>(msg => ManagerStatusMessage = msg), CancellationToken.None);
 
-            if (ModManager.RemoteModifications != null)
+            if (RemoteModManager.Modifications != null)
             {
-                ModificationViewModels = ModManager.RemoteModifications.CreateDerivedCollection(mod => new ModViewModel(mod, this));
+                ModificationViewModels = RemoteModManager.Modifications.CreateDerivedCollection(mod => new ModViewModel(mod, this));
             }
             else
             {
@@ -147,7 +160,10 @@ namespace UI.WPF.Modules.Installation.ViewModels
         {
             base.OnActivate();
 
-            UpdateMods();
+            if (RemoteModManager.Modifications == null)
+            {
+                UpdateMods();
+            }
         }
     }
 }

@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using ModInstallation.Annotations;
 using Semver;
+using Splat;
 
 namespace ModInstallation.Interfaces.Mods
 {
@@ -21,5 +23,8 @@ namespace ModInstallation.Interfaces.Mods
 
         [CanBeNull]
         string Description { get;}
+
+        [CanBeNull]
+        Uri LogoUri { get; }
     }
 }

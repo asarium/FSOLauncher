@@ -14,16 +14,28 @@ using ModInstallation.Util;
 
 namespace ModInstallation.Implementations
 {
-    [Export(typeof(IModManager))]
-    public class DefaultModManager : PropertyChangeBase, IModManager
+    [Export(typeof(IRemoteModManager))]
+    public class DefaultRemoteModManager : PropertyChangeBase, IRemoteModManager
     {
         private readonly List<IModRepository> _repositories = new List<IModRepository>();
 
-        #region IModManager Members
+        private IEnumerable<IModification> _modifications;
 
-        public IEnumerable<IModification> RemoteModifications { get; private set; }
+        #region IRemoteModManager Members
 
-        public IEnumerable<IModification> LocalModifications { get; private set; }
+        public IEnumerable<IModification> Modifications
+        {
+            get { return _modifications; }
+            private set
+            {
+                if (Equals(value, _modifications))
+                {
+                    return;
+                }
+                _modifications = value;
+                OnPropertyChanged();
+            }
+        }
 
         public async Task RetrieveInformationAsync(IProgress<string> progressReporter, CancellationToken token)
         {
@@ -32,11 +44,11 @@ namespace ModInstallation.Implementations
             foreach (var modRepository in _repositories)
             {
                 progressReporter.Report(string.Format("Retrieving information from repository '{0}'.", modRepository.Name));
-                
+
                 await modRepository.RetrieveRepositoryInformationAsync(progressReporter, token);
             }
 
-            RemoteModifications =
+            Modifications =
                 _repositories.Where(modRepository => modRepository.Modifications != null)
                     .SelectMany(modRepository => modRepository.Modifications)
                     .ToList();

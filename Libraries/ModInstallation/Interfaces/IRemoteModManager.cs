@@ -12,13 +12,10 @@ using ModInstallation.Interfaces.Mods;
 
 namespace ModInstallation.Interfaces
 {
-    public interface IModManager : INotifyPropertyChanged
+    public interface IRemoteModManager : INotifyPropertyChanged
     {
         [CanBeNull]
-        IEnumerable<IModification> RemoteModifications { get; }
-
-        [CanBeNull]
-        IEnumerable<IModification> LocalModifications { get; }
+        IEnumerable<IModification> Modifications { get; }
 
         [NotNull]
         Task RetrieveInformationAsync([NotNull] IProgress<string> progressReporter, CancellationToken token);

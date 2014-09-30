@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using ModInstallation.Annotations;
 
 namespace ModInstallation.Util
@@ -18,6 +19,12 @@ namespace ModInstallation.Util
             var pre = (si ? "kMGTPE" : "KMGTPE")[exp - 1] + (si ? "" : "i");
 
             return string.Format("{0:0.0} {1}B", bytes / Math.Pow(unit, exp), pre);
+        }
+
+        [NotNull]
+        public static IEnumerable<T> AsEnumerable<T>(this T obj)
+        {
+            yield return obj;
         }
     }
 }

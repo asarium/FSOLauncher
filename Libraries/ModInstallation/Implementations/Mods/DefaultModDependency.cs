@@ -15,23 +15,13 @@ namespace ModInstallation.Implementations.Mods
 {
     public class DefaultModDependency : PropertyChangeBase, IModDependency
     {
-        private List<VersionConstraint> _versionConstraints;
+        public IEnumerable<IVersionConstraint> VersionConstraints { get; private set; }
 
         #region IModDependency Members
 
         public IEnumerable<string> PackageNames { get; private set; }
 
         public string ModId { get; private set; }
-
-        public bool VersionMatches(SemVersion version)
-        {
-            if (_versionConstraints == null)
-            {
-                return true;
-            }
-
-            return _versionConstraints.All(constraint => constraint.VersionMatches(version));
-        }
 
         #endregion
 
@@ -41,7 +31,7 @@ namespace ModInstallation.Implementations.Mods
             var newInstance = new DefaultModDependency
             {
                 ModId = dep.id,
-                _versionConstraints = ParseVersionString(dep.version).ToList(),
+                VersionConstraints = ParseVersionString(dep.version).ToList(),
                 PackageNames = dep.packages != null ? dep.packages.ToList() : Enumerable.Empty<string>()
             };
 

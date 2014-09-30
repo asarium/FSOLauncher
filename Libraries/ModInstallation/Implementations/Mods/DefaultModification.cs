@@ -1,5 +1,6 @@
 ﻿#region Usings
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using ModInstallation.Annotations;
@@ -26,12 +27,25 @@ namespace ModInstallation.Implementations.Mods
 
         public string Description { get; private set; }
 
+        public Uri LogoUri { get; private set; }
+
         #endregion
 
         [CanBeNull]
         public static DefaultModification InitializeFromData([NotNull] Modification mod, [CanBeNull] IErrorHandler errorHandler = null)
         {
-            var newInstance = new DefaultModification {Id = mod.id, Title = mod.title, Description = mod.description};
+            var newInstance = new DefaultModification
+            {
+                Id = mod.id,
+                Title = mod.title,
+                Description = mod.description
+            };
+
+            Uri logo;
+            if (Uri.TryCreate(mod.logo, UriKind.Absolute, out logo))
+            {
+                newInstance.LogoUri = logo;
+            }
 
             newInstance.Packages =
                 mod.packages.Select(pack => DefaultPackage.InitializeFromData(newInstance, pack, errorHandler))

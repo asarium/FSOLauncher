@@ -29,7 +29,7 @@ namespace ModInstallation.Tests.Implementations
         [SetUp]
         public void SetUp()
         {
-            var path = Path.Combine(TestContext.CurrentContext.WorkDirectory, TestContext.CurrentContext.Test.Name);
+            var path = TestExtensions.GetTestDirectory();
 
             if (Directory.Exists(path))
             {

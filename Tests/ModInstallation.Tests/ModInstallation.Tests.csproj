@@ -62,6 +62,7 @@
     <Compile Include="Implementations\AbstractJsonRepositoryTests.cs" />
     <Compile Include="Implementations\DefaultDependencyResolverTests.cs" />
     <Compile Include="Implementations\DefaultFileDownloaderTests.cs" />
+    <Compile Include="Implementations\DefaultLocalModManagerTests.cs" />
     <Compile Include="Implementations\DefaultModManagerTests.cs" />
     <Compile Include="Implementations\Extractors\SharpCompressExtractorTests.cs" />
     <Compile Include="Implementations\Mods\DefaultModDependencyTests.cs" />
@@ -75,6 +76,8 @@
     <Compile Include="TestClasses\TestWebClient.cs" />
     <Compile Include="TestData\TestResourceUtil.cs" />
     <Compile Include="Util\AssertEx.cs" />
+    <Compile Include="Util\DataClassExtensionsTests.cs" />
+    <Compile Include="Util\TestExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

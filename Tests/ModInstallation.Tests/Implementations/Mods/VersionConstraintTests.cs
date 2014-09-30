@@ -1,6 +1,8 @@
 ﻿#region Usings
 
 using ModInstallation.Implementations.Mods;
+using ModInstallation.Interfaces.Mods;
+using ModInstallation.Util;
 using NUnit.Framework;
 using Semver;
 

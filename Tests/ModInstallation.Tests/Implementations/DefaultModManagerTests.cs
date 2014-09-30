@@ -19,17 +19,17 @@ namespace ModInstallation.Tests.Implementations
         [Test, NotNull]
         public async Task TestRetrieveInformationAsync()
         {
-            var modManager = new DefaultModManager();
+            var modManager = new DefaultRemoteModManager();
             modManager.AddModRepository(new TestRepository("Test"));
 
             await modManager.RetrieveInformationAsync(new Progress<string>(), CancellationToken.None);
 
-            Assert.IsNotNull(modManager.RemoteModifications);
+            Assert.IsNotNull(modManager.Modifications);
 
-            CollectionAssert.IsNotEmpty(modManager.RemoteModifications);
-            Assert.AreEqual(1, modManager.RemoteModifications.Count());
+            CollectionAssert.IsNotEmpty(modManager.Modifications);
+            Assert.AreEqual(1, modManager.Modifications.Count());
 
-            Assert.AreEqual("FSO", modManager.RemoteModifications.First().Id);
+            Assert.AreEqual("FSO", modManager.Modifications.First().Id);
         }
     }
 }

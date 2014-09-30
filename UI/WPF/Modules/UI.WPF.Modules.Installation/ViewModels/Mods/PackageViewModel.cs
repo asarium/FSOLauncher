@@ -26,6 +26,8 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
 
         private double _operationProgress;
 
+        private bool _progressIdeterminate;
+
         private bool _selected;
 
         public PackageViewModel([NotNull] IPackage package, [NotNull] InstallationTabViewModel installationTabViewModel)
@@ -47,6 +49,12 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
             });
 
             CancelCommand = cancelCommand;
+        }
+
+        public bool ProgressIdeterminate
+        {
+            get { return _progressIdeterminate; }
+            private set { RaiseAndSetIfPropertyChanged(ref _progressIdeterminate, value); }
         }
 
         [CanBeNull]
@@ -90,6 +98,16 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
         {
             OperationMessage = installationProgress.Message;
             OperationProgress = installationProgress.OverallProgress;
+
+            if (installationProgress.OverallProgress < 0.01 && installationProgress.SubProgress < 0.0)
+            {
+                // If the operations is just starting and we get an indeterminate sub progress then reflect that in the UI
+                ProgressIdeterminate = true;
+            }
+            else
+            {
+                ProgressIdeterminate = false;
+            }
         }
 
         [NotNull]
@@ -111,6 +129,10 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
             try
             {
                 await installer.InstallPackageAsync(Package, ProgressReporter, TokenSource.Token);
+
+                await _installationTabViewModel.LocalModManager.AddPackageAsync(Package);
+
+                OperationMessage = null;
             }
             catch (OperationCanceledException)
             {
@@ -139,7 +161,7 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
             {
                 var packageViewModel = packageViewModelList.FirstOrDefault(p => Equals(p.Package, dependency));
 
-                if (packageViewModel != null && ! ReferenceEquals(this, packageViewModel))
+                if (packageViewModel != null && !ReferenceEquals(this, packageViewModel))
                 {
                     packageViewModel.Selected = true;
                 }
@@ -149,17 +171,17 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
         [NotNull]
         private List<IModification> GetModList()
         {
-            var modManager = _installationTabViewModel.ModManager;
-            if (modManager.LocalModifications != null && modManager.RemoteModifications != null)
+            var modManager = _installationTabViewModel.RemoteModManager;
+            if (modManager.Modifications != null && modManager.Modifications != null)
             {
-                return modManager.LocalModifications.Concat(modManager.RemoteModifications).ToList();
+                return modManager.Modifications.Concat(modManager.Modifications).ToList();
             }
-            if (modManager.RemoteModifications != null)
+            if (modManager.Modifications != null)
             {
-                return modManager.RemoteModifications.ToList();
+                return modManager.Modifications.ToList();
             }
 
-            return modManager.LocalModifications != null ? modManager.LocalModifications.ToList() : new List<IModification>();
+            return modManager.Modifications != null ? modManager.Modifications.ToList() : new List<IModification>();
         }
     }
 }

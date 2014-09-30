@@ -30,7 +30,7 @@ namespace ModInstallation.Interfaces.Mods
 
         PackageStatus Status { get; }
 
-        [CanBeNull]
+        [NotNull]
         IEnumerable<IModDependency> Dependencies { get; }
 
         [NotNull]

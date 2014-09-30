@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using ModInstallation.Annotations;
 using ModInstallation.Implementations.DataClasses;
 using ModInstallation.Implementations.Mods;
+using ModInstallation.Interfaces.Mods;
+using ModInstallation.Util;
 using NUnit.Framework;
 using Semver;
 

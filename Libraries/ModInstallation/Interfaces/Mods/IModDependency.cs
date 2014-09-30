@@ -17,6 +17,7 @@ namespace ModInstallation.Interfaces.Mods
         [NotNull]
         string ModId { get; }
 
-        bool VersionMatches([NotNull] SemVersion version);
+        [NotNull]
+        IEnumerable<IVersionConstraint> VersionConstraints { get; }
     }
 }

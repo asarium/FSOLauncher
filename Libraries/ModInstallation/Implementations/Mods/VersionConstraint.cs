@@ -1,27 +1,11 @@
 using System;
 using ModInstallation.Annotations;
+using ModInstallation.Interfaces.Mods;
 using Semver;
 
 namespace ModInstallation.Implementations.Mods
 {
-    public enum ConstraintType
-    {
-        Any,
-
-        LessThan,
-
-        LessThanEqual,
-
-        Equal,
-
-        GreaterThanEqual,
-
-        GreaterThan,
-
-        NotEqual
-    }
-
-    public sealed class VersionConstraint
+    public sealed class VersionConstraint : IVersionConstraint
     {
         public VersionConstraint(ConstraintType type, [CanBeNull] SemVersion version)
         {
@@ -31,33 +15,9 @@ namespace ModInstallation.Implementations.Mods
 
         public ConstraintType Type { get; private set; }
 
-        [CanBeNull]
         public SemVersion Version { get; private set; }
 
-        public bool VersionMatches([NotNull] SemVersion ver)
-        {
-            switch (Type)
-            {
-                case ConstraintType.Any:
-                    return true;
-                case ConstraintType.LessThan:
-                    return ver < Version;
-                case ConstraintType.LessThanEqual:
-                    return ver <= Version;
-                case ConstraintType.Equal:
-                    return ver ==Version;
-                case ConstraintType.GreaterThanEqual:
-                    return ver >= Version;
-                case ConstraintType.GreaterThan:
-                    return ver > Version;
-                case ConstraintType.NotEqual:
-                    return ver != Version;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-
-        private bool Equals([NotNull] VersionConstraint other)
+        private bool Equals([NotNull] IVersionConstraint other)
         {
             return Type == other.Type && Equals(Version, other.Version);
         }
