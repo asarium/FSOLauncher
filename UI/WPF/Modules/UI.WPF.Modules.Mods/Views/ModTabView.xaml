@@ -9,6 +9,10 @@
              xmlns:converters="clr-namespace:UI.WPF.Modules.Mods.Converters" mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModels:ModTabViewModel}" d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
+    	<Grid.ColumnDefinitions>
+    		<ColumnDefinition/>
+    		<ColumnDefinition Width="Auto"/>
+    	</Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition />
@@ -16,10 +20,11 @@
 
         <TextBox Margin="5" Grid.Row="0" Width="150" HorizontalAlignment="Right" VerticalAlignment="Center"
                  Text="{Binding FilterString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Delay=200}"
-                 controls:TextboxHelper.Watermark="Search..." controls:TextboxHelper.ClearTextButton="True" />
+                 controls:TextboxHelper.Watermark="Search..." controls:TextboxHelper.ClearTextButton="True" Grid.Column="1" />
 
         <ItemsControl ItemsSource="{Binding ModificationsView}" Grid.Row="1"
-                      VirtualizingStackPanel.IsVirtualizing="True" ScrollViewer.CanContentScroll="True">
+                      VirtualizingStackPanel.IsVirtualizing="True" ScrollViewer.CanContentScroll="True" Grid.ColumnSpan="2"
+                      Grid.Column="0">
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="viewModels:ModViewModel">
                     <Grid>
@@ -45,5 +50,6 @@
                 </ControlTemplate>
             </ItemsControl.Template>
         </ItemsControl>
+        <controls:ToggleSwitch Content="" HorizontalAlignment="Left" Margin="5" VerticalAlignment="Center" IsChecked="True" OnLabel="Downloaded" OffLabel="Standard"/>
     </Grid>
 </UserControl>
