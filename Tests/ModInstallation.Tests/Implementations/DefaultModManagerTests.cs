@@ -29,7 +29,7 @@ namespace ModInstallation.Tests.Implementations
             CollectionAssert.IsNotEmpty(modManager.Modifications);
             Assert.AreEqual(1, modManager.Modifications.Count());
 
-            Assert.AreEqual("FSO", modManager.Modifications.First().Id);
+            Assert.AreEqual("mediavps", modManager.Modifications.First().Id);
         }
     }
 }

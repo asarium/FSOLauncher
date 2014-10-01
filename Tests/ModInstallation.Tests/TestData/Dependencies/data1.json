@@ -7,7 +7,7 @@
         {
           "name": "package1",
           "status": "required",
-          "files": {},
+          "files": [],
           "dependencies": [
             {
               "id": "test1",
@@ -21,7 +21,7 @@
         {
           "name": "package2",
           "status": "optional",
-          "files": {},
+          "files": [],
           "dependencies": []
         }
       ]

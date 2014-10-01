@@ -34,10 +34,10 @@ namespace ModInstallation.Tests.Implementations
             Assert.AreEqual(1, mods.Count());
 
             var fsoMod = mods.First();
-            Assert.AreEqual("FSO", fsoMod.Id);
-            Assert.IsTrue(fsoMod.Version == "3.7.2-rc4");
-            Assert.AreEqual("FreeSpace Open", fsoMod.Title);
-            Assert.AreEqual("Recent builds of FreeSpace Open (the engine)", fsoMod.Description);
+            Assert.AreEqual("mediavps", fsoMod.Id);
+            Assert.IsTrue(fsoMod.Version == "2.0.1");
+            Assert.AreEqual("MediaVPs", fsoMod.Title);
+            Assert.AreEqual("MediaVPs modification", fsoMod.Description);
         }
     }
 }
