@@ -37,6 +37,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UI.WPF.Modules.Mods", "UI\W
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UI.WPF.Modules.Update", "UI\WPF\Modules\UI.WPF.Modules.Update\UI.WPF.Modules.Update.csproj", "{85DDB6E7-BF9F-447C-8BB9-60081222A130}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UI.WPF.Modules.Update.Tests", "Tests\UI.WPF.Modules.Update.Tests\UI.WPF.Modules.Update.Tests.csproj", "{73CFB5E1-7B58-4E35-837D-4AC38E0E67E9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -91,6 +93,10 @@ Global
 		{85DDB6E7-BF9F-447C-8BB9-60081222A130}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{85DDB6E7-BF9F-447C-8BB9-60081222A130}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{85DDB6E7-BF9F-447C-8BB9-60081222A130}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73CFB5E1-7B58-4E35-837D-4AC38E0E67E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73CFB5E1-7B58-4E35-837D-4AC38E0E67E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73CFB5E1-7B58-4E35-837D-4AC38E0E67E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73CFB5E1-7B58-4E35-837D-4AC38E0E67E9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -110,5 +116,6 @@ Global
 		{DADDDCA5-724D-4907-8F32-9C3FABEAFA09} = {F78C8A15-7646-4BE5-9EF4-0DF764892006}
 		{638DA46F-90D8-43FD-8090-2AF8598D53DB} = {8B2856F4-0E20-4248-861D-FD9D7EC6BEB8}
 		{85DDB6E7-BF9F-447C-8BB9-60081222A130} = {8B2856F4-0E20-4248-861D-FD9D7EC6BEB8}
+		{73CFB5E1-7B58-4E35-837D-4AC38E0E67E9} = {F78C8A15-7646-4BE5-9EF4-0DF764892006}
 	EndGlobalSection
 EndGlobal
