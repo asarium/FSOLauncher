@@ -2,16 +2,18 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Caliburn.Micro;
-using ReactiveUI;
+using FSOManagement.Annotations;
 
 #endregion
 
 namespace FSOManagement
 {
-    public class ExecutableManager
+    public class ExecutableManager : INotifyPropertyChanged
     {
         private readonly BindableCollection<Executable> _executables;
 
@@ -72,6 +74,12 @@ namespace FSOManagement
             get { return _executables; }
         }
 
+        #region INotifyPropertyChanged Members
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        #endregion
+
         public IEnumerable<Executable> RefreshExecutables()
         {
             _executables.Clear();
@@ -105,7 +113,9 @@ namespace FSOManagement
         public virtual void StopFileSystemWatcher()
         {
             if (_exeChangedWatcher == null)
+            {
                 return;
+            }
 
             _exeChangedWatcher.Created -= ExecutableCreated;
             _exeChangedWatcher.Deleted -= ExecutableDeleted;
@@ -158,5 +168,14 @@ namespace FSOManagement
             }
         }
 
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            var handler = PropertyChanged;
+            if (handler != null)
+            {
+                handler(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
     }
 }
