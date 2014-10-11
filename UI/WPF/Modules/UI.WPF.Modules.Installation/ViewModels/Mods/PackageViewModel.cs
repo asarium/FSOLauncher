@@ -11,6 +11,7 @@ using ModInstallation.Interfaces;
 using ModInstallation.Interfaces.Mods;
 using ReactiveUI;
 using UI.WPF.Launcher.Common.Classes;
+using UI.WPF.Launcher.Common.Services;
 
 #endregion
 
@@ -143,7 +144,7 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
             }
         }
 
-        private void SelectedChanged(bool selected)
+        private async void SelectedChanged(bool selected)
         {
             if (!selected)
             {
@@ -152,19 +153,59 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
 
             var modList = GetModList();
 
-            var dependencies = _installationTabViewModel.DependencyResolver.ResolveDependencies(Package, modList, null);
+            bool failed;
 
             var packageViewModels = _installationTabViewModel.ModificationViewModels.SelectMany(mod => mod.Packages);
             var packageViewModelList = packageViewModels as IList<PackageViewModel> ?? packageViewModels.ToList();
 
-            foreach (var dependency in dependencies)
+            try
             {
-                var packageViewModel = packageViewModelList.FirstOrDefault(p => Equals(p.Package, dependency));
+                var dependencies = _installationTabViewModel.DependencyResolver.ResolveDependencies(Package, modList, null);
 
-                if (packageViewModel != null && !ReferenceEquals(this, packageViewModel))
+                foreach (var dependency in dependencies)
                 {
-                    packageViewModel.Selected = true;
+                    var packageViewModel = packageViewModelList.FirstOrDefault(p => Equals(p.Package, dependency));
+
+                    if (packageViewModel != null && !ReferenceEquals(this, packageViewModel))
+                    {
+                        packageViewModel.Selected = true;
+                    }
                 }
+
+                failed = false;
+            }
+            catch (InvalidOperationException)
+            {
+                // await can't be used in a catch block (at least not in this version of C#)
+                failed = true;
+            }
+
+            if (!failed)
+            {
+                return;
+            }
+
+            var result =
+                await
+                    _installationTabViewModel.InteractionService.ShowQuestion(MessageType.Error, QuestionType.YesNo,
+                        "Failed to resolve dependencies",
+                        "The installer was unable to resolve the dependencies of the selected package.\nDo you want to continue with your current selection?\n(This will probably cause issues later)",
+                        new QuestionSettings
+                        {
+                            YesText = "Continue",
+                            NoText = "Abort"
+                        });
+
+            switch (result)
+            {
+                case QuestionAnswer.Yes:
+                    // Don't do anything, the mod is already selected
+                    break;
+                case QuestionAnswer.No:
+                    Selected = false;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -172,14 +213,6 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
         private List<IModification> GetModList()
         {
             var modManager = _installationTabViewModel.RemoteModManager;
-            if (modManager.Modifications != null && modManager.Modifications != null)
-            {
-                return modManager.Modifications.Concat(modManager.Modifications).ToList();
-            }
-            if (modManager.Modifications != null)
-            {
-                return modManager.Modifications.ToList();
-            }
 
             return modManager.Modifications != null ? modManager.Modifications.ToList() : new List<IModification>();
         }
