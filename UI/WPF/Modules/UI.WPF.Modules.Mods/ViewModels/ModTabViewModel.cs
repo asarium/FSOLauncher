@@ -113,7 +113,7 @@ namespace UI.WPF.Modules.Mods.ViewModels
 
         private async void LoadMods([NotNull] IModManager manager)
         {
-            await manager.RefreshModsAsync(CancellationToken.None);
+            await manager.RefreshModsAsync();
 
             UpdateViewModelStatus();
         }

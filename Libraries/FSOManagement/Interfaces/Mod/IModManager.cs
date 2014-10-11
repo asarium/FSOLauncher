@@ -12,6 +12,6 @@ namespace FSOManagement.Interfaces.Mod
         IReadOnlyReactiveList<IModification> Modifications { get; }
 
         [NotNull]
-        Task RefreshModsAsync(CancellationToken token);
+        Task RefreshModsAsync();
     }
 }

@@ -150,7 +150,7 @@ namespace UI.WPF.Modules.Mods.ViewModels
         private async Task ActivateThisMod()
         {
             // If the mod ini hasn't yet been read, do it
-            await ReadModIniAsync(CancellationToken.None);
+            await ReadModIniAsync();
 
             ProfileManager.CurrentProfile.ModActivationManager.ActiveMod = Mod;
         }
@@ -162,11 +162,11 @@ namespace UI.WPF.Modules.Mods.ViewModels
             await InteractionService.ShowDialog(dialog);
         }
 
-        public async Task ReadModIniAsync(CancellationToken token)
+        public async Task ReadModIniAsync()
         {
             if (_readModIniTask == null)
             {
-                _readModIniTask = Mod.ReadModIniAsync(token);
+                _readModIniTask = Mod.ReadModIniAsync();
             }
 
             await _readModIniTask;

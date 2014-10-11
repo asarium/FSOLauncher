@@ -229,13 +229,8 @@ namespace FSOManagement.Implementations.Mod
             return !Equals(left, right);
         }
 
-        public async Task ReadModIniAsync(CancellationToken token)
+        public async Task ReadModIniAsync()
         {
-            if (token.IsCancellationRequested)
-            {
-                return;
-            }
-
             var iniPath = Path.Combine(ModRootPath, "mod.ini");
 
             if (!File.Exists(iniPath))
@@ -252,14 +247,8 @@ namespace FSOManagement.Implementations.Mod
             {
                 iniContent = new byte[stream.Length];
 
-                await stream.ReadAsync(iniContent, 0, iniContent.Length, token);
+                await stream.ReadAsync(iniContent, 0, iniContent.Length);
             }
-
-            if (token.IsCancellationRequested)
-            {
-                return;
-            }
-
 
             var iniData = await Task.Run(() =>
             {
@@ -273,12 +262,7 @@ namespace FSOManagement.Implementations.Mod
                     // TODO: Add notification
                     return null;
                 }
-            }, token);
-
-            if (token.IsCancellationRequested)
-            {
-                return;
-            }
+            });
 
             if (iniData == null)
             {

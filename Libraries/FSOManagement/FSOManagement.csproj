@@ -86,6 +86,7 @@
     <Compile Include="Implementations\ClsLookupAccountName.cs" />
     <Compile Include="Implementations\ConfigurationKeyNames.cs" />
     <Compile Include="Implementations\Mod\IniModDependencies.cs" />
+    <Compile Include="Implementations\Mod\IniModListLoader.cs" />
     <Compile Include="Implementations\Mod\Modification.cs" />
     <Compile Include="Implementations\Mod\ModManager.cs" />
     <Compile Include="Implementations\Mod\NoModDependencies.cs" />

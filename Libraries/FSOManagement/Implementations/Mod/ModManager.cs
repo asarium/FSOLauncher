@@ -2,10 +2,8 @@
 
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using System.Threading.Tasks;
 using FSOManagement.Annotations;
 using FSOManagement.Interfaces.Mod;
@@ -15,8 +13,16 @@ using ReactiveUI;
 
 namespace FSOManagement.Implementations.Mod
 {
+    public interface IModListLoader
+    {
+        [NotNull]
+        Task<IEnumerable<IModification>> LoadModificationListAsync([NotNull] string searchFolder);
+    }
+
     public class ModManager : IModManager, INotifyPropertyChanged
     {
+        private static readonly IEnumerable<IModListLoader> Loaders = new[] {new IniModListLoader()};
+
         private readonly ReactiveList<IModification> _modifications = new ReactiveList<IModification>();
 
         private readonly string _rootFolder;
@@ -33,14 +39,14 @@ namespace FSOManagement.Implementations.Mod
             get { return _modifications; }
         }
 
-        public async Task RefreshModsAsync(CancellationToken token)
+        public async Task RefreshModsAsync()
         {
-            var modifications = GetOldModifications().ToList();
+            var loadTasks = Loaders.Select(loader => loader.LoadModificationListAsync(_rootFolder));
 
-            await Task.WhenAll(modifications.OfType<Modification>().Select(mod => mod.ReadModIniAsync(token)));
+            var loaded = await Task.WhenAll(loadTasks);
 
             _modifications.Clear();
-            _modifications.AddRange(modifications);
+            _modifications.AddRange(loaded.SelectMany(x => x));
         }
 
         #endregion
@@ -50,19 +56,6 @@ namespace FSOManagement.Implementations.Mod
         public event PropertyChangedEventHandler PropertyChanged;
 
         #endregion
-
-        [NotNull]
-        private IEnumerable<IModification> GetOldModifications()
-        {
-            yield return new Modification(_rootFolder);
-
-            var possibleDirs = Directory.EnumerateDirectories(_rootFolder);
-
-            foreach (var possibleDir in possibleDirs.Where(possibleDir => File.Exists(Path.Combine(_rootFolder, possibleDir, "mod.ini"))))
-            {
-                yield return new Modification(Path.Combine(_rootFolder, possibleDir));
-            }
-        }
 
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([NotNull, CallerMemberName] string propertyName = null)
