@@ -13,10 +13,11 @@ using Akavache;
 using Caliburn.Micro;
 using ModInstallation.Interfaces;
 using ModInstallation.Windows.Implementations.Extractors;
-using NLog;
 using NLog.Config;
 using SDLGlue;
+using Splat;
 using UI.WPF.Launcher.Common.Interfaces;
+using UI.WPF.Launcher.Implementations;
 using UI.WPF.Launcher.Properties;
 using UI.WPF.Modules.Advanced;
 using UI.WPF.Modules.General;
@@ -30,11 +31,9 @@ using LogManager = NLog.LogManager;
 
 namespace UI.WPF.Launcher
 {
-    public class LauncherBootstrapper : BootstrapperBase
+    public class LauncherBootstrapper : BootstrapperBase, IEnableLogger
     {
         private CompositionContainer _container;
-
-        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
 #if !DEBUG
         private bool _unhandledExceptionCaught;
@@ -61,7 +60,7 @@ namespace UI.WPF.Launcher
         protected override void OnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
             // Only handle exceptions in non-debug mode so the debugger can break at the location where the exception was generated
-            logger.Fatal("Unhandled exception!", e.Exception);
+            this.Log().Fatal("Unhandled exception!", e.Exception);
 #if !DEBUG
     // Only ever allow one window to open.
             if (_unhandledExceptionCaught)
@@ -155,9 +154,9 @@ namespace UI.WPF.Launcher
 
         protected override void OnStartup(object sender, StartupEventArgs e)
         {
-            InitializeNLog();
+            InitializeLogging();
 
-            logger.Info("Starting application");
+            this.Log().Info("Starting application");
 
             SDLLibrary.Init(SDLLibrary.InitMode.Joystick | SDLLibrary.InitMode.Video);
             SDLJoystick.Init();
@@ -177,8 +176,10 @@ namespace UI.WPF.Launcher
             DisplayRootViewFor<IShellViewModel>();
         }
 
-        private static void InitializeNLog()
+        private static void InitializeLogging()
         {
+            Locator.CurrentMutable.Register(() => new NLogLogManager(), typeof(ILogManager));
+
             var assembly = Assembly.GetExecutingAssembly();
 
             using (var stream = assembly.GetManifestResourceStream("UI.WPF.Launcher.NLog.config"))
