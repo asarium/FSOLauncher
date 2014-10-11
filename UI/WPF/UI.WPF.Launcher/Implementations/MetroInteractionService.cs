@@ -68,7 +68,10 @@ namespace UI.WPF.Launcher.Implementations
 
             Execute(() =>
             {
-                var dlg = new VistaFolderBrowserDialog {Description = title};
+                var dlg = new VistaFolderBrowserDialog
+                {
+                    Description = title
+                };
 
                 var b = dlg.ShowDialog(Window);
 
@@ -95,10 +98,55 @@ namespace UI.WPF.Launcher.Implementations
             throw new NotImplementedException();
         }
 
-        public Task<QuestionAnswer> ShowQuestion(MessageType type, QuestionType questionType, string title, string text,
+        public async Task<QuestionAnswer> ShowQuestion(MessageType type, QuestionType questionType, string title, string text,
             QuestionSettings settings = null)
         {
-            throw new NotImplementedException();
+            MessageDialogStyle style;
+            switch (questionType)
+            {
+                case QuestionType.YesNo:
+                    style = MessageDialogStyle.AffirmativeAndNegative;
+                    break;
+                case QuestionType.YesNoCancel:
+                    style = MessageDialogStyle.AffirmativeAndNegativeAndSingleAuxiliary;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("questionType");
+            }
+
+            var dialogSettings = new MetroDialogSettings();
+
+            if (settings != null)
+            {
+                if (settings.CancelText != null)
+                {
+                    dialogSettings.NegativeButtonText = settings.CancelText;
+                }
+
+                if (settings.YesText != null)
+                {
+                    dialogSettings.AffirmativeButtonText = settings.YesText;
+                }
+
+                if (settings.CancelText != null)
+                {
+                    dialogSettings.FirstAuxiliaryButtonText = settings.CancelText;
+                }
+            }
+
+            var result = await Window.ShowMessageAsync(title, text, style, dialogSettings);
+
+            switch (result)
+            {
+                case MessageDialogResult.Negative:
+                    return QuestionAnswer.No;
+                case MessageDialogResult.Affirmative:
+                    return QuestionAnswer.Yes;
+                case MessageDialogResult.FirstAuxiliary:
+                    return QuestionAnswer.Cancel;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         #endregion
