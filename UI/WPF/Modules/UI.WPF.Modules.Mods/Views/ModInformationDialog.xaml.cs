@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using FSOManagement;
+using FSOManagement.Implementations.Mod;
 using MahApps.Metro.Controls.Dialogs;
 using ReactiveUI;
 using UI.WPF.Launcher.Common.Interfaces;

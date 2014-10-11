@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using FSOManagement.Annotations;
+using FSOManagement.Implementations.Mod;
 
 #endregion
 

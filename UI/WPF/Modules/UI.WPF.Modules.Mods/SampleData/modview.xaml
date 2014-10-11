@@ -1,11 +1,12 @@
 ﻿<ViewModels:ModViewModel xmlns:ViewModels="clr-namespace:UI.WPF.Modules.Mods.ViewModels"
                          xmlns:FSOManagement="clr-namespace:FSOManagement;assembly=FSOManagement"
+                         xmlns:mod="clr-namespace:FSOManagement.Implementations.Mod;assembly=FSOManagement"
                          DisplayName="Maecenas aenean mauris curabitur" IsNotifying="True"
                          ImagePath="bplogo.bmp">
     <ViewModels:ModViewModel.Mod>
-        <FSOManagement:Modification Bugtracker="Vestibulum blandit consequat" Forum="Donec nunc aliquet dictumst"
+        <mod:Modification Bugtracker="Vestibulum blandit consequat" Forum="Donec nunc aliquet dictumst"
                                     FolderName="Adipiscing parturient nam" Image="Class quisque vivamus aliquam"
-                                    Infotext="Duis curae" ModFolderPath="Cursus integer accumsan"
+                                    Infotext="Duis curae" ModRootPath="Cursus integer accumsan"
                                     Name="Praesent auctor vestibulum congue" Website="Sed bibendum phasellus" />
     </ViewModels:ModViewModel.Mod>
 </ViewModels:ModViewModel>

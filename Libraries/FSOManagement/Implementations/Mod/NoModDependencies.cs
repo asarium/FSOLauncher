@@ -2,11 +2,11 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using FSOManagement.Interfaces;
+using FSOManagement.Interfaces.Mod;
 
 #endregion
 
-namespace FSOManagement.Implementations
+namespace FSOManagement.Implementations.Mod
 {
     public class NoModDependencies : IModDependencies
     {

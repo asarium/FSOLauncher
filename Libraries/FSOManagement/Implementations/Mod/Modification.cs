@@ -9,8 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using FSOManagement.Annotations;
-using FSOManagement.Implementations;
-using FSOManagement.Interfaces;
+using FSOManagement.Interfaces.Mod;
 using FSOManagement.Util;
 using IniParser;
 using IniParser.Exceptions;
@@ -18,10 +17,10 @@ using IniParser.Model;
 
 #endregion
 
-namespace FSOManagement
+namespace FSOManagement.Implementations.Mod
 {
     [Serializable]
-    public class Modification : INotifyPropertyChanged, ISerializable
+    public class Modification : INotifyPropertyChanged, ISerializable, IModification
     {
         #region Fields
 
@@ -40,13 +39,13 @@ namespace FSOManagement
         [NonSerialized]
         private string _infotext;
 
-        private string _modFolderPath;
-
         [NonSerialized]
         private string _name;
 
         [NonSerialized]
         private string _website;
+
+        private string _modRootPath;
 
         #endregion
 
@@ -57,9 +56,9 @@ namespace FSOManagement
 
         protected Modification(SerializationInfo info, StreamingContext context)
         {
-            _modFolderPath = info.GetString("modPath");
+            _modRootPath = info.GetString("modPath");
 
-            OnCreate(_modFolderPath);
+            OnCreate(_modRootPath);
         }
 
         #region Properties
@@ -78,23 +77,9 @@ namespace FSOManagement
             }
         }
 
-        public string ModFolderPath
-        {
-            get { return _modFolderPath; }
-            private set
-            {
-                if (value == _modFolderPath)
-                {
-                    return;
-                }
-                _modFolderPath = value;
-                OnPropertyChanged();
-            }
-        }
-
         public string FolderName
         {
-            get { return Path.GetFileName(ModFolderPath); }
+            get { return Path.GetFileName(ModRootPath); }
         }
 
         public string Image
@@ -194,7 +179,7 @@ namespace FSOManagement
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            info.AddValue("modPath", _modFolderPath);
+            info.AddValue("modPath", _modRootPath);
         }
 
         #endregion
@@ -202,14 +187,14 @@ namespace FSOManagement
         private void OnCreate(string modPath)
         {
             Name = Path.GetFileName(modPath);
-            ModFolderPath = modPath;
+            ModRootPath = modPath;
 
             Dependencies = new NoModDependencies();
         }
 
         protected bool Equals(Modification other)
         {
-            return string.Equals(_modFolderPath, other._modFolderPath);
+            return string.Equals(_modRootPath, other.ModRootPath);
         }
 
         public override bool Equals(object obj)
@@ -231,7 +216,7 @@ namespace FSOManagement
 
         public override int GetHashCode()
         {
-            return (_modFolderPath != null ? _modFolderPath.GetHashCode() : 0);
+            return ModRootPath.GetHashCode();
         }
 
         public static bool operator ==(Modification left, Modification right)
@@ -251,7 +236,7 @@ namespace FSOManagement
                 return;
             }
 
-            var iniPath = Path.Combine(ModFolderPath, "mod.ini");
+            var iniPath = Path.Combine(ModRootPath, "mod.ini");
 
             if (!File.Exists(iniPath))
             {
@@ -282,7 +267,7 @@ namespace FSOManagement
                 {
                     return parser.ReadData(new StreamReader(new MemoryStream(iniContent), Encoding.UTF8));
                 }
-                catch (ParsingException e)
+                catch (ParsingException)
                 {
                     // Ignore the error, pretend its a mod without mod.ini
                     // TODO: Add notification
@@ -339,6 +324,20 @@ namespace FSOManagement
             if (handler != null)
             {
                 handler(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+
+        public string ModRootPath
+        {
+            get { return _modRootPath; }
+            private set
+            {
+                if (value == _modRootPath)
+                {
+                    return;
+                }
+                _modRootPath = value;
+                OnPropertyChanged();
             }
         }
     }

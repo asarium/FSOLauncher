@@ -4,13 +4,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using FSOManagement.Annotations;
-using FSOManagement.Interfaces;
+using FSOManagement.Interfaces.Mod;
 using FSOManagement.Util;
 using IniParser.Model;
 
 #endregion
 
-namespace FSOManagement.Implementations
+namespace FSOManagement.Implementations.Mod
 {
     public class IniModDependencies : IModDependencies
     {

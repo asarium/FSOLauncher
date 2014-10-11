@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Caliburn.Micro;
 using FSOManagement;
+using FSOManagement.Implementations.Mod;
 using ReactiveUI;
 using UI.WPF.Launcher.Common.Interfaces;
 using UI.WPF.Launcher.Common.Services;
@@ -36,7 +37,7 @@ namespace UI.WPF.Modules.Mods.ViewModels
         {
             Mod = mod;
 
-            mod.WhenAny(x => x.ModFolderPath, x => x.Image, GetImagePath).BindTo(this, x => x.ImagePath);
+            mod.WhenAny(x => x.ModRootPath, x => x.Image, GetImagePath).BindTo(this, x => x.ImagePath);
 
             mod.WhenAny(x => x.Name, x => x.FolderName, (name, folderName) => string.IsNullOrEmpty(name.Value) ? folderName.Value : name.Value)
                 .BindTo(this, x => x.DisplayName);

@@ -5,53 +5,71 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
 using FSOManagement.Annotations;
-using FSOManagement.Interfaces;
+using FSOManagement.Interfaces.Mod;
+using FSOManagement.Profiles;
 using FSOManagement.Util;
 using ReactiveUI;
 
 #endregion
 
-namespace FSOManagement.Profiles
+namespace FSOManagement.Implementations.Mod
 {
     public class ModActivationManager : IModActivationManager
     {
-        private readonly Profile _parentProfile;
-
-        private Modification _activeMod;
+        private IModification _activeMod;
 
         private string _commandLine;
 
-        private IEnumerable<Modification> _primaryModifications = Enumerable.Empty<Modification>();
+        private IEnumerable<IModification> _primaryModifications = Enumerable.Empty<IModification>();
 
-        private IEnumerable<Modification> _secondaryModifications = Enumerable.Empty<Modification>();
+        private IEnumerable<IModification> _secondaryModifications = Enumerable.Empty<IModification>();
 
         public ModActivationManager([NotNull] Profile profile)
         {
-            _parentProfile = profile;
+            ParentProfile = profile;
 
-            _parentProfile.WhenAny(x => x.SelectedTotalConversion, x => x.SelectedModification,
-                (val1, val2) => val1.Value == null ? null : GetModification(val1.Value.ModManager.Modifications, val2.Value))
-                .BindTo(this, x => x.ActiveMod);
+            var modificationCountObservable =
+                ParentProfile.WhenAnyObservable(x => x.SelectedTotalConversion.ModManager.Modifications.CountChanged);
 
-            this.WhenAny(x => x.ActiveMod, val => val.Value == null ? null : val.Value.ModFolderPath)
-                .BindTo(_parentProfile, x => x.SelectedModification);
-
-            this.WhenAnyValue(x => x.ActiveMod.Dependencies).Subscribe(deps =>
+            if (ParentProfile.SelectedModification != null)
             {
-                PrimaryModifications = deps.PrimaryDependencies.Select(ResolveModification).ToList();
+                // We need to wait until the mods have been loaded, then the
+                // selected modification can be resolved
+                modificationCountObservable.Where(count => count > 0).FirstAsync().Subscribe(_ =>
+                {
+                    if (ParentProfile.SelectedTotalConversion == null)
+                    {
+                        return;
+                    }
 
-                SecondaryModifications = deps.SecondayDependencies.Select(ResolveModification).ToList();
-            });
+                    var mods = ParentProfile.SelectedTotalConversion.ModManager.Modifications;
+
+                    ActiveMod = GetModification(mods, ParentProfile.SelectedModification);
+                });
+            }
+
+            this.WhenAnyValue(x => x.ActiveMod.Dependencies).CombineLatest(modificationCountObservable, (deps, mods) => deps)
+                .Subscribe(deps =>
+                {
+                    PrimaryModifications = deps.PrimaryDependencies.Select(ResolveModification).ToList();
+
+                    SecondaryModifications = deps.SecondayDependencies.Select(ResolveModification).ToList();
+                });
 
             this.WhenAny(x => x.ActiveMod, x => x.PrimaryModifications, x => x.SecondaryModifications,
                 (val1, val2, val3) => GetCommandLine(val1.Value, val2.Value, val3.Value)).BindTo(this, x => x.CommandLine);
+
+            this.WhenAnyValue(x => x.ActiveMod.ModRootPath).BindTo(ParentProfile, x => x.SelectedModification);
         }
+
+        [NotNull]
+        public Profile ParentProfile { get; private set; }
 
         #region IModActivationManager Members
 
-        [NotNull]
         public string CommandLine
         {
             get { return _commandLine; }
@@ -66,8 +84,7 @@ namespace FSOManagement.Profiles
             }
         }
 
-        [NotNull]
-        public IEnumerable<Modification> PrimaryModifications
+        public IEnumerable<IModification> PrimaryModifications
         {
             get { return _primaryModifications; }
             private set
@@ -81,8 +98,7 @@ namespace FSOManagement.Profiles
             }
         }
 
-        [NotNull]
-        public IEnumerable<Modification> SecondaryModifications
+        public IEnumerable<IModification> SecondaryModifications
         {
             get { return _secondaryModifications; }
             private set
@@ -96,8 +112,7 @@ namespace FSOManagement.Profiles
             }
         }
 
-        [CanBeNull]
-        public Modification ActiveMod
+        public IModification ActiveMod
         {
             get { return _activeMod; }
             set
@@ -117,26 +132,26 @@ namespace FSOManagement.Profiles
         #endregion
 
         [CanBeNull]
-        private static Modification GetModification([NotNull] IEnumerable<Modification> modifications, [CanBeNull] string modFolder)
+        private static IModification GetModification([NotNull] IEnumerable<IModification> modifications, [CanBeNull] string modFolder)
         {
             if (modFolder == null)
             {
                 return null;
             }
 
-            return modifications.FirstOrDefault(mod => Utils.NormalizePath(mod.ModFolderPath) == Utils.NormalizePath(modFolder));
+            return modifications.FirstOrDefault(mod => Utils.NormalizePath(mod.ModRootPath) == Utils.NormalizePath(modFolder));
         }
 
         [NotNull]
-        private string GetModArgument([NotNull] Modification mod)
+        private string GetModArgument([NotNull] IModification mod)
         {
-            if (_parentProfile.SelectedTotalConversion == null)
+            if (ParentProfile.SelectedTotalConversion == null)
             {
-                return mod.FolderName;
+                return Path.GetFileName(mod.ModRootPath);
             }
 
-            var rootPath = _parentProfile.SelectedTotalConversion.RootFolder.EnsureEndsWith(Path.DirectorySeparatorChar);
-            var modPath = mod.ModFolderPath.EnsureEndsWith(Path.DirectorySeparatorChar);
+            var rootPath = ParentProfile.SelectedTotalConversion.RootFolder.EnsureEndsWith(Path.DirectorySeparatorChar);
+            var modPath = mod.ModRootPath.EnsureEndsWith(Path.DirectorySeparatorChar);
 
             var rootUri = new Uri(rootPath, UriKind.Absolute);
             var modUri = new Uri(modPath, UriKind.Absolute);
@@ -155,22 +170,22 @@ namespace FSOManagement.Profiles
         }
 
         [NotNull]
-        private IEnumerable<string> GetCommandLineFragments([CanBeNull] Modification mod, [NotNull] IEnumerable<Modification> primary,
-            [NotNull] IEnumerable<Modification> secondary)
+        private IEnumerable<string> GetCommandLineFragments([CanBeNull] IModification mod, [NotNull] IEnumerable<IModification> primary,
+            [NotNull] IEnumerable<IModification> secondary)
         {
             if (mod == null)
             {
                 yield break;
             }
 
-            if (_parentProfile.SelectedTotalConversion == null)
+            if (ParentProfile.SelectedTotalConversion == null)
             {
                 yield return GetModArgument(mod);
 
                 yield break;
             }
 
-            if (Utils.NormalizePath(mod.ModFolderPath) == Utils.NormalizePath(_parentProfile.SelectedTotalConversion.RootFolder))
+            if (Utils.NormalizePath(mod.ModRootPath) == Utils.NormalizePath(ParentProfile.SelectedTotalConversion.RootFolder))
             {
                 // No arguments when the mod is the root.
                 yield break;
@@ -190,8 +205,8 @@ namespace FSOManagement.Profiles
         }
 
         [NotNull]
-        private string GetCommandLine([CanBeNull] Modification mod, [NotNull] IEnumerable<Modification> primary,
-            [NotNull] IEnumerable<Modification> secondary)
+        private string GetCommandLine([CanBeNull] IModification mod, [NotNull] IEnumerable<IModification> primary,
+            [NotNull] IEnumerable<IModification> secondary)
         {
             var fragments = GetCommandLineFragments(mod, primary, secondary);
 
@@ -206,18 +221,18 @@ namespace FSOManagement.Profiles
         }
 
         [CanBeNull]
-        private Modification ResolveModification([NotNull] string path)
+        private IModification ResolveModification([NotNull] string path)
         {
-            if (_parentProfile.SelectedTotalConversion == null)
+            if (ParentProfile.SelectedTotalConversion == null)
             {
                 return null;
             }
 
-            var modPath = Path.GetFullPath(Path.Combine(_parentProfile.SelectedTotalConversion.RootFolder, path));
+            var modPath = Path.GetFullPath(Path.Combine(ParentProfile.SelectedTotalConversion.RootFolder, path));
 
             return
-                _parentProfile.SelectedTotalConversion.ModManager.Modifications.FirstOrDefault(
-                    mod => string.Equals(mod.ModFolderPath, modPath, StringComparison.InvariantCultureIgnoreCase));
+                ParentProfile.SelectedTotalConversion.ModManager.Modifications.FirstOrDefault(
+                    mod => string.Equals(mod.ModRootPath, modPath, StringComparison.InvariantCultureIgnoreCase));
         }
 
         [NotifyPropertyChangedInvocator]

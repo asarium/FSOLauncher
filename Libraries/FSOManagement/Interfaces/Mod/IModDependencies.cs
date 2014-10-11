@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace FSOManagement.Interfaces
+namespace FSOManagement.Interfaces.Mod
 {
     public interface IModDependencies
     {
