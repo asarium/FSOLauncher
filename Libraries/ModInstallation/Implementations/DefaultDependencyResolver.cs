@@ -208,7 +208,17 @@ namespace ModInstallation.Implementations
                 if (!modDependency.PackageNames.Any())
                 {
                     // If no packages were specified, depend on the required packages
-                    packages = matchedMod.Packages.Where(p => p.Status == PackageStatus.Required);
+
+                    // Special case if the matched mod is the parent of our package and that package is required
+                    // we have to make sure that package doesn't add a dependency on itself.
+                    if (matchedMod.Id == package.ContainingModification.Id && package.Status == PackageStatus.Required)
+                    {
+                        packages = matchedMod.Packages.Where(p => p.Status == PackageStatus.Required && p.Name != package.Name);
+                    }
+                    else
+                    {
+                        packages = matchedMod.Packages.Where(p => p.Status == PackageStatus.Required);
+                    }
                 }
                 else
                 {
