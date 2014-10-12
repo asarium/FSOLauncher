@@ -107,6 +107,7 @@
     <Compile Include="OpenAL\OpenALManager.cs" />
     <Compile Include="Profiles\ConfigurationKey.cs" />
     <Compile Include="Profiles\ConfigurationManager.cs" />
+    <Compile Include="Profiles\DataClass\ProfileData.cs" />
     <Compile Include="Profiles\DefaultConfigurationKey.cs" />
     <Compile Include="Profiles\FlagInformation.cs" />
     <Compile Include="Profiles\FlagManager.cs" />

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Threading.Tasks;
 using FSOManagement;
+using FSOManagement.Annotations;
 using FSOManagement.Interfaces;
 
 namespace UI.WPF.Launcher.Common.Interfaces
@@ -15,5 +17,7 @@ namespace UI.WPF.Launcher.Common.Interfaces
         int Height { get; set; }
 
         bool CheckForUpdates { get; set; }
+
+        void Save();
     }
 }

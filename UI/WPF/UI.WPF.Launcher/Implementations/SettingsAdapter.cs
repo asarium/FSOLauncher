@@ -42,6 +42,11 @@ namespace UI.WPF.Launcher.Implementations
             set { _settings.CheckForUpdates = value; }
         }
 
+        public void Save()
+        {
+            _settings.Save();
+        }
+
         public IEnumerable<TotalConversion> TotalConversions
         {
             get { return _settings.TotalConversions; }

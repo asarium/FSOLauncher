@@ -205,7 +205,7 @@ namespace UI.WPF.Launcher
         {
             BlobCache.Shutdown().Wait();
 
-            Settings.Default.Save();
+            IoC.Get<ISettings>().Save();
 
             SDLVideo.Quit();
             SDLJoystick.Quit();
