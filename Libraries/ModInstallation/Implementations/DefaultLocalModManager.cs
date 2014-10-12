@@ -14,19 +14,16 @@ using ModInstallation.Interfaces;
 using ModInstallation.Interfaces.Mods;
 using ModInstallation.Util;
 using Newtonsoft.Json;
-using NLog;
-using LogManager = NLog.LogManager;
+using Splat;
 
 #endregion
 
 namespace ModInstallation.Implementations
 {
     [Export(typeof(ILocalModManager))]
-    public class DefaultLocalModManager : ILocalModManager
+    public class DefaultLocalModManager : ILocalModManager, IEnableLogger
     {
         private const string ModInfoFile = "mod.json";
-
-        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         private readonly BindableCollection<IModification> _modifications;
 
@@ -162,7 +159,7 @@ namespace ModInstallation.Implementations
             }
             catch (IOException e)
             {
-                logger.Error("Failed to load " + ModInfoFile + " content!", e);
+                this.Log().ErrorException("Failed to load " + ModInfoFile + " content!", e);
                 return;
             }
 
@@ -173,7 +170,7 @@ namespace ModInstallation.Implementations
             }
             catch (Exception e)
             {
-                logger.Error(ModInfoFile + " parsing failed!", e);
+                this.Log().ErrorException(ModInfoFile + " parsing failed!", e);
                 return;
             }
 
