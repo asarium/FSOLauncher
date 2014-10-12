@@ -88,6 +88,7 @@
     <Compile Include="Implementations\ConfigurationKeyNames.cs" />
     <Compile Include="Implementations\Mod\IniModDependencies.cs" />
     <Compile Include="Implementations\Mod\IniModListLoader.cs" />
+    <Compile Include="Implementations\Mod\LocalModManagerListLoader.cs" />
     <Compile Include="Implementations\Mod\Modification.cs" />
     <Compile Include="Implementations\Mod\ModManager.cs" />
     <Compile Include="Implementations\Mod\NoModDependencies.cs" />
@@ -136,6 +137,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ModInstallation\ModInstallation.csproj">
+      <Project>{6219DDE3-F989-412B-8368-3EEB6B0D0C00}</Project>
+      <Name>ModInstallation</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SDLGlue\SDLGlue.csproj">
       <Project>{589ECBC2-CDFB-42AA-A9DF-35D804464711}</Project>
       <Name>SDLGlue</Name>
