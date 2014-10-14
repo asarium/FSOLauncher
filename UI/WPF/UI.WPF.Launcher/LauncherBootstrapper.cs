@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
@@ -16,7 +17,9 @@ using ModInstallation.Windows.Implementations.Extractors;
 using NLog.Config;
 using SDLGlue;
 using Splat;
+using UI.WPF.Launcher.Common.Classes;
 using UI.WPF.Launcher.Common.Interfaces;
+using UI.WPF.Launcher.Common.Util;
 using UI.WPF.Launcher.Implementations;
 using UI.WPF.Launcher.Properties;
 using UI.WPF.Modules.Advanced;
@@ -171,9 +174,11 @@ namespace UI.WPF.Launcher
             timer.Start();
 
             BlobCache.EnsureInitialized();
-            BlobCache.ApplicationName = "FSOLauncher";
+            BlobCache.ApplicationName = LauncherUtils.GetApplicationName();
 
             DisplayRootViewFor<IShellViewModel>();
+
+            IoC.Get<IEventAggregator>().PublishOnUIThread(new MainWindowOpenedMessage());
         }
 
         private static void InitializeLogging()
@@ -204,8 +209,6 @@ namespace UI.WPF.Launcher
         protected override void OnExit(object sender, EventArgs e)
         {
             BlobCache.Shutdown().Wait();
-
-            IoC.Get<ISettings>().Save();
 
             SDLVideo.Quit();
             SDLJoystick.Quit();

@@ -7,12 +7,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using FSOManagement.Annotations;
 using FSOManagement.Interfaces.Mod;
+using FSOManagement.Profiles.DataClass;
 
 #endregion
 
 namespace FSOManagement.Interfaces
 {
-    public interface IProfile : INotifyPropertyChanged, ICloneable
+    public interface IProfile : INotifyPropertyChanged, ICloneable, IDataModel<ProfileData>
     {
         #region Properties
 

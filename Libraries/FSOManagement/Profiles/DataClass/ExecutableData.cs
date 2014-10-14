@@ -2,7 +2,7 @@
 
 namespace FSOManagement.Profiles.DataClass
 {
-    public class ExecutableData
+    public struct ExecutableData
     {
         [NotNull]
         public string Path { get; set; } 

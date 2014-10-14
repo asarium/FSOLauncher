@@ -6,7 +6,7 @@ using FSOManagement.Annotations;
 
 namespace FSOManagement.Profiles.DataClass
 {
-    public class TcData
+    public struct TcData
     {
         [NotNull]
         public string Name { get; set; }

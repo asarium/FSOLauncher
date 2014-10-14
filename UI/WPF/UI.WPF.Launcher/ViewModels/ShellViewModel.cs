@@ -12,7 +12,7 @@ using System.Windows.Input;
 using Caliburn.Micro;
 using FSOManagement;
 using FSOManagement.Interfaces;
-using FSOManagement.Profiles;
+using FSOManagement.Profiles.DataClass;
 using ReactiveUI;
 using UI.WPF.Launcher.Common;
 using UI.WPF.Launcher.Common.Classes;
@@ -26,18 +26,21 @@ using ViewLocator = Caliburn.Micro.ViewLocator;
 namespace UI.WPF.Launcher.ViewModels
 {
     [Export(typeof(IShellViewModel))]
-    public class ShellViewModel : Conductor<ILauncherTab>.Collection.OneActive, IShellViewModel, IHandle<InstanceLaunchedMessage>
+    public class ShellViewModel : Conductor<ILauncherTab>.Collection.OneActive, IShellViewModel, IHandle<InstanceLaunchedMessage>,
+        IHandle<MainWindowOpenedMessage>
     {
         private bool _hasTotalConversions;
 
+        private ICommand _launchGameCommand;
+
         private ILauncherViewModel _launcherViewModel;
+
+        private bool _settingsLoaded;
 
         private string _title = "FSO Launcher";
 
-        private ICommand _launchGameCommand;
-
         [ImportingConstructor]
-        public ShellViewModel(IEventAggregator eventAggregator, ISettings settings)
+        public ShellViewModel(IEventAggregator eventAggregator, ISettings settings, IInteractionService interactionService)
         {
             AddGameRootCommand = ReactiveCommand.CreateAsyncTask(async _ => await AddGameRoot());
 
@@ -45,7 +48,15 @@ namespace UI.WPF.Launcher.ViewModels
 
             settings.WhenAnyValue(x => x.SelectedProfile).Subscribe(profile =>
             {
-                LaunchGameCommand = ReactiveCommand.CreateAsyncTask(profile.CanLaunchExecutable, async _ => await LaunchExecutable(settings.SelectedProfile));
+                if (profile == null)
+                {
+                    LaunchGameCommand = null;
+                }
+                else
+                {
+                    LaunchGameCommand = ReactiveCommand.CreateAsyncTask(profile.CanLaunchExecutable,
+                        async _ => await LaunchExecutable(settings.SelectedProfile));
+                }
             });
 
             Settings = settings;
@@ -147,6 +158,15 @@ namespace UI.WPF.Launcher.ViewModels
 
         #endregion
 
+        #region IHandle<MainWindowOpenedMessage> Members
+
+        void IHandle<MainWindowOpenedMessage>.Handle(MainWindowOpenedMessage message)
+        {
+            LoadSettingsAsync();
+        }
+
+        #endregion
+
         #region IShellViewModel Members
 
         public string Title
@@ -180,9 +200,87 @@ namespace UI.WPF.Launcher.ViewModels
 
         #endregion
 
+        public async void LoadSettingsAsync()
+        {
+            if (_settingsLoaded)
+            {
+                return;
+            }
+
+            Task closeTask = null;
+            IProgressController controller = null;
+            try
+            {
+                var loadTask = Settings.LoadAsync();
+
+                if (Task.WhenAny(loadTask, Task.Delay(2000)) != loadTask)
+                {
+                    // Took too long, show the dialog
+                    controller = await InteractionService.OpenProgressDialogAsync("Loading Settings", "This should only take a few seconds...");
+                    controller.Indeterminate = true;
+                    controller.Cancelable = false;
+
+                    await loadTask;
+                }
+            }
+            finally
+            {
+                _settingsLoaded = true;
+
+                if (controller != null)
+                {
+                    closeTask = controller.CloseAsync();
+                }
+            }
+
+            if (closeTask != null)
+            {
+                //This is not ideal but it works as  this is an async void function 
+                await closeTask;
+            }
+        }
+
+        public async Task SaveSettingsAsync()
+        {
+            Task closeTask = null;
+            IProgressController controller = null;
+            try
+            {
+                var saveTask = Settings.SaveAsync();
+
+                if (Task.WhenAny(saveTask, Task.Delay(2000)) != saveTask)
+                {
+                    // Took too long, show the dialog
+                    controller = await InteractionService.OpenProgressDialogAsync("Saving Settings", "This should only take a few seconds...");
+                    controller.Indeterminate = true;
+                    controller.Cancelable = false;
+
+                    await saveTask;
+                }
+            }
+            finally
+            {
+                _settingsLoaded = true;
+
+                if (controller != null)
+                {
+                    closeTask = controller.CloseAsync();
+                }
+            }
+
+            if (closeTask != null)
+            {
+                //This is not ideal but it works as  this is an async void function 
+                await closeTask;
+            }
+        }
+
         private async Task AddProfile()
         {
-            var dialog = new ProfileInputDialog(LauncherViewModel.ProfileManager) {Title = "Add a new profile"};
+            var dialog = new ProfileInputDialog(LauncherViewModel.ProfileManager)
+            {
+                Title = "Add a new profile"
+            };
 
             var result = await InteractionService.ShowDialog(dialog);
 
@@ -196,7 +294,7 @@ namespace UI.WPF.Launcher.ViewModels
             {
                 var cloneProfile = LauncherViewModel.ProfileManager.Profiles.First(p => p.Name == result.ClonedProfile);
 
-                profile = (IProfile)cloneProfile.Clone();
+                profile = (IProfile) cloneProfile.Clone();
                 profile.Name = result.Name;
             }
             else
@@ -221,7 +319,10 @@ namespace UI.WPF.Launcher.ViewModels
 
         private async Task AddGameRoot()
         {
-            var dialog = new GameRootInputDialog(LauncherViewModel.TotalConversions) {Title = "Add a new game directory"};
+            var dialog = new GameRootInputDialog(LauncherViewModel.TotalConversions)
+            {
+                Title = "Add a new game directory"
+            };
 
             var result = await InteractionService.ShowDialog(dialog);
 
@@ -230,9 +331,19 @@ namespace UI.WPF.Launcher.ViewModels
                 return;
             }
 
-            var tc = new TotalConversion(result.Name, result.Path);
+            var tc = new TotalConversion();
+            tc.InitializeFromData(new TcData
+            {
+                Name = result.Name,
+                RootPath = result.Path
+            });
+
             LauncherViewModel.TotalConversions.Add(tc);
-            LauncherViewModel.ProfileManager.CurrentProfile.SelectedTotalConversion = tc;
+
+            if (LauncherViewModel.ProfileManager.CurrentProfile != null)
+            {
+                LauncherViewModel.ProfileManager.CurrentProfile.SelectedTotalConversion = tc;
+            }
         }
     }
 }

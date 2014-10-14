@@ -19,9 +19,9 @@ namespace UI.WPF.Modules.General.ViewModels
 
         private JoystickSettingsViewModel _joystickSettingsViewModel;
 
-        private VideoSettingsViewModel _videoSettingsViewModel;
-
         private SpeechViewModel _speechViewModel;
+
+        private VideoSettingsViewModel _videoSettingsViewModel;
 
         [ImportingConstructor]
         public GeneralTabViewModel(IProfileManager profileManager)
@@ -30,11 +30,22 @@ namespace UI.WPF.Modules.General.ViewModels
 
             profileManager.GetProfileObservable().Subscribe(profile =>
             {
-                ExecutableListViewModel = new ExecutableListViewModel(profile);
-                VideoSettingsViewModel = new VideoSettingsViewModel(profile);
-                JoystickSettingsViewModel = new JoystickSettingsViewModel(profile);
-                AudioSettingsViewModel = new AudioSettingsViewModel(profile);
-                SpeechViewModel = new SpeechViewModel(profile);
+                if (profile == null)
+                {
+                    ExecutableListViewModel = null;
+                    VideoSettingsViewModel = null;
+                    JoystickSettingsViewModel = null;
+                    AudioSettingsViewModel = null;
+                    SpeechViewModel = null;
+                }
+                else
+                {
+                    ExecutableListViewModel = new ExecutableListViewModel(profile);
+                    VideoSettingsViewModel = new VideoSettingsViewModel(profile);
+                    JoystickSettingsViewModel = new JoystickSettingsViewModel(profile);
+                    AudioSettingsViewModel = new AudioSettingsViewModel(profile);
+                    SpeechViewModel = new SpeechViewModel(profile);
+                }
             });
         }
 

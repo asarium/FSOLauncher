@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Threading.Tasks;
 using System.Windows;
+using JetBrains.Annotations;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
 using Ookii.Dialogs.Wpf;
@@ -15,6 +16,55 @@ using UI.WPF.Launcher.Common.Services;
 
 namespace UI.WPF.Launcher.Implementations
 {
+    internal class ProgressControllerWrapper : IProgressController
+    {
+        public ProgressControllerWrapper(ProgressDialogController controller)
+        {
+            _controller = controller;
+        }
+
+        private readonly ProgressDialogController _controller;
+
+        #region IProgressController Members
+
+        public string Title
+        {
+            set { _controller.SetTitle(value); }
+        }
+
+        public string Message
+        {
+            set { _controller.SetMessage(value); }
+        }
+
+        public double Progress
+        {
+            set { _controller.SetProgress(value); }
+        }
+
+        public bool IsCanceled
+        {
+            get { return _controller.IsCanceled; }
+        }
+
+        public bool Cancelable
+        {
+            set { _controller.SetCancelable(value); }
+        }
+
+        public bool Indeterminate
+        {
+            set { _controller.SetIndeterminate(); }
+        }
+
+        public Task CloseAsync()
+        {
+            return _controller.CloseAsync();
+        }
+
+        #endregion
+    }
+
     [Export(typeof(IInteractionService))]
     public class MetroInteractionService : IInteractionService
     {
@@ -98,7 +148,10 @@ namespace UI.WPF.Launcher.Implementations
             throw new NotImplementedException();
         }
 
-        public async Task<QuestionAnswer> ShowQuestion(MessageType type, QuestionType questionType, string title, string text,
+        public async Task<QuestionAnswer> ShowQuestion(MessageType type,
+            QuestionType questionType,
+            string title,
+            string text,
             QuestionSettings settings = null)
         {
             MessageDialogStyle style;
@@ -147,6 +200,11 @@ namespace UI.WPF.Launcher.Implementations
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        public async Task<IProgressController> OpenProgressDialogAsync(string title, string message)
+        {
+            return new ProgressControllerWrapper(await Window.ShowProgressAsync(title, message));
         }
 
         #endregion

@@ -10,6 +10,7 @@ using System.Windows.Input;
 using Caliburn.Micro;
 using FSOManagement;
 using FSOManagement.Interfaces;
+using FSOManagement.Profiles;
 using ReactiveUI;
 using UI.WPF.Launcher.Common.Interfaces;
 using UI.WPF.Launcher.Common.Services;
@@ -140,6 +141,9 @@ namespace UI.WPF.Modules.Advanced.ViewModels
 
             return val.Flags.Select(flag =>
             {
+                if (ProfileManager.CurrentProfile == null)
+                    return null;
+
                 var viewModel = new FlagViewModel(flag, ProfileManager.CurrentProfile.FlagManager);
                 viewModel.SetEnabled(ProfileManager.CurrentProfile.FlagManager.IsFlagSet(flag.Name));
                 return viewModel;
@@ -161,6 +165,12 @@ namespace UI.WPF.Modules.Advanced.ViewModels
 
         private async Task RegenerateFlagList(CancellationToken token)
         {
+            if (ProfileManager.CurrentProfile == null)
+            {
+                CurrentBuildCaps = null;
+                return;
+            }
+
             if (ProfileManager.CurrentProfile.SelectedExecutable == null)
             {
                 // Clear list

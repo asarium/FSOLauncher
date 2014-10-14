@@ -18,7 +18,10 @@ namespace UI.WPF.Modules.General.Tests.ViewModels
         [Test]
         public void TestExecutableViewModels()
         {
-            var executables = new BindableCollection<Executable> {new Executable("/fs2_open_3_7_0.exe")};
+            var executables = new BindableCollection<Executable>
+            {
+                new Executable("/fs2_open_3_7_0.exe")
+            };
 
             var exeManager = new Mock<ExecutableManager>();
             exeManager.Setup(x => x.Executables).Returns(executables);
@@ -28,7 +31,11 @@ namespace UI.WPF.Modules.General.Tests.ViewModels
             var tcMock = new Mock<TotalConversion>();
             tcMock.Setup(x => x.ExecutableManager).Returns(exeManager.Object);
 
-            var testProfile = new Profile("Test") {SelectedTotalConversion = tcMock.Object};
+            var testProfile = new Profile
+            {
+                SelectedTotalConversion = tcMock.Object,
+                Name = "Test"
+            };
 
             var tabViewModel = new ExecutableListViewModel(testProfile);
 
@@ -80,7 +87,11 @@ namespace UI.WPF.Modules.General.Tests.ViewModels
             var tcMock = new Mock<TotalConversion>();
             tcMock.Setup(x => x.ExecutableManager).Returns(exeManager.Object);
 
-            var testProfile = new Profile("Test") {SelectedTotalConversion = tcMock.Object};
+            var testProfile = new Profile
+            {
+                SelectedTotalConversion = tcMock.Object,
+                Name = "Test"
+            };
 
             var tabViewModel = new ExecutableListViewModel(testProfile);
 

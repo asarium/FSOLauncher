@@ -4,85 +4,71 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
-using System.Runtime.Serialization;
-using System.Xml.Serialization;
 using FSOManagement.Annotations;
 using FSOManagement.Implementations.Mod;
+using FSOManagement.Interfaces;
+using FSOManagement.Profiles.DataClass;
 
 #endregion
 
 namespace FSOManagement
 {
-    [Serializable]
-    public class TotalConversion : INotifyPropertyChanged, ISerializable, IEquatable<TotalConversion>
+    public class TotalConversion : INotifyPropertyChanged, IEquatable<TotalConversion>, IDataModel<TcData>
     {
-        [NonSerialized]
-        private readonly ModManager _modManager;
-
-        [NonSerialized]
-        private ExecutableManager _executableManager;
-
-        private string _name;
-
-        private string _rootFolder;
+        private TcData _data;
 
         [UsedImplicitly]
         public TotalConversion()
         {
         }
 
-        public TotalConversion(string name, string rootFolder)
-        {
-            if (!Directory.Exists(rootFolder))
-            {
-                throw new ArgumentException("Root folder does not exist!");
-            }
-
-            _name = name;
-            _rootFolder = rootFolder;
-
-            _executableManager = new ExecutableManager(_rootFolder);
-            _modManager = new ModManager(_rootFolder);
-        }
-
-        protected TotalConversion(SerializationInfo info, StreamingContext context)
-        {
-            _name = info.GetString("name");
-            _rootFolder = info.GetString("root");
-
-            _executableManager = new ExecutableManager(_rootFolder);
-            _modManager = new ModManager(_rootFolder);
-        }
-
-        public ModManager ModManager
-        {
-            get { return _modManager; }
-        }
+        [NotNull]
+        public ModManager ModManager { get; private set; }
 
         public string Name
         {
-            get { return _name; }
+            get { return _data.Name; }
             set
             {
-                if (value == _name)
+                if (value == _data.Name)
                 {
                     return;
                 }
-                _name = value;
+                _data.Name = value;
                 OnPropertyChanged();
             }
         }
 
         public string RootFolder
         {
-            get { return _rootFolder; }
-            set { _rootFolder = value; }
+            get { return _data.RootPath; }
+            set { _data.RootPath = value; }
         }
 
-        public virtual ExecutableManager ExecutableManager
+        [NotNull]
+        public ExecutableManager ExecutableManager { get; private set; }
+
+        #region IDataModel<TcData> Members
+
+        public void InitializeFromData(TcData data)
         {
-            get { return _executableManager ?? (_executableManager = new ExecutableManager(_rootFolder)); }
+            if (!Directory.Exists(data.RootPath))
+            {
+                throw new ArgumentException("Root folder does not exist!");
+            }
+
+            _data = data;
+
+            ModManager = new ModManager(RootFolder);
+            ExecutableManager = new ExecutableManager(RootFolder);
         }
+
+        public TcData GetData()
+        {
+            return _data;
+        }
+
+        #endregion
 
         #region IEquatable<TotalConversion> Members
 
@@ -96,7 +82,7 @@ namespace FSOManagement
             {
                 return true;
             }
-            return string.Equals(_rootFolder, other._rootFolder);
+            return string.Equals(_data.RootPath, other._data.RootPath);
         }
 
         #endregion
@@ -104,16 +90,6 @@ namespace FSOManagement
         #region INotifyPropertyChanged Members
 
         public event PropertyChangedEventHandler PropertyChanged;
-
-        #endregion
-
-        #region ISerializable Members
-
-        public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            info.AddValue("name", _name);
-            info.AddValue("root", _rootFolder);
-        }
 
         #endregion
 
@@ -143,9 +119,8 @@ namespace FSOManagement
         public override int GetHashCode()
         {
             // _rootFolder is only changed when the object is initialized
-// ReSharper disable NonReadonlyFieldInGetHashCode
-            return (_rootFolder != null ? _rootFolder.GetHashCode() : 0);
-// ReSharper restore NonReadonlyFieldInGetHashCode
+// ReSharper disable once NonReadonlyFieldInGetHashCode
+            return _data.RootPath.GetHashCode();
         }
 
         public static bool operator ==(TotalConversion left, TotalConversion right)

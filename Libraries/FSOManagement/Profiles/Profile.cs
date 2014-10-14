@@ -7,8 +7,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,41 +14,37 @@ using FSOManagement.Annotations;
 using FSOManagement.Implementations.Mod;
 using FSOManagement.Interfaces;
 using FSOManagement.Interfaces.Mod;
+using FSOManagement.Profiles.DataClass;
 using FSOManagement.Profiles.Keys;
 using FSOManagement.Util;
 using ReactiveUI;
+using Splat;
 
 #endregion
 
 namespace FSOManagement.Profiles
 {
-    [Serializable]
-    public class Profile : IProfile, IDeserializationCallback
+    public class Profile : IProfile, IEnableLogger
     {
-        [NonSerialized]
-        private IObservable<bool> _canLaunchExecutable;
+        private readonly FlagManager _flagManager;
 
-        [NonSerialized]
+        private readonly ModActivationManager _modActivationManager;
+
         private string _commandLine;
 
-        [NonSerialized]
-        private FlagManager _flagManager;
+        private ProfileData _profileData;
 
-        [NonSerialized]
-        private ModActivationManager _modActivationManager;
-
-        private string _name;
-
-        private Dictionary<IConfigurationKey, object> _settingsDictionary;
-
-        private Profile()
+        public Profile()
         {
-            OnCreated();
-        }
+            _modActivationManager = new ModActivationManager(this);
+            _flagManager = new FlagManager(this);
 
-        public Profile([NotNull] string name) : this()
-        {
-            _name = name;
+            this.WhenAny(x => x.ModActivationManager.CommandLine,
+                x => x.FlagManager.CommandLine,
+                x => x.ExtraCommandLine,
+                (cmd1, cmd2, cmd3) => JoinCommandLine(cmd1.Value, cmd2.Value, cmd3.Value)).BindTo(this, x => x.CommandLine);
+
+            CanLaunchExecutable = this.WhenAny(x => x.SelectedExecutable, val => CanLaunch(val.Value));
         }
 
         [CanBeNull]
@@ -67,43 +61,23 @@ namespace FSOManagement.Profiles
             set { SetValue(General.CommandLineOptions, value); }
         }
 
-        #region IDeserializationCallback Members
-
-        public void OnDeserialization([CanBeNull] object sender)
-        {
-            if (_settingsDictionary != null)
-            {
-                // Something is wrong with the dictionary implementation
-                // See http://stackoverflow.com/a/457204/844001
-                ((IDeserializationCallback) _settingsDictionary).OnDeserialization(sender);
-            }
-
-            OnCreated();
-        }
-
-        #endregion
-
         #region IProfile Members
 
         public string Name
         {
-            get { return _name; }
+            get { return _profileData.Name; }
             set
             {
-                if (value == _name)
+                if (value == _profileData.Name)
                 {
                     return;
                 }
-                _name = value;
+                _profileData.Name = value;
                 OnPropertyChanged();
             }
         }
 
-        public IObservable<bool> CanLaunchExecutable
-        {
-            get { return _canLaunchExecutable; }
-            private set { _canLaunchExecutable = value; }
-        }
+        public IObservable<bool> CanLaunchExecutable { get; private set; }
 
         public TextureFiltering TextureFiltering
         {
@@ -179,17 +153,11 @@ namespace FSOManagement.Profiles
 
         public object Clone()
         {
-            // Use serialization to get a truly unreated new instance
-            var formatter = new BinaryFormatter();
+            // Use serialization to get a truly unrealated new instance
+            var newInstance = new Profile();
+            newInstance.InitializeFromData(_profileData);
 
-            using (var stream = new MemoryStream())
-            {
-                formatter.Serialize(stream, this);
-
-                stream.Seek(0, SeekOrigin.Begin);
-
-                return formatter.Deserialize(stream);
-            }
+            return newInstance;
         }
 
         public IFlagManager FlagManager
@@ -271,17 +239,17 @@ namespace FSOManagement.Profiles
             {
                 var process = new Process
                 {
-                    StartInfo =
-                        new ProcessStartInfo
-                        {
-                            FileName = SelectedExecutable.FullPath,
-                            WorkingDirectory = Path.GetDirectoryName(SelectedExecutable.FullPath)
-                        }
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = SelectedExecutable.FullPath,
+                        WorkingDirectory = Path.GetDirectoryName(SelectedExecutable.FullPath)
+                    }
                 };
                 process.Start();
 
                 return process;
-            }, token);
+            },
+                token);
 
             return launchedProcess;
         }
@@ -293,6 +261,16 @@ namespace FSOManagement.Profiles
 
         [field: NonSerialized]
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public void InitializeFromData(ProfileData data)
+        {
+            _profileData = data;
+        }
+
+        public ProfileData GetData()
+        {
+            return _profileData;
+        }
 
         #endregion
 
@@ -324,15 +302,31 @@ namespace FSOManagement.Profiles
 
         #endregion
 
-        private void OnCreated()
+        protected bool Equals(Profile other)
         {
-            _modActivationManager = new ModActivationManager(this);
-            _flagManager = new FlagManager(this);
+            return string.Equals(_profileData.Name, other._profileData.Name);
+        }
 
-            this.WhenAny(x => x.ModActivationManager.CommandLine, x => x.FlagManager.CommandLine, x => x.ExtraCommandLine,
-                (cmd1, cmd2, cmd3) => JoinCommandLine(cmd1.Value, cmd2.Value, cmd3.Value)).BindTo(this, x => x.CommandLine);
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+            if (obj.GetType() != this.GetType())
+            {
+                return false;
+            }
+            return Equals((Profile) obj);
+        }
 
-            CanLaunchExecutable = this.WhenAny(x => x.SelectedExecutable, val => CanLaunch(val.Value));
+        public override int GetHashCode()
+        {
+            return _profileData.Name == null ? 31 : _profileData.Name.GetHashCode();
         }
 
         private static bool CanLaunch([CanBeNull] Executable value)
@@ -358,34 +352,62 @@ namespace FSOManagement.Profiles
 
         private TVal GetValue<TVal>([NotNull] IConfigurationKey<TVal> key)
         {
-            if (_settingsDictionary == null)
+            if (_profileData.Settings == null)
             {
                 return key.Default;
             }
 
             object value;
-            if (!_settingsDictionary.TryGetValue(key, out value))
+            if (!_profileData.Settings.TryGetValue(key.Name, out value))
             {
                 return key.Default;
             }
 
-            if (value is TVal)
+            if (value == null)
             {
-                return (TVal) (value);
+                return key.Default;
             }
 
-            return default(TVal);
+            // If it's a data model get the data
+            if (!IsDataModelOf(typeof(TVal), value.GetType()))
+            {
+                this.Log().Warn("Settings key {0} should be data type of {1} but is type {2}!", key.Name, typeof(TVal), value.GetType());
+                return key.Default;
+            }
+
+            var modelInstance = Activator.CreateInstance<TVal>();
+
+            var initializeMethod = typeof(TVal).GetMethod("InitializeFromData");
+            initializeMethod.Invoke(modelInstance, new[] {value});
+
+            return modelInstance;
         }
 
-        private void SetValue<TVal>([NotNull] IConfigurationKey<TVal> key, TVal value, [NotNull, CallerMemberName] string propertyName = null)
+        private void SetValue<TVal>([NotNull] IConfigurationKey key, TVal value, [NotNull, CallerMemberName] string propertyName = null)
         {
-            if (_settingsDictionary == null)
+            object val = value;
+            if (value is IDataModel)
             {
-                _settingsDictionary = new Dictionary<IConfigurationKey, object>();
+                dynamic dynValue = value;
+                val = dynValue.GetData();
             }
 
-            _settingsDictionary[key] = value;
+            if (_profileData.Settings == null)
+            {
+                _profileData.Settings = new Dictionary<string, object>();
+            }
+
+            _profileData.Settings[key.Name] = val;
             OnPropertyChanged(propertyName);
+        }
+
+        private static bool IsDataModelOf([NotNull] Type type, [NotNull] Type dataType)
+        {
+            var interfaces = type.GetInterfaces();
+            return
+                interfaces.Any(
+                    x =>
+                        x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IDataModel<>) && x.GetGenericArguments().Any(arg => arg == dataType));
         }
 
         [NotifyPropertyChangedInvocator]

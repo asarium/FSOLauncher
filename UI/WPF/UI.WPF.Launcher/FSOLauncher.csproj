@@ -111,6 +111,9 @@
       <HintPath>..\..\..\packages\reactiveui-core.6.0.7\lib\Net45\ReactiveUI.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="ReactiveUI.Events">
+      <HintPath>..\..\..\packages\reactiveui-events.6.1.0\lib\net45\ReactiveUI.Events.dll</HintPath>
+    </Reference>
     <Reference Include="Splat">
       <HintPath>..\..\..\packages\Splat.1.5.0\lib\Net45\Splat.dll</HintPath>
       <Private>True</Private>
@@ -166,13 +169,11 @@
     <Compile Include="Implementations\MetroInteractionService.cs" />
     <Compile Include="Implementations\MetroWindowManager.cs" />
     <Compile Include="Implementations\NLogLogManager.cs" />
-    <Compile Include="Implementations\SettingsAdapter.cs" />
     <Compile Include="Properties\Settings.cs" />
     <Compile Include="SingleInstance.cs" />
     <Compile Include="ViewModels\GameRootInputViewModel.cs" />
     <Compile Include="ViewModels\ProfileInputViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
-    <Compile Include="ViewModels\Test.cs" />
     <Compile Include="Views\ProfileInputDialog.xaml.cs">
       <DependentUpon>ProfileInputDialog.xaml</DependentUpon>
     </Compile>

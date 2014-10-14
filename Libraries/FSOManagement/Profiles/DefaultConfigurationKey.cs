@@ -70,17 +70,8 @@ namespace FSOManagement.Profiles
     [Serializable]
     public class DefaultConfigurationKey<TValue> : DefaultConfigurationKey, IConfigurationKey<TValue>
     {
-        private readonly Func<TValue, object> _converter;
-
         public DefaultConfigurationKey([NotNull] string name, TValue defaultValue = default(TValue)) : base(name)
         {
-            Default = defaultValue;
-        }
-
-        public DefaultConfigurationKey([NotNull] string name, [NotNull] Func<TValue, object> converter, TValue defaultValue = default(TValue))
-            : base(name)
-        {
-            _converter = converter;
             Default = defaultValue;
         }
 
@@ -88,10 +79,6 @@ namespace FSOManagement.Profiles
 
         public TValue Default { get; private set; }
 
-        public object Convert(TValue value)
-        {
-            return _converter != null ? _converter(value) : value;
-        }
 
         #endregion
     }

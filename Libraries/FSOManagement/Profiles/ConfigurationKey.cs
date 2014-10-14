@@ -13,11 +13,8 @@ namespace FSOManagement.Profiles
         string Name { get; }
     }
 
-    public interface IConfigurationKey<TValue> : IConfigurationKey
+    public interface IConfigurationKey<out TValue> : IConfigurationKey
     {
         TValue Default { get; }
-
-        [NotNull]
-        object Convert(TValue value);
     }
 }

@@ -93,6 +93,7 @@
     <Compile Include="Implementations\RegistryConfigurationProvider.cs" />
     <Compile Include="Implementations\WindowsSpeechHandler.cs" />
     <Compile Include="Interfaces\IConfigurationProvider.cs" />
+    <Compile Include="Interfaces\IDataModel.cs" />
     <Compile Include="Interfaces\IFlagManager.cs" />
     <Compile Include="Interfaces\ILauncherSettings.cs" />
     <Compile Include="Interfaces\Mod\IModification.cs" />
