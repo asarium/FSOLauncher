@@ -1,6 +1,5 @@
 ﻿#region Usings
 
-using System;
 using System.Collections.Generic;
 using FSOManagement.Annotations;
 using FSOManagement.Interfaces;
@@ -12,46 +11,64 @@ namespace FSOManagement.Profiles.DataClass
     public struct ProfileData
     {
         [CanBeNull]
+        public SortedSet<FlagInformation> CommandLineOptions { get; set; }
+
+        [CanBeNull]
         public string Name { get; set; }
-        
-        TextureFiltering TextureFiltering { get; set; }
-
-        TcData SelectedTotalConversion { get; set; }
-
-        ExecutableData SelectedExecutable { get; set; }
 
         [CanBeNull]
-        string SelectedJoystickGuid { get; set; }
+        public string SelectedModification { get; set; }
 
-        int ResolutionWidth { get; set; }
+        public TextureFiltering TextureFiltering { get; set; }
 
-        int ResolutionHeight { get; set; }
+        public TcData SelectedTotalConversion { get; set; }
 
-        [CanBeNull]
-        string SelectedAudioDevice { get; set; }
-
-        uint SampleRate { get; set; }
-
-        bool EfxEnabled { get; set; }
+        public ExecutableData SelectedExecutable { get; set; }
 
         [CanBeNull]
-        string SpeechVoiceName { get; set; }
+        public string SelectedJoystickGuid { get; set; }
 
-        int SpeechVoiceVolume { get; set; }
+        public int ResolutionWidth { get; set; }
+
+        public int ResolutionHeight { get; set; }
 
         [CanBeNull]
-        string ExtraCommandLine { get; set; }
+        public string SelectedAudioDevice { get; set; }
+
+        public uint SampleRate { get; set; }
+
+        public bool EfxEnabled { get; set; }
+
+        [CanBeNull]
+        public string SpeechVoiceName { get; set; }
+
+        public int SpeechVoiceVolume { get; set; }
+
+        [CanBeNull]
+        public string ExtraCommandLine { get; set; }
 
         #region Voice settings
 
-        bool UseVoiceInTechRoom { get; set; }
+        public bool UseVoiceInTechRoom { get; set; }
 
-        bool UseVoiceInBriefing { get; set; }
+        public bool UseVoiceInBriefing { get; set; }
 
-        bool UseVoiceInGame { get; set; }
+        public bool UseVoiceInGame { get; set; }
 
-        bool UseVoiceInMulti { get; set; }
+        public bool UseVoiceInMulti { get; set; }
 
         #endregion
+
+        public ProfileData Clone()
+        {
+            var ret = this;
+
+            if (CommandLineOptions != null)
+            {
+                ret.CommandLineOptions = new SortedSet<FlagInformation>(CommandLineOptions);
+            }
+
+            return ret;
+        }
     }
 }

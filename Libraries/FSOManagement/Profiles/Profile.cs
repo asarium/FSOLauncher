@@ -15,7 +15,6 @@ using FSOManagement.Implementations.Mod;
 using FSOManagement.Interfaces;
 using FSOManagement.Interfaces.Mod;
 using FSOManagement.Profiles.DataClass;
-using FSOManagement.Profiles.Keys;
 using FSOManagement.Util;
 using ReactiveUI;
 using Splat;
@@ -30,9 +29,11 @@ namespace FSOManagement.Profiles
 
         private readonly ModActivationManager _modActivationManager;
 
-        private string _commandLine;
-
         private ProfileData _profileData;
+
+        private Executable _selectedExecutable;
+
+        private TotalConversion _selectedTotalConversion;
 
         public Profile()
         {
@@ -48,20 +49,104 @@ namespace FSOManagement.Profiles
         }
 
         [CanBeNull]
-        internal string SelectedModification
-        {
-            get { return GetValue(General.SelectedModificationFolder); }
-            set { SetValue(General.SelectedModificationFolder, value); }
-        }
-
-        [NotNull]
         internal SortedSet<FlagInformation> CommandLineOptions
         {
-            get { return GetValue(General.CommandLineOptions); }
-            set { SetValue(General.CommandLineOptions, value); }
+            get { return _profileData.CommandLineOptions; }
+            set { _profileData.CommandLineOptions = value; }
+        }
+
+        [CanBeNull]
+        public string SelectedModification
+        {
+            get { return _profileData.SelectedModification; }
+            set { _profileData.SelectedModification = value; }
         }
 
         #region IProfile Members
+
+        public bool EfxEnabled
+        {
+            get { return _profileData.EfxEnabled; }
+            set { _profileData.EfxEnabled = value; }
+        }
+
+        public string ExtraCommandLine
+        {
+            get { return _profileData.ExtraCommandLine; }
+            set { _profileData.ExtraCommandLine = value; }
+        }
+
+        public int ResolutionHeight
+        {
+            get { return _profileData.ResolutionHeight; }
+            set { _profileData.ResolutionHeight = value; }
+        }
+
+        public int ResolutionWidth
+        {
+            get { return _profileData.ResolutionWidth; }
+            set { _profileData.ResolutionWidth = value; }
+        }
+
+        public uint SampleRate
+        {
+            get { return _profileData.SampleRate; }
+            set { _profileData.SampleRate = value; }
+        }
+
+        public string SelectedAudioDevice
+        {
+            get { return _profileData.SelectedAudioDevice; }
+            set { _profileData.SelectedAudioDevice = value; }
+        }
+
+        public string SelectedJoystickGuid
+        {
+            get { return _profileData.SelectedJoystickGuid; }
+            set { _profileData.SelectedJoystickGuid = value; }
+        }
+
+        public string SpeechVoiceName
+        {
+            get { return _profileData.SpeechVoiceName; }
+            set { _profileData.SpeechVoiceName = value; }
+        }
+
+        public int SpeechVoiceVolume
+        {
+            get { return _profileData.SpeechVoiceVolume; }
+            set { _profileData.SpeechVoiceVolume = value; }
+        }
+
+        public TextureFiltering TextureFiltering
+        {
+            get { return _profileData.TextureFiltering; }
+            set { _profileData.TextureFiltering = value; }
+        }
+
+        public bool UseVoiceInBriefing
+        {
+            get { return _profileData.UseVoiceInBriefing; }
+            set { _profileData.UseVoiceInBriefing = value; }
+        }
+
+        public bool UseVoiceInGame
+        {
+            get { return _profileData.UseVoiceInGame; }
+            set { _profileData.UseVoiceInGame = value; }
+        }
+
+        public bool UseVoiceInMulti
+        {
+            get { return _profileData.UseVoiceInMulti; }
+            set { _profileData.UseVoiceInMulti = value; }
+        }
+
+        public bool UseVoiceInTechRoom
+        {
+            get { return _profileData.UseVoiceInTechRoom; }
+            set { _profileData.UseVoiceInTechRoom = value; }
+        }
 
         public string Name
         {
@@ -77,85 +162,16 @@ namespace FSOManagement.Profiles
             }
         }
 
+        public string CommandLine { get; private set; }
+
         public IObservable<bool> CanLaunchExecutable { get; private set; }
 
-        public TextureFiltering TextureFiltering
-        {
-            get { return GetValue(Video.TextureFiltering); }
-            set { SetValue(Video.TextureFiltering, value); }
-        }
-
-        public TotalConversion SelectedTotalConversion
-        {
-            get { return GetValue(General.SelectedTotalConversion); }
-            set { SetValue(General.SelectedTotalConversion, value); }
-        }
-
-        public Executable SelectedExecutable
-        {
-            get { return GetValue(General.SelectedExecutable); }
-            set { SetValue(General.SelectedExecutable, value); }
-        }
-
-        public string SelectedJoystickGuid
-        {
-            get { return GetValue(General.SelectedJoystickGUID); }
-            set { SetValue(General.SelectedJoystickGUID, value); }
-        }
-
-        public int ResolutionWidth
-        {
-            get { return GetValue(Video.ResolutionWidth); }
-            set { SetValue(Video.ResolutionWidth, value); }
-        }
-
-        public int ResolutionHeight
-        {
-            get { return GetValue(Video.ResolutionHeight); }
-            set { SetValue(Video.ResolutionHeight, value); }
-        }
-
-        public string SelectedAudioDevice
-        {
-            get { return GetValue(Audio.SelectedAudioDevice); }
-            set { SetValue(Audio.SelectedAudioDevice, value); }
-        }
-
-        public uint SampleRate
-        {
-            get { return GetValue(Audio.SampleRate); }
-            set { SetValue(Audio.SampleRate, value); }
-        }
-
-        public bool EfxEnabled
-        {
-            get { return GetValue(Audio.EfxEnabled); }
-            set { SetValue(Audio.EfxEnabled, value); }
-        }
-
-        public string SpeechVoiceName
-        {
-            get { return GetValue(General.VoiceName); }
-            set { SetValue(General.VoiceName, value); }
-        }
-
-        public int SpeechVoiceVolume
-        {
-            get { return GetValue(General.VoiceVolume); }
-            set { SetValue(General.VoiceVolume, value); }
-        }
-
-        public string ExtraCommandLine
-        {
-            get { return GetValue(General.ExtraCommandLine); }
-            set { SetValue(General.ExtraCommandLine, value); }
-        }
 
         public object Clone()
         {
             // Use serialization to get a truly unrealated new instance
             var newInstance = new Profile();
-            newInstance.InitializeFromData(_profileData);
+            newInstance.InitializeFromData(_profileData.Clone());
 
             return newInstance;
         }
@@ -170,16 +186,30 @@ namespace FSOManagement.Profiles
             get { return _modActivationManager; }
         }
 
-        public string CommandLine
+        public TotalConversion SelectedTotalConversion
         {
-            get { return _commandLine; }
-            private set
+            get { return _selectedTotalConversion; }
+            set
             {
-                if (value == _commandLine)
+                if (Equals(value, _selectedTotalConversion))
                 {
                     return;
                 }
-                _commandLine = value;
+                _selectedTotalConversion = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public Executable SelectedExecutable
+        {
+            get { return _selectedExecutable; }
+            set
+            {
+                if (Equals(value, _selectedExecutable))
+                {
+                    return;
+                }
+                _selectedExecutable = value;
                 OnPropertyChanged();
             }
         }
@@ -259,45 +289,50 @@ namespace FSOManagement.Profiles
             return ConfigurationManager.ReadConfigurationAsync(this);
         }
 
-        [field: NonSerialized]
         public event PropertyChangedEventHandler PropertyChanged;
 
         public void InitializeFromData(ProfileData data)
         {
             _profileData = data;
+
+// ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            if (data.SelectedTotalConversion.RootPath != null)
+            {
+                SelectedTotalConversion = new TotalConversion();
+                SelectedTotalConversion.InitializeFromData(data.SelectedTotalConversion);
+            }
+            else
+            {
+                SelectedTotalConversion = null;
+            }
+
+// ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            if (data.SelectedExecutable.Path != null)
+            {
+                SelectedExecutable = new Executable();
+                SelectedExecutable.InitializeFromData(data.SelectedExecutable);
+            }
+            else
+            {
+                SelectedExecutable = null;
+            }
         }
 
         public ProfileData GetData()
         {
-            return _profileData;
-        }
+            var ret = _profileData.Clone();
 
-        #endregion
+            if (SelectedExecutable != null)
+            {
+                ret.SelectedExecutable = SelectedExecutable.GetData();
+            }
 
-        #region Voice settings
+            if (SelectedTotalConversion != null)
+            {
+                ret.SelectedTotalConversion = SelectedTotalConversion.GetData();
+            }
 
-        public bool UseVoiceInTechRoom
-        {
-            get { return GetValue(Keys.Speech.UseInTechRoom); }
-            set { SetValue(Keys.Speech.UseInTechRoom, value); }
-        }
-
-        public bool UseVoiceInBriefing
-        {
-            get { return GetValue(Keys.Speech.UseInBriefing); }
-            set { SetValue(Keys.Speech.UseInBriefing, value); }
-        }
-
-        public bool UseVoiceInGame
-        {
-            get { return GetValue(Keys.Speech.UseInGame); }
-            set { SetValue(Keys.Speech.UseInGame, value); }
-        }
-
-        public bool UseVoiceInMulti
-        {
-            get { return GetValue(Keys.Speech.UseInMulti); }
-            set { SetValue(Keys.Speech.UseInMulti, value); }
+            return ret;
         }
 
         #endregion
@@ -348,66 +383,6 @@ namespace FSOManagement.Profiles
         private static string JoinCommandLine([NotNull] params string[] parts)
         {
             return string.Join(" ", parts.Where(str => !string.IsNullOrEmpty(str)));
-        }
-
-        private TVal GetValue<TVal>([NotNull] IConfigurationKey<TVal> key)
-        {
-            if (_profileData.Settings == null)
-            {
-                return key.Default;
-            }
-
-            object value;
-            if (!_profileData.Settings.TryGetValue(key.Name, out value))
-            {
-                return key.Default;
-            }
-
-            if (value == null)
-            {
-                return key.Default;
-            }
-
-            // If it's a data model get the data
-            if (!IsDataModelOf(typeof(TVal), value.GetType()))
-            {
-                this.Log().Warn("Settings key {0} should be data type of {1} but is type {2}!", key.Name, typeof(TVal), value.GetType());
-                return key.Default;
-            }
-
-            var modelInstance = Activator.CreateInstance<TVal>();
-
-            var initializeMethod = typeof(TVal).GetMethod("InitializeFromData");
-            initializeMethod.Invoke(modelInstance, new[] {value});
-
-            return modelInstance;
-        }
-
-        private void SetValue<TVal>([NotNull] IConfigurationKey key, TVal value, [NotNull, CallerMemberName] string propertyName = null)
-        {
-            object val = value;
-            if (value is IDataModel)
-            {
-                dynamic dynValue = value;
-                val = dynValue.GetData();
-            }
-
-            if (_profileData.Settings == null)
-            {
-                _profileData.Settings = new Dictionary<string, object>();
-            }
-
-            _profileData.Settings[key.Name] = val;
-            OnPropertyChanged(propertyName);
-        }
-
-        private static bool IsDataModelOf([NotNull] Type type, [NotNull] Type dataType)
-        {
-            var interfaces = type.GetInterfaces();
-            return
-                interfaces.Any(
-                    x =>
-                        x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IDataModel<>) && x.GetGenericArguments().Any(arg => arg == dataType));
         }
 
         [NotifyPropertyChangedInvocator]

@@ -114,10 +114,6 @@
     <Compile Include="Profiles\DefaultConfigurationKey.cs" />
     <Compile Include="Profiles\FlagInformation.cs" />
     <Compile Include="Profiles\FlagManager.cs" />
-    <Compile Include="Profiles\Keys\Audio.cs" />
-    <Compile Include="Profiles\Keys\General.cs" />
-    <Compile Include="Profiles\Keys\Speech.cs" />
-    <Compile Include="Profiles\Keys\Video.cs" />
     <Compile Include="Implementations\Mod\ModActivationManager.cs" />
     <Compile Include="Profiles\Profile.cs" />
     <Compile Include="Properties\Annotations.cs" />

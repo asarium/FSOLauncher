@@ -4,7 +4,7 @@ using FSOManagement.Annotations;
 namespace FSOManagement.Profiles
 {
     [Serializable]
-    internal struct FlagInformation : IComparable<FlagInformation>
+    public struct FlagInformation : IComparable<FlagInformation>
     {
         private readonly string _name;
 
