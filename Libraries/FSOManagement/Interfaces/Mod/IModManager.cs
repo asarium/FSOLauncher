@@ -1,6 +1,5 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Caliburn.Micro;
 using FSOManagement.Annotations;
 using ReactiveUI;
 

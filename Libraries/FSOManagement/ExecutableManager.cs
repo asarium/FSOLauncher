@@ -6,8 +6,8 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using Caliburn.Micro;
 using FSOManagement.Annotations;
+using ReactiveUI;
 
 #endregion
 
@@ -15,7 +15,7 @@ namespace FSOManagement
 {
     public class ExecutableManager : INotifyPropertyChanged
     {
-        private readonly BindableCollection<Executable> _executables;
+        private readonly IReactiveList<Executable> _executables;
 
         private readonly string _rootPath;
 
@@ -33,7 +33,7 @@ namespace FSOManagement
             }
 
             _rootPath = rootFolder;
-            _executables = new BindableCollection<Executable>(ListExecutables());
+            _executables = new ReactiveList<Executable>(ListExecutables());
         }
 
         #region FileSystemWatcher Event handlers
@@ -69,7 +69,7 @@ namespace FSOManagement
 
         #endregion
 
-        public virtual BindableCollection<Executable> Executables
+        public virtual IReactiveList<Executable> Executables
         {
             get { return _executables; }
         }
@@ -84,7 +84,10 @@ namespace FSOManagement
         {
             _executables.Clear();
 
-            ListExecutables().Apply(exe => _executables.Add(exe));
+            foreach (var listExecutable in ListExecutables())
+            {
+                _executables.Add(listExecutable);
+            }
 
             return _executables;
         }

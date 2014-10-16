@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using Caliburn.Micro;
 using FSOManagement.Annotations;
 using FSOManagement.Interfaces;
 
@@ -72,7 +71,10 @@ namespace FSOManagement.Profiles
 
             var result = _flagInformations.RemoveWhere(info => info.Name == name) > 0;
 
-            eventArgs.Apply(OnFlagChanged);
+            foreach (var flagChangedEventArgse in eventArgs)
+            {
+                OnFlagChanged(flagChangedEventArgse);
+            }
             UpdateCommandLine();
 
             return result;

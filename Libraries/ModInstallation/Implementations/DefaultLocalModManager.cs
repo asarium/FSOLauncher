@@ -14,6 +14,7 @@ using ModInstallation.Interfaces;
 using ModInstallation.Interfaces.Mods;
 using ModInstallation.Util;
 using Newtonsoft.Json;
+using ReactiveUI;
 using Splat;
 
 #endregion
@@ -25,11 +26,11 @@ namespace ModInstallation.Implementations
     {
         private const string ModInfoFile = "mod.json";
 
-        private readonly BindableCollection<IModification> _modifications;
+        private readonly IReactiveList<IModification> _modifications;
 
         public DefaultLocalModManager()
         {
-            _modifications = new BindableCollection<IModification>();
+            _modifications = new ReactiveList<IModification>();
         }
 
         #region ILocalModManager Members

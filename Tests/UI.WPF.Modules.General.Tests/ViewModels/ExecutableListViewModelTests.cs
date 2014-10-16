@@ -6,6 +6,7 @@ using FSOManagement;
 using FSOManagement.Profiles;
 using Moq;
 using NUnit.Framework;
+using ReactiveUI;
 using UI.WPF.Modules.General.ViewModels;
 
 #endregion
@@ -18,8 +19,7 @@ namespace UI.WPF.Modules.General.Tests.ViewModels
         [Test]
         public void TestExecutableViewModels()
         {
-            var executables = new BindableCollection<Executable>
-            {
+            var executables = new ReactiveList<Executable>{
                 new Executable("/fs2_open_3_7_0.exe")
             };
 
@@ -72,7 +72,7 @@ namespace UI.WPF.Modules.General.Tests.ViewModels
         [Test]
         public void TestSelectedExecutableChanged()
         {
-            var executables = new BindableCollection<Executable>
+            var executables = new ReactiveList<Executable>
             {
                 new Executable("/fs2_open_3_7_0.exe"),
                 new Executable("/fs2_open_3_7_0-DEBUG.exe"),

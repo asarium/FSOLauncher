@@ -14,9 +14,11 @@ namespace FSOManagement.Implementations.Mod
         [NotNull, Import]
         private ILocalModManager LocalModManager { get; set; }
 
-        public Task<IEnumerable<IModification>> LoadModificationListAsync(string searchFolder)
+        public async Task<IEnumerable<IModification>> LoadModificationListAsync(string searchFolder)
         {
             var currentDirectory = LocalModManager.PackageDirectory;
+
+            return null;
         }
     }
 }
