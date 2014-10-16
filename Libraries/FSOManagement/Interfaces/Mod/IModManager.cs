@@ -9,6 +9,9 @@ namespace FSOManagement.Interfaces.Mod
     public interface IModManager
     {
         [NotNull]
+        string RootFolder { set; }
+
+        [NotNull]
         IReadOnlyReactiveList<IModification> Modifications { get; }
 
         [NotNull]

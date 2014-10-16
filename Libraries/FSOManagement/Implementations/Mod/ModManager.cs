@@ -2,12 +2,14 @@
 
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.Composition;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using FSOManagement.Annotations;
 using FSOManagement.Interfaces.Mod;
 using ReactiveUI;
+using Splat;
 
 #endregion
 
@@ -21,18 +23,19 @@ namespace FSOManagement.Implementations.Mod
 
     public class ModManager : IModManager, INotifyPropertyChanged
     {
-        private static readonly IEnumerable<IModListLoader> Loaders = new[] {new IniModListLoader()};
-
         private readonly ReactiveList<IModification> _modifications = new ReactiveList<IModification>();
 
-        private readonly string _rootFolder;
-
-        public ModManager([NotNull] string rootFolder)
+        public ModManager()
         {
-            _rootFolder = rootFolder;
+            Loaders = Locator.Current.GetServices<IModListLoader>();
         }
 
+        [NotNull]
+        private IEnumerable<IModListLoader> Loaders { get; set; }
+
         #region IModManager Members
+
+        public string RootFolder { set; private get; }
 
         public IReadOnlyReactiveList<IModification> Modifications
         {
@@ -41,7 +44,7 @@ namespace FSOManagement.Implementations.Mod
 
         public async Task RefreshModsAsync()
         {
-            var loadTasks = Loaders.Select(loader => loader.LoadModificationListAsync(_rootFolder));
+            var loadTasks = Loaders.Select(loader => loader.LoadModificationListAsync(RootFolder));
 
             var loaded = await Task.WhenAll(loadTasks);
 

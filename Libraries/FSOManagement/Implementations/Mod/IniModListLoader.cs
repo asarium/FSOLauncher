@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,6 +8,7 @@ using FSOManagement.Interfaces.Mod;
 
 namespace FSOManagement.Implementations.Mod
 {
+    [Export(typeof(IModListLoader))]
     public class IniModListLoader : IModListLoader
     {
         public async Task<IEnumerable<IModification>> LoadModificationListAsync(string searchFolder)
