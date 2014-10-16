@@ -35,6 +35,8 @@ namespace FSOManagement.Profiles
 
         private TotalConversion _selectedTotalConversion;
 
+        private string _commandLine;
+
         public Profile()
         {
             _modActivationManager = new ModActivationManager(this);
@@ -52,14 +54,22 @@ namespace FSOManagement.Profiles
         internal SortedSet<FlagInformation> CommandLineOptions
         {
             get { return _profileData.CommandLineOptions; }
-            set { _profileData.CommandLineOptions = value; }
+            set
+            {
+                _profileData.CommandLineOptions = value;
+                OnPropertyChanged();
+            }
         }
 
         [CanBeNull]
         public string SelectedModification
         {
             get { return _profileData.SelectedModification; }
-            set { _profileData.SelectedModification = value; }
+            set
+            {
+                _profileData.SelectedModification = value;
+                OnPropertyChanged();
+            }
         }
 
         #region IProfile Members
@@ -67,85 +77,141 @@ namespace FSOManagement.Profiles
         public bool EfxEnabled
         {
             get { return _profileData.EfxEnabled; }
-            set { _profileData.EfxEnabled = value; }
+            set
+            {
+                _profileData.EfxEnabled = value;
+                OnPropertyChanged();
+            }
         }
 
         public string ExtraCommandLine
         {
             get { return _profileData.ExtraCommandLine; }
-            set { _profileData.ExtraCommandLine = value; }
+            set
+            {
+                _profileData.ExtraCommandLine = value;
+                OnPropertyChanged();
+            }
         }
 
         public int ResolutionHeight
         {
             get { return _profileData.ResolutionHeight; }
-            set { _profileData.ResolutionHeight = value; }
+            set
+            {
+                _profileData.ResolutionHeight = value;
+                OnPropertyChanged();
+            }
         }
 
         public int ResolutionWidth
         {
             get { return _profileData.ResolutionWidth; }
-            set { _profileData.ResolutionWidth = value; }
+            set
+            {
+                _profileData.ResolutionWidth = value;
+                OnPropertyChanged();
+            }
         }
 
         public uint SampleRate
         {
             get { return _profileData.SampleRate; }
-            set { _profileData.SampleRate = value; }
+            set
+            {
+                _profileData.SampleRate = value;
+                OnPropertyChanged();
+            }
         }
 
         public string SelectedAudioDevice
         {
             get { return _profileData.SelectedAudioDevice; }
-            set { _profileData.SelectedAudioDevice = value; }
+            set
+            {
+                _profileData.SelectedAudioDevice = value;
+                OnPropertyChanged();
+            }
         }
 
         public string SelectedJoystickGuid
         {
             get { return _profileData.SelectedJoystickGuid; }
-            set { _profileData.SelectedJoystickGuid = value; }
+            set
+            {
+                _profileData.SelectedJoystickGuid = value;
+                OnPropertyChanged();
+            }
         }
 
         public string SpeechVoiceName
         {
             get { return _profileData.SpeechVoiceName; }
-            set { _profileData.SpeechVoiceName = value; }
+            set
+            {
+                _profileData.SpeechVoiceName = value;
+                OnPropertyChanged();
+            }
         }
 
         public int SpeechVoiceVolume
         {
             get { return _profileData.SpeechVoiceVolume; }
-            set { _profileData.SpeechVoiceVolume = value; }
+            set
+            {
+                _profileData.SpeechVoiceVolume = value;
+                OnPropertyChanged();
+            }
         }
 
         public TextureFiltering TextureFiltering
         {
             get { return _profileData.TextureFiltering; }
-            set { _profileData.TextureFiltering = value; }
+            set
+            {
+                _profileData.TextureFiltering = value;
+                OnPropertyChanged();
+            }
         }
 
         public bool UseVoiceInBriefing
         {
             get { return _profileData.UseVoiceInBriefing; }
-            set { _profileData.UseVoiceInBriefing = value; }
+            set
+            {
+                _profileData.UseVoiceInBriefing = value;
+                OnPropertyChanged();
+            }
         }
 
         public bool UseVoiceInGame
         {
             get { return _profileData.UseVoiceInGame; }
-            set { _profileData.UseVoiceInGame = value; }
+            set
+            {
+                _profileData.UseVoiceInGame = value;
+                OnPropertyChanged();
+            }
         }
 
         public bool UseVoiceInMulti
         {
             get { return _profileData.UseVoiceInMulti; }
-            set { _profileData.UseVoiceInMulti = value; }
+            set
+            {
+                _profileData.UseVoiceInMulti = value;
+                OnPropertyChanged();
+            }
         }
 
         public bool UseVoiceInTechRoom
         {
             get { return _profileData.UseVoiceInTechRoom; }
-            set { _profileData.UseVoiceInTechRoom = value; }
+            set
+            {
+                _profileData.UseVoiceInTechRoom = value;
+                OnPropertyChanged();
+            }
         }
 
         public string Name
@@ -162,7 +228,19 @@ namespace FSOManagement.Profiles
             }
         }
 
-        public string CommandLine { get; private set; }
+        public string CommandLine
+        {
+            get { return _commandLine; }
+            private set
+            {
+                if (value == _commandLine)
+                {
+                    return;
+                }
+                _commandLine = value;
+                OnPropertyChanged();
+            }
+        }
 
         public IObservable<bool> CanLaunchExecutable { get; private set; }
 
