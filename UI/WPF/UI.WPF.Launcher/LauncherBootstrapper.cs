@@ -15,6 +15,7 @@ using Caliburn.Micro;
 using ModInstallation.Interfaces;
 using ModInstallation.Windows.Implementations.Extractors;
 using NLog.Config;
+using ReactiveUI;
 using SDLGlue;
 using Splat;
 using UI.WPF.Launcher.Common.Classes;
@@ -58,12 +59,14 @@ namespace UI.WPF.Launcher
             batch.AddExportedValue(_container);
 
             _container.Compose(batch);
+
+            Locator.CurrentMutable = new MefDependencyResolver(_container, Locator.CurrentMutable);
         }
 
         protected override void OnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
             // Only handle exceptions in non-debug mode so the debugger can break at the location where the exception was generated
-            this.Log().Fatal("Unhandled exception!", e.Exception);
+            this.Log().FatalException("Unhandled exception!", e.Exception);
 #if !DEBUG
     // Only ever allow one window to open.
             if (_unhandledExceptionCaught)
@@ -114,27 +117,19 @@ namespace UI.WPF.Launcher
 
         protected override object GetInstance(Type serviceType, string key)
         {
-            var contract = string.IsNullOrEmpty(key) ? AttributedModelServices.GetContractName(serviceType) : key;
-            var export = _container.GetExportedValues<object>(contract).FirstOrDefault();
-
-            if (export != null)
-            {
-                return export;
-            }
-
-            throw new Exception(string.Format("Could not locate any instances of contract {0}.", contract));
+            return Locator.Current.GetService(serviceType, key);
         }
 
         protected override IEnumerable<object> GetAllInstances(Type serviceType)
         {
-            return _container.GetExportedValues<object>(AttributedModelServices.GetContractName(serviceType));
+            return Locator.Current.GetServices(serviceType);
         }
 
         protected override IEnumerable<Assembly> SelectAssemblies()
         {
             return new[]
             {
-// ApplicationMain assembly
+                // ApplicationMain assembly
                 typeof(LauncherBootstrapper).Assembly,
 
                 // Modules follow
@@ -152,7 +147,7 @@ namespace UI.WPF.Launcher
 
         protected override void BuildUp(object instance)
         {
-            _container.SatisfyImportsOnce(instance);
+            throw new InvalidOperationException("BuildUp should not be used!");
         }
 
         protected override void OnStartup(object sender, StartupEventArgs e)

@@ -1,16 +1,13 @@
 ﻿#region Usings
 
-using System.ComponentModel.Composition;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Caliburn.Micro;
-using FSOManagement;
 using FSOManagement.Implementations.Mod;
 using ReactiveUI;
+using Splat;
 using UI.WPF.Launcher.Common.Interfaces;
-using UI.WPF.Launcher.Common.Services;
 using UI.WPF.Modules.Mods.Views;
 
 #endregion
@@ -49,12 +46,13 @@ namespace UI.WPF.Modules.Mods.ViewModels
             var moreInfoCommand = ReactiveCommand.CreateAsyncTask(async x => await OpenMoreInfoDialog());
 
             MoreInfoCommand = moreInfoCommand;
+
+            InteractionService = Locator.Current.GetService<IInteractionService>();
+            ProfileManager = Locator.Current.GetService<IProfileManager>();
         }
 
-        [Import]
         private IInteractionService InteractionService { get; set; }
 
-        [Import]
         private IProfileManager ProfileManager { get; set; }
 
         public ICommand ActivateCommand { get; private set; }

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Windows;
 using Caliburn.Micro;
 using Microsoft.Shell;
+using Splat;
 using UI.WPF.Launcher.Common.Classes;
 
 #endregion
@@ -27,7 +28,7 @@ namespace UI.WPF.Launcher
 
         bool ISingleInstanceApp.SignalExternalCommandLineArgs(IList<string> args)
         {
-            IoC.Get<IEventAggregator>().PublishOnUIThreadAsync(new InstanceLaunchedMessage(args));
+            Locator.Current.GetService<IEventAggregator>().PublishOnUIThreadAsync(new InstanceLaunchedMessage(args));
 
             return true;
         }
