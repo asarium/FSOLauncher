@@ -2,12 +2,15 @@
 
 using System;
 using System.ComponentModel;
+using System.ComponentModel.Composition;
 using System.IO;
 using System.Runtime.CompilerServices;
 using FSOManagement.Annotations;
 using FSOManagement.Implementations.Mod;
 using FSOManagement.Interfaces;
+using FSOManagement.Interfaces.Mod;
 using FSOManagement.Profiles.DataClass;
+using Splat;
 
 #endregion
 
@@ -23,7 +26,7 @@ namespace FSOManagement
         }
 
         [NotNull]
-        public ModManager ModManager { get; private set; }
+        public IModManager ModManager { get; private set; }
 
         public string Name
         {
@@ -59,7 +62,11 @@ namespace FSOManagement
 
             _data = data;
 
-            ModManager = new ModManager(RootFolder);
+            ModManager = new ModManager
+            {
+                RootFolder = RootFolder
+            };
+
             ExecutableManager = new ExecutableManager(RootFolder);
         }
 
