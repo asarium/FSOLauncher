@@ -12,6 +12,7 @@ using System.Windows.Threading;
 using System.Xml;
 using Akavache;
 using Caliburn.Micro;
+using FSOManagement;
 using ModInstallation.Interfaces;
 using ModInstallation.Windows.Implementations.Extractors;
 using NLog.Config;
@@ -141,7 +142,8 @@ namespace UI.WPF.Launcher
                 typeof(InstallationModule).Assembly,
 
                 // Libraries
-                typeof(IRemoteModManager).Assembly
+                typeof(IRemoteModManager).Assembly,
+                typeof(FSOUtilities).Assembly
             };
         }
 
