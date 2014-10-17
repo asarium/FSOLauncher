@@ -1,13 +1,15 @@
-﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Threading.Tasks;
-using FSOManagement.Annotations;
+using FSOManagement.Implementations.Mod;
 using FSOManagement.Interfaces.Mod;
+using ModInstallation.Annotations;
 using ModInstallation.Interfaces;
+using ModInstallation.Interfaces.Mods;
+using ReactiveUI;
 
-namespace FSOManagement.Implementations.Mod
+namespace ModInstallation.Implementations
 {
     [Export(typeof(IModListLoader))]
     public class LocalModManagerListLoader : IModListLoader
@@ -23,9 +25,14 @@ namespace FSOManagement.Implementations.Mod
 
             if (Path.GetFullPath(currentDirectory) == Path.GetFullPath(newDirectory))
                 // No change necessary
-                return null;
+                return LocalModManager.Modifications.CreateDerivedCollection(GetLocaModification);
 
             return null;
+        }
+
+        [NotNull]
+        private ILocalModification GetLocaModification([NotNull] IInstalledModification mod)
+        {
         }
     }
 }
