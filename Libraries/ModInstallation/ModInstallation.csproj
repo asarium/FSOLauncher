@@ -41,8 +41,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Newtonsoft.Json.6.0.5\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="ReactiveUI">
-      <HintPath>..\..\packages\reactiveui-core.6.0.7\lib\Net45\ReactiveUI.dll</HintPath>
+    <Reference Include="ReactiveUI, Version=6.0.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\reactiveui-core.6.1.0\lib\Net45\ReactiveUI.dll</HintPath>
     </Reference>
     <Reference Include="Semver">
       <HintPath>..\..\packages\semver.1.1.2\lib\net45\Semver.dll</HintPath>
@@ -50,9 +51,8 @@
     <Reference Include="SharpCompress">
       <HintPath>..\..\packages\sharpcompress.0.10.3\lib\net40\SharpCompress.dll</HintPath>
     </Reference>
-    <Reference Include="Splat, Version=1.5.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Splat.1.5.0\lib\Net45\Splat.dll</HintPath>
+    <Reference Include="Splat">
+      <HintPath>..\..\packages\Splat.1.5.1\lib\Net45\Splat.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -151,6 +151,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\FSOManagement\FSOManagement.csproj">
+      <Project>{73342923-20EE-4F2C-B9AB-9A03341F782A}</Project>
+      <Name>FSOManagement</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SDLGlue\SDLGlue.csproj">
       <Project>{589ECBC2-CDFB-42AA-A9DF-35D804464711}</Project>
       <Name>SDLGlue</Name>

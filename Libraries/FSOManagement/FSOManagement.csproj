@@ -36,13 +36,13 @@
     <Reference Include="INIFileParser">
       <HintPath>..\..\packages\ini-parser.2.1.1\lib\INIFileParser.dll</HintPath>
     </Reference>
-    <Reference Include="ReactiveUI, Version=6.0.7.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="ReactiveUI, Version=6.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\reactiveui-core.6.0.7\lib\Net45\ReactiveUI.dll</HintPath>
+      <HintPath>..\..\packages\reactiveui-core.6.1.0\lib\Net45\ReactiveUI.dll</HintPath>
     </Reference>
-    <Reference Include="Splat, Version=1.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Splat, Version=1.5.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Splat.1.5.0\lib\Net45\Splat.dll</HintPath>
+      <HintPath>..\..\packages\Splat.1.5.1\lib\Net45\Splat.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -133,10 +133,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ModInstallation\ModInstallation.csproj">
-      <Project>{6219DDE3-F989-412B-8368-3EEB6B0D0C00}</Project>
-      <Name>ModInstallation</Name>
-    </ProjectReference>
     <ProjectReference Include="..\SDLGlue\SDLGlue.csproj">
       <Project>{589ECBC2-CDFB-42AA-A9DF-35D804464711}</Project>
       <Name>SDLGlue</Name>
