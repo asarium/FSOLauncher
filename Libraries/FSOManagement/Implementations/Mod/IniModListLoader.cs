@@ -11,25 +11,25 @@ namespace FSOManagement.Implementations.Mod
     [Export(typeof(IModListLoader))]
     public class IniModListLoader : IModListLoader
     {
-        public async Task<IEnumerable<IModification>> LoadModificationListAsync(string searchFolder)
+        public async Task<IEnumerable<ILocalModification>> LoadModificationListAsync(string searchFolder)
         {
             var modifications = GetModifications(searchFolder).ToList();
 
-            await Task.WhenAll(modifications.OfType<Modification>().Select(mod => mod.ReadModIniAsync()));
+            await Task.WhenAll(modifications.OfType<LocalModification>().Select(mod => mod.ReadModIniAsync()));
 
             return modifications;
         }
 
         [NotNull]
-        private static IEnumerable<IModification> GetModifications([NotNull] string searchFolder)
+        private static IEnumerable<ILocalModification> GetModifications([NotNull] string searchFolder)
         {
-            yield return new Modification(searchFolder);
+            yield return new LocalModification(searchFolder);
 
             var possibleDirs = Directory.EnumerateDirectories(searchFolder);
 
             foreach (var possibleDir in possibleDirs.Where(possibleDir => File.Exists(Path.Combine(searchFolder, possibleDir, "mod.ini"))))
             {
-                yield return new Modification(Path.Combine(searchFolder, possibleDir));
+                yield return new LocalModification(Path.Combine(searchFolder, possibleDir));
             }
         }
     }

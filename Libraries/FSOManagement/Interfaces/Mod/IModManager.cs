@@ -11,7 +11,7 @@ namespace FSOManagement.Interfaces.Mod
         string RootFolder { set; }
 
         [NotNull]
-        IReadOnlyReactiveList<IModification> Modifications { get; }
+        IReadOnlyReactiveList<ILocalModification> Modifications { get; }
 
         [NotNull]
         Task RefreshModsAsync();

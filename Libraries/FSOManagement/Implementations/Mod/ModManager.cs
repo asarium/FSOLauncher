@@ -18,12 +18,12 @@ namespace FSOManagement.Implementations.Mod
     public interface IModListLoader
     {
         [NotNull]
-        Task<IEnumerable<IModification>> LoadModificationListAsync([NotNull] string searchFolder);
+        Task<IEnumerable<ILocalModification>> LoadModificationListAsync([NotNull] string searchFolder);
     }
 
     public class ModManager : IModManager, INotifyPropertyChanged
     {
-        private readonly ReactiveList<IModification> _modifications = new ReactiveList<IModification>();
+        private readonly ReactiveList<ILocalModification> _modifications = new ReactiveList<ILocalModification>();
 
         public ModManager()
         {
@@ -37,7 +37,7 @@ namespace FSOManagement.Implementations.Mod
 
         public string RootFolder { set; private get; }
 
-        public IReadOnlyReactiveList<IModification> Modifications
+        public IReadOnlyReactiveList<ILocalModification> Modifications
         {
             get { return _modifications; }
         }

@@ -2,7 +2,7 @@
 
 namespace FSOManagement.Interfaces.Mod
 {
-    public interface IModification
+    public interface ILocalModification
     {
         [NotNull]
         string ModRootPath { get; }

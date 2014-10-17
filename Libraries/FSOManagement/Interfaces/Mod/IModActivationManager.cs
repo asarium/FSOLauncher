@@ -10,12 +10,12 @@ namespace FSOManagement.Interfaces.Mod
         string CommandLine { get; }
 
         [NotNull]
-        IEnumerable<IModification> PrimaryModifications { get; }
+        IEnumerable<ILocalModification> PrimaryModifications { get; }
 
         [NotNull]
-        IEnumerable<IModification> SecondaryModifications { get; }
+        IEnumerable<ILocalModification> SecondaryModifications { get; }
 
         [CanBeNull]
-        IModification ActiveMod { get; set; }
+        ILocalModification ActiveMod { get; set; }
     }
 }

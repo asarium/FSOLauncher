@@ -142,7 +142,7 @@ namespace UI.WPF.Modules.Mods.ViewModels
                 val => CreateStandardModificationsView(val.Value)).BindTo(this, x => x.StandardModificationsView);
         }
 
-        private void OnActiveModChanged([CanBeNull] IModification activeMod)
+        private void OnActiveModChanged([CanBeNull] ILocalModification activeMod)
         {
             if (StandardModificationsView == null)
             {
@@ -167,7 +167,7 @@ namespace UI.WPF.Modules.Mods.ViewModels
             StandardModificationsView.Cast<ModViewModel>().Apply(view => view.IsActiveMod = view.Mod.ModRootPath == activeMod.ModRootPath);
         }
 
-        private void OnPrimaryModificationsChanges([CanBeNull] IEnumerable<IModification> modifications)
+        private void OnPrimaryModificationsChanges([CanBeNull] IEnumerable<ILocalModification> modifications)
         {
             if (StandardModificationsView == null)
             {
@@ -183,7 +183,7 @@ namespace UI.WPF.Modules.Mods.ViewModels
                 .Apply(view => view.IsPrimaryMod = modifications.Any(mod => mod.ModRootPath == view.Mod.ModRootPath));
         }
 
-        private void OnSecondaryModificationsChanges([CanBeNull] IEnumerable<IModification> modifications)
+        private void OnSecondaryModificationsChanges([CanBeNull] IEnumerable<ILocalModification> modifications)
         {
             if (StandardModificationsView == null)
             {
@@ -222,9 +222,9 @@ namespace UI.WPF.Modules.Mods.ViewModels
         }
 
         [NotNull]
-        private ICollectionView CreateStandardModificationsView([NotNull] IEnumerable<IModification> value)
+        private ICollectionView CreateStandardModificationsView([NotNull] IEnumerable<ILocalModification> value)
         {
-            var viewModelCollection = value.CreateDerivedCollection(CreateModViewModel, mod => mod is Modification);
+            var viewModelCollection = value.CreateDerivedCollection(CreateModViewModel, mod => mod is LocalModification);
 
             var collectionView = CollectionViewSource.GetDefaultView(viewModelCollection);
 
@@ -241,9 +241,9 @@ namespace UI.WPF.Modules.Mods.ViewModels
         }
 
         [CanBeNull]
-        private static ModViewModel CreateModViewModel([NotNull] IModification mod)
+        private static ModViewModel CreateModViewModel([NotNull] ILocalModification mod)
         {
-            var modification = (Modification) mod;
+            var modification = (LocalModification) mod;
 
             var modViewModel = new ModViewModel(modification);
 

@@ -85,7 +85,7 @@
     <Compile Include="Implementations\Mod\IniModDependencies.cs" />
     <Compile Include="Implementations\Mod\IniModListLoader.cs" />
     <Compile Include="Implementations\Mod\LocalModManagerListLoader.cs" />
-    <Compile Include="Implementations\Mod\Modification.cs" />
+    <Compile Include="Implementations\Mod\LocalModification.cs" />
     <Compile Include="Implementations\Mod\ModManager.cs" />
     <Compile Include="Implementations\Mod\NoModDependencies.cs" />
     <Compile Include="Implementations\RegistryConfigurationProvider.cs" />
@@ -94,7 +94,7 @@
     <Compile Include="Interfaces\IDataModel.cs" />
     <Compile Include="Interfaces\IFlagManager.cs" />
     <Compile Include="Interfaces\ILauncherSettings.cs" />
-    <Compile Include="Interfaces\Mod\IModification.cs" />
+    <Compile Include="Interfaces\Mod\ILocalModification.cs" />
     <Compile Include="Interfaces\Mod\IModActivationManager.cs" />
     <Compile Include="Interfaces\Mod\IModDependencies.cs" />
     <Compile Include="Interfaces\IProfile.cs" />

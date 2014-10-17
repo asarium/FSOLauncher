@@ -19,13 +19,13 @@ namespace FSOManagement.Implementations.Mod
 {
     public class ModActivationManager : IModActivationManager
     {
-        private IModification _activeMod;
+        private ILocalModification _activeMod;
 
         private string _commandLine;
 
-        private IEnumerable<IModification> _primaryModifications = Enumerable.Empty<IModification>();
+        private IEnumerable<ILocalModification> _primaryModifications = Enumerable.Empty<ILocalModification>();
 
-        private IEnumerable<IModification> _secondaryModifications = Enumerable.Empty<IModification>();
+        private IEnumerable<ILocalModification> _secondaryModifications = Enumerable.Empty<ILocalModification>();
 
         public ModActivationManager([NotNull] Profile profile)
         {
@@ -84,7 +84,7 @@ namespace FSOManagement.Implementations.Mod
             }
         }
 
-        public IEnumerable<IModification> PrimaryModifications
+        public IEnumerable<ILocalModification> PrimaryModifications
         {
             get { return _primaryModifications; }
             private set
@@ -98,7 +98,7 @@ namespace FSOManagement.Implementations.Mod
             }
         }
 
-        public IEnumerable<IModification> SecondaryModifications
+        public IEnumerable<ILocalModification> SecondaryModifications
         {
             get { return _secondaryModifications; }
             private set
@@ -112,7 +112,7 @@ namespace FSOManagement.Implementations.Mod
             }
         }
 
-        public IModification ActiveMod
+        public ILocalModification ActiveMod
         {
             get { return _activeMod; }
             set
@@ -132,7 +132,7 @@ namespace FSOManagement.Implementations.Mod
         #endregion
 
         [CanBeNull]
-        private static IModification GetModification([NotNull] IEnumerable<IModification> modifications, [CanBeNull] string modFolder)
+        private static ILocalModification GetModification([NotNull] IEnumerable<ILocalModification> modifications, [CanBeNull] string modFolder)
         {
             if (modFolder == null)
             {
@@ -143,7 +143,7 @@ namespace FSOManagement.Implementations.Mod
         }
 
         [NotNull]
-        private string GetModArgument([NotNull] IModification mod)
+        private string GetModArgument([NotNull] ILocalModification mod)
         {
             if (ParentProfile.SelectedTotalConversion == null)
             {
@@ -170,8 +170,8 @@ namespace FSOManagement.Implementations.Mod
         }
 
         [NotNull]
-        private IEnumerable<string> GetCommandLineFragments([CanBeNull] IModification mod, [NotNull] IEnumerable<IModification> primary,
-            [NotNull] IEnumerable<IModification> secondary)
+        private IEnumerable<string> GetCommandLineFragments([CanBeNull] ILocalModification mod, [NotNull] IEnumerable<ILocalModification> primary,
+            [NotNull] IEnumerable<ILocalModification> secondary)
         {
             if (mod == null)
             {
@@ -205,8 +205,8 @@ namespace FSOManagement.Implementations.Mod
         }
 
         [NotNull]
-        private string GetCommandLine([CanBeNull] IModification mod, [NotNull] IEnumerable<IModification> primary,
-            [NotNull] IEnumerable<IModification> secondary)
+        private string GetCommandLine([CanBeNull] ILocalModification mod, [NotNull] IEnumerable<ILocalModification> primary,
+            [NotNull] IEnumerable<ILocalModification> secondary)
         {
             var fragments = GetCommandLineFragments(mod, primary, secondary);
 
@@ -221,7 +221,7 @@ namespace FSOManagement.Implementations.Mod
         }
 
         [CanBeNull]
-        private IModification ResolveModification([NotNull] string path)
+        private ILocalModification ResolveModification([NotNull] string path)
         {
             if (ParentProfile.SelectedTotalConversion == null)
             {

@@ -4,7 +4,7 @@
                          DisplayName="Maecenas aenean mauris curabitur" IsNotifying="True"
                          ImagePath="bplogo.bmp">
     <ViewModels:ModViewModel.Mod>
-        <mod:Modification Bugtracker="Vestibulum blandit consequat" Forum="Donec nunc aliquet dictumst"
+        <mod:LocalModification Bugtracker="Vestibulum blandit consequat" Forum="Donec nunc aliquet dictumst"
                                     FolderName="Adipiscing parturient nam" Image="Class quisque vivamus aliquam"
                                     Infotext="Duis curae" ModRootPath="Cursus integer accumsan"
                                     Name="Praesent auctor vestibulum congue" Website="Sed bibendum phasellus" />
