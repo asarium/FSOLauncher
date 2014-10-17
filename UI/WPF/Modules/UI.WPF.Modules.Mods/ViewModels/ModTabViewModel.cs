@@ -247,8 +247,6 @@ namespace UI.WPF.Modules.Mods.ViewModels
 
             var modViewModel = new ModViewModel(modification);
 
-            IoC.BuildUp(modViewModel);
-
             return modViewModel;
         }
     }
