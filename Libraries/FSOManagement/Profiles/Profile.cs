@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
@@ -46,6 +47,14 @@ namespace FSOManagement.Profiles
                 x => x.FlagManager.CommandLine,
                 x => x.ExtraCommandLine,
                 (cmd1, cmd2, cmd3) => JoinCommandLine(cmd1.Value, cmd2.Value, cmd3.Value)).BindTo(this, x => x.CommandLine);
+
+            this.WhenAnyValue(x => x.SelectedTotalConversion)
+                .Select(tc => tc == null ? default(TcData) : tc.GetData())
+                .Subscribe(data => _profileData.SelectedTotalConversion = data);
+
+            this.WhenAnyValue(x => x.SelectedExecutable)
+                .Select(exe => exe == null ? default(ExecutableData) : exe.GetData())
+                .Subscribe(data => _profileData.SelectedExecutable = data);
 
             CanLaunchExecutable = this.WhenAny(x => x.SelectedExecutable, val => CanLaunch(val.Value));
         }
