@@ -49,7 +49,7 @@ namespace FSOManagement
         }
 
         [NotNull]
-        public ExecutableManager ExecutableManager { get; private set; }
+        public virtual ExecutableManager ExecutableManager { get; private set; }
 
         #region IDataModel<TcData> Members
 
