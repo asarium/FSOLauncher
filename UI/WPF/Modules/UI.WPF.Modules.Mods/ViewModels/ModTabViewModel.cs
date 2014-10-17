@@ -224,7 +224,7 @@ namespace UI.WPF.Modules.Mods.ViewModels
         [NotNull]
         private ICollectionView CreateStandardModificationsView([NotNull] IEnumerable<ILocalModification> value)
         {
-            var viewModelCollection = value.CreateDerivedCollection(CreateModViewModel, mod => mod is LocalModification);
+            var viewModelCollection = value.CreateDerivedCollection(CreateModViewModel, mod => mod is IniModification);
 
             var collectionView = CollectionViewSource.GetDefaultView(viewModelCollection);
 
@@ -243,7 +243,7 @@ namespace UI.WPF.Modules.Mods.ViewModels
         [CanBeNull]
         private static ModViewModel CreateModViewModel([NotNull] ILocalModification mod)
         {
-            var modification = (LocalModification) mod;
+            var modification = (IniModification) mod;
 
             var modViewModel = new ModViewModel(modification);
 

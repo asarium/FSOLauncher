@@ -30,7 +30,7 @@ namespace UI.WPF.Modules.Mods.ViewModels
 
         private Task _readModIniTask;
 
-        public ModViewModel(LocalModification mod)
+        public ModViewModel(IniModification mod)
         {
             Mod = mod;
 
@@ -143,7 +143,7 @@ namespace UI.WPF.Modules.Mods.ViewModels
             }
         }
 
-        public LocalModification Mod { get; private set; }
+        public IniModification Mod { get; private set; }
 
         private async Task ActivateThisMod()
         {
@@ -170,7 +170,7 @@ namespace UI.WPF.Modules.Mods.ViewModels
             await _readModIniTask;
         }
 
-        private static string GetImagePath(IObservedChange<LocalModification, string> path, IObservedChange<LocalModification, string> image)
+        private static string GetImagePath(IObservedChange<IniModification, string> path, IObservedChange<IniModification, string> image)
         {
             if (string.IsNullOrEmpty(image.Value))
             {

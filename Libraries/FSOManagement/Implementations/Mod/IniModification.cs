@@ -20,7 +20,7 @@ using IniParser.Model;
 namespace FSOManagement.Implementations.Mod
 {
     [Serializable]
-    public class LocalModification : INotifyPropertyChanged, ISerializable, ILocalModification
+    public class IniModification : INotifyPropertyChanged, ISerializable, ILocalModification
     {
         #region Fields
 
@@ -49,12 +49,12 @@ namespace FSOManagement.Implementations.Mod
 
         #endregion
 
-        public LocalModification(string path)
+        public IniModification(string path)
         {
             OnCreate(path);
         }
 
-        protected LocalModification(SerializationInfo info, StreamingContext context)
+        protected IniModification(SerializationInfo info, StreamingContext context)
         {
             _modRootPath = info.GetString("modPath");
 
@@ -192,7 +192,7 @@ namespace FSOManagement.Implementations.Mod
             Dependencies = new NoModDependencies();
         }
 
-        protected bool Equals(LocalModification other)
+        protected bool Equals(IniModification other)
         {
             return string.Equals(_modRootPath, other.ModRootPath);
         }
@@ -211,7 +211,7 @@ namespace FSOManagement.Implementations.Mod
             {
                 return false;
             }
-            return Equals((LocalModification) obj);
+            return Equals((IniModification) obj);
         }
 
         public override int GetHashCode()
@@ -219,12 +219,12 @@ namespace FSOManagement.Implementations.Mod
             return ModRootPath.GetHashCode();
         }
 
-        public static bool operator ==(LocalModification left, LocalModification right)
+        public static bool operator ==(IniModification left, IniModification right)
         {
             return Equals(left, right);
         }
 
-        public static bool operator !=(LocalModification left, LocalModification right)
+        public static bool operator !=(IniModification left, IniModification right)
         {
             return !Equals(left, right);
         }

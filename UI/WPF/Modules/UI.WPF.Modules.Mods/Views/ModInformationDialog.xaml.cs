@@ -87,7 +87,7 @@ namespace UI.WPF.Modules.Mods.Views
 
         #endregion
 
-        private static ICommand CreateLinkCommand(LocalModification viewModel, Expression<Func<LocalModification, string>> propertyExpression)
+        private static ICommand CreateLinkCommand(IniModification viewModel, Expression<Func<IniModification, string>> propertyExpression)
         {
             var observable = viewModel.WhenAny(propertyExpression, val => !string.IsNullOrEmpty(val.Value));
             var propertyAccessor = propertyExpression.Compile();

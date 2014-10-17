@@ -15,7 +15,7 @@ namespace FSOManagement.Implementations.Mod
         {
             var modifications = GetModifications(searchFolder).ToList();
 
-            await Task.WhenAll(modifications.OfType<LocalModification>().Select(mod => mod.ReadModIniAsync()));
+            await Task.WhenAll(modifications.OfType<IniModification>().Select(mod => mod.ReadModIniAsync()));
 
             return modifications;
         }
@@ -23,13 +23,13 @@ namespace FSOManagement.Implementations.Mod
         [NotNull]
         private static IEnumerable<ILocalModification> GetModifications([NotNull] string searchFolder)
         {
-            yield return new LocalModification(searchFolder);
+            yield return new IniModification(searchFolder);
 
             var possibleDirs = Directory.EnumerateDirectories(searchFolder);
 
             foreach (var possibleDir in possibleDirs.Where(possibleDir => File.Exists(Path.Combine(searchFolder, possibleDir, "mod.ini"))))
             {
-                yield return new LocalModification(Path.Combine(searchFolder, possibleDir));
+                yield return new IniModification(Path.Combine(searchFolder, possibleDir));
             }
         }
     }
