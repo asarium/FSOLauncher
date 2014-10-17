@@ -35,6 +35,8 @@ namespace FSOManagement
 
     public enum ExecutableFeatureSet
     {
+        None,
+
         SSE,
 
         SSE2,
@@ -67,6 +69,7 @@ namespace FSOManagement
         [UsedImplicitly]
         public Executable()
         {
+            SetDefaultData();
         }
 
         public ExecutableType Type
@@ -128,6 +131,7 @@ namespace FSOManagement
 
         public void InitializeFromData(ExecutableData data)
         {
+            SetDefaultData();
             _data = data;
 
             ReparsePath();
@@ -156,6 +160,16 @@ namespace FSOManagement
         }
 
         #endregion
+
+        private void SetDefaultData()
+        {
+            _featureSet = ExecutableFeatureSet.None;
+            _major = -1;
+            _minor = -1;
+            _release = -1;
+            _revision = -1;
+            _type = ExecutableType.FreeSpace;
+        }
 
         [OnDeserialized]
         private void OnDeserialized(StreamingContext context)
@@ -222,7 +236,10 @@ namespace FSOManagement
                 stringBuilder.AppendFormat(" r{0}", Revision);
             }
 
-            stringBuilder.AppendFormat(" {0}", Enum.GetName(typeof(ExecutableFeatureSet), FeatureSet));
+            if (FeatureSet != ExecutableFeatureSet.None)
+            {
+                stringBuilder.AppendFormat(" {0}", Enum.GetName(typeof(ExecutableFeatureSet), FeatureSet));
+            }
 
             if (includeDebug && Mode == ExecutableMode.Debug)
             {
@@ -266,7 +283,8 @@ namespace FSOManagement
                 p.Start();
 
                 return p;
-            }, cancellationToken);
+            },
+                cancellationToken);
 
             await process.WaitForExitAsync(cancellationToken);
 
