@@ -175,7 +175,7 @@ namespace UI.WPF.Launcher
 
             DisplayRootViewFor<IShellViewModel>();
 
-            IoC.Get<IEventAggregator>().PublishOnUIThread(new MainWindowOpenedMessage());
+            Locator.Current.GetService<IEventAggregator>().PublishOnUIThread(new MainWindowOpenedMessage());
         }
 
         private static void InitializeLogging()
