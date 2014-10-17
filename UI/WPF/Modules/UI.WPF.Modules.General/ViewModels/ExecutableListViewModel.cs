@@ -16,13 +16,13 @@ namespace UI.WPF.Modules.General.ViewModels
 {
     public class ExecutableListViewModel : PropertyChangedBase
     {
-        private BindableCollection<ExecutableViewModel> _executables;
+        private IReactiveList<ExecutableViewModel> _executables;
 
         private ExecutableViewModel _selectedExecutableViewModel;
 
         private TotalConversion _selectedTc;
 
-        private BindableCollection<Executable> _selectedTcExecutables;
+        private IReactiveList<Executable> _selectedTcExecutables;
 
         public ExecutableListViewModel(IProfile profile)
         {
@@ -69,7 +69,7 @@ namespace UI.WPF.Modules.General.ViewModels
             }
         }
 
-        public BindableCollection<Executable> SelectedTcExecutables
+        public IReactiveList<Executable> SelectedTcExecutables
         {
             get { return _selectedTcExecutables; }
             private set
@@ -108,7 +108,7 @@ namespace UI.WPF.Modules.General.ViewModels
             }
         }
 
-        public BindableCollection<ExecutableViewModel> Executables
+        public IReactiveList<ExecutableViewModel> Executables
         {
             get { return _executables; }
             set
@@ -128,17 +128,17 @@ namespace UI.WPF.Modules.General.ViewModels
             }
         }
 
-        private static BindableCollection<ExecutableViewModel> CreateExecutableCollection(IEnumerable<Executable> value)
+        private static IReactiveList<ExecutableViewModel> CreateExecutableCollection(IEnumerable<Executable> value)
         {
             if (value == null)
             {
-                return new BindableCollection<ExecutableViewModel>();
+                return new ReactiveList<ExecutableViewModel>();
             }
 
             var grouped = value.GroupBy(x => x, Executable.GroupingComparer);
             var viewModels = grouped.Select(CreateViewModelFromGroup);
 
-            var collection = new BindableCollection<ExecutableViewModel>(viewModels);
+            var collection = new ReactiveList<ExecutableViewModel>(viewModels);
 
             return collection;
         }
