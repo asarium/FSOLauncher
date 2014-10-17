@@ -20,11 +20,11 @@ namespace UI.WPF.Modules.General.Tests.ViewModels.Internal
 
             viewModel.Debug = new Executable(@"C:\fred2_open_3_7_0-DEBUG");
 
-            Assert.AreEqual("FRED2 Open 3.7.0 SSE2", viewModel.DisplayString);
+            Assert.AreEqual("FRED2 Open 3.7.0", viewModel.DisplayString);
 
             viewModel.Release = new Executable(@"C:\fred2_open_3_7_0");
 
-            Assert.AreEqual("FRED2 Open 3.7.0 SSE2", viewModel.DisplayString);
+            Assert.AreEqual("FRED2 Open 3.7.0", viewModel.DisplayString);
         }
 
         [Test]
