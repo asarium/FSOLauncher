@@ -243,7 +243,7 @@ namespace FSOManagement.Implementations.Mod
 
             byte[] iniContent;
 
-            using (var stream = new FileStream(iniPath, FileMode.Open, FileAccess.Read))
+            using (var stream = new FileStream(iniPath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true))
             {
                 iniContent = new byte[stream.Length];
 
