@@ -2,13 +2,14 @@
 using System.Threading.Tasks;
 using ModInstallation.Annotations;
 using ModInstallation.Interfaces.Mods;
+using ReactiveUI;
 
 namespace ModInstallation.Interfaces
 {
     public interface ILocalModManager
     {
         [CanBeNull]
-        IEnumerable<IModification> Modifications { get; }
+        IReadOnlyReactiveList<IInstalledModification> Modifications { get; }
 
         [NotNull]
         string PackageDirectory { get; set; }

@@ -129,6 +129,7 @@
     <Compile Include="Interfaces\Mods\IErrorHandler.cs" />
     <Compile Include="Interfaces\Mods\IFileInformation.cs" />
     <Compile Include="Interfaces\Mods\IFileVerifier.cs" />
+    <Compile Include="Interfaces\Mods\IInstalledModification.cs" />
     <Compile Include="Interfaces\Mods\IModDependency.cs" />
     <Compile Include="Interfaces\Mods\IModification.cs" />
     <Compile Include="Interfaces\IRemoteModManager.cs" />

@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
@@ -14,27 +15,81 @@ using ModInstallation.Interfaces.Mods;
 using ModInstallation.Util;
 using Newtonsoft.Json;
 using ReactiveUI;
+using Semver;
 using Splat;
 
 #endregion
 
 namespace ModInstallation.Implementations
 {
+    internal class InstalledMod : IInstalledModification
+    {
+        private readonly IModification _wrappedModification;
+
+        private readonly string _installPath;
+
+        public InstalledMod([NotNull] IModification wrappedModification, [NotNull] string installPath)
+        {
+            _wrappedModification = wrappedModification;
+            _installPath = installPath;
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged
+        {
+            add { _wrappedModification.PropertyChanged += value; }
+            remove { _wrappedModification.PropertyChanged -= value; }
+        }
+
+        public string Title
+        {
+            get { return _wrappedModification.Title; }
+        }
+
+        public SemVersion Version
+        {
+            get { return _wrappedModification.Version; }
+        }
+
+        public string Id
+        {
+            get { return _wrappedModification.Id; }
+        }
+
+        public IEnumerable<IPackage> Packages
+        {
+            get { return _wrappedModification.Packages; }
+        }
+
+        public string Description
+        {
+            get { return _wrappedModification.Description; }
+        }
+
+        public Uri LogoUri
+        {
+            get { return _wrappedModification.LogoUri; }
+        }
+
+        public string InstallPath {
+            get { return _installPath; }
+        }
+    }
+
     [Export(typeof(ILocalModManager))]
     public class DefaultLocalModManager : ILocalModManager, IEnableLogger
     {
         private const string ModInfoFile = "mod.json";
 
-        private readonly IReactiveList<IModification> _modifications;
+        private readonly ReactiveList<IInstalledModification> _modifications;
 
         public DefaultLocalModManager()
         {
-            _modifications = new ReactiveList<IModification>();
+            _modifications = new ReactiveList<IInstalledModification>();
         }
 
         #region ILocalModManager Members
 
-        public IEnumerable<IModification> Modifications
+        public IReadOnlyReactiveList<IInstalledModification> Modifications
         {
             get { return _modifications; }
         }
@@ -43,7 +98,7 @@ namespace ModInstallation.Implementations
 
         public async Task AddPackageAsync(IPackage package)
         {
-            var packageFile = Path.Combine(GetInstallationDirectory(package), ModInfoFile);
+            var packageFile = Path.Combine(GetInstallationDirectory(package.ContainingModification), ModInfoFile);
             Modification modData;
 
             if (File.Exists(packageFile))
@@ -133,13 +188,14 @@ namespace ModInstallation.Implementations
                 }
             }
 
+            var installedMod = new InstalledMod(newData, GetInstallationDirectory(newData));
             if (currentIndex >= 0 && currentIndex < _modifications.Count)
             {
-                _modifications[currentIndex] = newData;
+                _modifications[currentIndex] = installedMod;
             }
             else
             {
-                _modifications.Add(newData);
+                _modifications.Add(installedMod);
             }
         }
 
@@ -194,9 +250,9 @@ namespace ModInstallation.Implementations
         }
 
         [NotNull]
-        private string GetInstallationDirectory([NotNull] IPackage package)
+        private string GetInstallationDirectory([NotNull] IModification mod)
         {
-            return Path.Combine(PackageDirectory, package.ContainingModification.Id, package.ContainingModification.Version.ToString());
+            return Path.Combine(PackageDirectory, mod.Id, mod.Version.ToString());
         }
     }
 }
