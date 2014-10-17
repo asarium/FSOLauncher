@@ -101,10 +101,12 @@ namespace ModInstallation.Implementations
     {
         #region IDependencyResolver Members
 
-        public IEnumerable<IPackage> ResolveDependencies(IPackage package, IList<IModification> allModifications, IErrorHandler handler)
+        public IEnumerable<IPackage> ResolveDependencies(IPackage package, IEnumerable<IModification> allModifications, IErrorHandler handler)
         {
+            var modificationList = allModifications as IList<IModification> ?? allModifications.ToList();
+
             // This implements a variation of Kahns topological sorting algorithm
-            var graph = BuildDependencyGraph(package, allModifications, handler);
+            var graph = BuildDependencyGraph(package, modificationList, handler);
 
             var result = new List<IPackage>();
 
