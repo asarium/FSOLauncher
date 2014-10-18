@@ -38,7 +38,7 @@ namespace UI.WPF.Modules.Installation.ViewModels
             ProfileManager = profileManager;
 
             RemoteModManager = remoteManager;
-            RemoteModManager.AddModRepository(repositoryFactory.ConstructRepository("http://nebula.tproxy.de/nebula/mjnmixael/BTA_Demo/master/current.json"));
+            RemoteModManager.AddModRepository(repositoryFactory.ConstructRepository("http://nebula.tproxy.de/nebula/hellzed/mediavps_2014/master/current.json"));
 
             LocalModManager = localManager;
 
