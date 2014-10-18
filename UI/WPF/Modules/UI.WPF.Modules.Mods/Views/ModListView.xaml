@@ -4,18 +4,19 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewModels="clr-namespace:UI.WPF.Modules.Mods.ViewModels"
-             xmlns:mods="clr-namespace:UI.WPF.Modules.Mods" mc:Ignorable="d"
+             xmlns:views="clr-namespace:UI.WPF.Modules.Mods.Views"
+             mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModels:ModListViewModel}" d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
         <ResourceDictionary>
             <DataTemplate DataType="{x:Type viewModels:IniModViewModel}">
                 <Grid>
-                    <mods:ModDisplayControl VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
+                    <views:IniModView VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
                 </Grid>
             </DataTemplate>
             <DataTemplate DataType="{x:Type viewModels:InstalledModViewModel}">
                 <Grid>
-                    <!--                        <mods:ModDisplayControl VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />-->
+                    <views:InstalledModView VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
                 </Grid>
             </DataTemplate>
         </ResourceDictionary>

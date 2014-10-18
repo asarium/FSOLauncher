@@ -23,18 +23,13 @@ namespace UI.WPF.Modules.Mods.ViewModels
 
         private string _infoText;
 
-        public IniModViewModel([NotNull] IObservable<string> filterObservable, [NotNull] IniModification mod)
-            : base(mod, filterObservable)
+        public IniModViewModel([NotNull] IObservable<string> filterObservable, [NotNull] IniModification mod) : base(mod, filterObservable)
         {
             ImagePath = GetImagePath(mod.ModRootPath, mod.Image);
 
             DisplayName = string.IsNullOrEmpty(mod.Name) ? mod.FolderName : mod.Name;
 
             InfoText = mod.Infotext ?? "<no description>";
-
-            var activateCommand = ReactiveCommand.Create();
-            activateCommand.Subscribe(_ => ActivateThisMod());
-            ActivateCommand = activateCommand;
 
             var moreInfoCommand = ReactiveCommand.CreateAsyncTask(async x => await OpenMoreInfoDialog());
 
@@ -49,9 +44,6 @@ namespace UI.WPF.Modules.Mods.ViewModels
 
         [NotNull]
         private IProfileManager ProfileManager { get; set; }
-
-        [NotNull]
-        public ICommand ActivateCommand { get; private set; }
 
         [NotNull]
         public ICommand MoreInfoCommand { get; private set; }
@@ -77,16 +69,6 @@ namespace UI.WPF.Modules.Mods.ViewModels
             set { RaiseAndSetIfPropertyChanged(ref _displayName, value); }
         }
 
-        private void ActivateThisMod()
-        {
-            if (ProfileManager.CurrentProfile == null)
-            {
-                return;
-            }
-
-            ProfileManager.CurrentProfile.ModActivationManager.ActiveMod = Mod;
-        }
-
         [NotNull]
         private async Task OpenMoreInfoDialog()
         {
@@ -104,9 +86,28 @@ namespace UI.WPF.Modules.Mods.ViewModels
         protected override bool IsVisible(string filterString)
         {
             if (string.IsNullOrEmpty(filterString))
+            {
                 return true;
+            }
 
             return DisplayName == null || DisplayName.IndexOf(filterString, StringComparison.InvariantCultureIgnoreCase) >= 0;
+        }
+
+        protected override async Task<IBitmap> LoadLogoAsync()
+        {
+            if (!File.Exists(ImagePath))
+            {
+                return null;
+            }
+
+            try
+            {
+                return await BitmapLoader.Current.LoadFromResource(ImagePath, null, null);
+            }
+            catch (NotSupportedException)
+            {
+                return null;
+            }
         }
     }
 }

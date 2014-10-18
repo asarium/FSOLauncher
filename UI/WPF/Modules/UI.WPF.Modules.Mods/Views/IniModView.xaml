@@ -3,10 +3,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:ViewModels="clr-namespace:UI.WPF.Modules.Mods.ViewModels"
-             xmlns:converters="clr-namespace:UI.WPF.Modules.Mods.Converters"
-             xmlns:views="clr-namespace:UI.WPF.Modules.Mods.Views"
-             xmlns:blendHelpers="clr-namespace:UI.WPF.Modules.Mods.BlendHelpers" mc:Ignorable="d"
-             x:Class="UI.WPF.Modules.Mods.ModDisplayControl" x:Name="UserControl" d:DesignWidth="581.187"
+             xmlns:views="clr-namespace:UI.WPF.Modules.Mods.Views" mc:Ignorable="d"
+             x:Class="UI.WPF.Modules.Mods.Views.IniModView" x:Name="UserControl" d:DesignWidth="581.187"
              d:DesignHeight="275" d:DataContext="{d:DesignInstance {x:Type ViewModels:IniModViewModel}}">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -24,7 +22,7 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Border MinHeight="180" BorderThickness="0,2,0,0" BorderBrush="{DynamicResource AccentColorBrush}">
-        <Border BorderThickness="5" Margin="3,6" CornerRadius="20" Style="{DynamicResource ModBorderStyle}"
+        <Border BorderThickness="5" Margin="3,6" CornerRadius="20" Style="{StaticResource ModBorderStyle}"
                 Padding="5,0">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -33,7 +31,7 @@
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
 
-                <views:ModImageDisplayControl ImagePath="{Binding ImagePath}" Margin="5" />
+                <views:ModImageDisplayControl ImageSource="{Binding LogoSource}" LoadingImage="{Binding LoadingLogo}" Margin="5" />
 
                 <Grid Grid.Column="1" Margin="10">
                     <Grid.RowDefinitions>
