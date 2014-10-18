@@ -22,7 +22,8 @@ namespace ModInstallation.Util
                 id = mod.Id,
                 packages = mod.Packages.Select(ToDataClass),
                 title = mod.Title,
-                version = mod.Version.ToString()
+                version = mod.Version.ToString(),
+                logo = mod.LogoUri == null ? null : mod.LogoUri.ToString()
             };
         }
 
