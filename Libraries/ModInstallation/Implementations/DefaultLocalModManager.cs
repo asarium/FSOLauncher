@@ -170,6 +170,11 @@ namespace ModInstallation.Implementations
                 return;
             }
 
+            if (!Directory.Exists(PackageDirectory))
+            {
+                return;
+            }
+
             foreach (var modDir in Directory.EnumerateDirectories(PackageDirectory))
             {
                 foreach (var versionDir in Directory.EnumerateDirectories(modDir))
