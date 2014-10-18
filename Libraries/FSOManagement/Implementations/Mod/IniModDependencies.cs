@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using FSOManagement.Annotations;
 using FSOManagement.Interfaces.Mod;
@@ -25,16 +26,14 @@ namespace FSOManagement.Implementations.Mod
 
         #region IModDependencies Members
 
-        [NotNull]
-        public IEnumerable<string> PrimaryDependencies
+        public IEnumerable<string> GetPrimaryDependencies(string rootPath)
         {
-            get { return _primaryList ?? Enumerable.Empty<string>(); }
+            return _primaryList.Select(mod => Path.Combine(rootPath, mod));
         }
 
-        [NotNull]
-        public IEnumerable<string> SecondayDependencies
+        public IEnumerable<string> GetSecondayDependencies(string rootPath)
         {
-            get { return _secondaryList ?? Enumerable.Empty<string>(); }
+            return _secondaryList.Select(mod => Path.Combine(rootPath, mod));
         }
 
         #endregion

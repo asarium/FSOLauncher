@@ -10,26 +10,16 @@ namespace FSOManagement.Implementations.Mod
 {
     public class NoModDependencies : IModDependencies
     {
-        public NoModDependencies()
-        {
-        }
-
         #region IModDependencies Members
 
-        public IEnumerable<string> PrimaryDependencies
+        public IEnumerable<string> GetPrimaryDependencies(string rootPath)
         {
-            get
-            {
-                return Enumerable.Empty<string>();
-            }
+            return Enumerable.Empty<string>();
         }
 
-        public IEnumerable<string> SecondayDependencies
+        public IEnumerable<string> GetSecondayDependencies(string rootPath)
         {
-            get
-            {
-                return Enumerable.Empty<string>();
-            }
+            return Enumerable.Empty<string>();
         }
 
         #endregion

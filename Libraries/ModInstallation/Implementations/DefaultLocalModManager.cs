@@ -24,15 +24,17 @@ namespace ModInstallation.Implementations
 {
     internal class InstalledMod : IInstalledModification
     {
-        private readonly IModification _wrappedModification;
-
         private readonly string _installPath;
+
+        private readonly IModification _wrappedModification;
 
         public InstalledMod([NotNull] IModification wrappedModification, [NotNull] string installPath)
         {
             _wrappedModification = wrappedModification;
             _installPath = installPath;
         }
+
+        #region IInstalledModification Members
 
         public event PropertyChangedEventHandler PropertyChanged
         {
@@ -70,9 +72,12 @@ namespace ModInstallation.Implementations
             get { return _wrappedModification.LogoUri; }
         }
 
-        public string InstallPath {
+        public string InstallPath
+        {
             get { return _installPath; }
         }
+
+        #endregion
     }
 
     [Export(typeof(ILocalModManager))]
@@ -89,7 +94,7 @@ namespace ModInstallation.Implementations
 
         #region ILocalModManager Members
 
-        public IReadOnlyReactiveList<IInstalledModification> Modifications
+        public IEnumerable<IInstalledModification> Modifications
         {
             get { return _modifications; }
         }
@@ -125,11 +130,12 @@ namespace ModInstallation.Implementations
                 modData = GetDataClass(package);
             }
 
-            var json = await Task.Run(() => JsonConvert.SerializeObject(modData, new JsonSerializerSettings
-            {
-                NullValueHandling = NullValueHandling.Ignore,
-                Formatting = Formatting.Indented
-            }));
+            var json = await Task.Run(() => JsonConvert.SerializeObject(modData,
+                new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore,
+                    Formatting = Formatting.Indented
+                }));
 
             var directoryName = Path.GetDirectoryName(packageFile);
             if (directoryName != null && !Directory.Exists(directoryName))
@@ -158,6 +164,11 @@ namespace ModInstallation.Implementations
         public async Task ParseLocalModDataAsync()
         {
             _modifications.Clear();
+
+            if (PackageDirectory == null)
+            {
+                return;
+            }
 
             foreach (var modDir in Directory.EnumerateDirectories(PackageDirectory))
             {
@@ -252,6 +263,11 @@ namespace ModInstallation.Implementations
         [NotNull]
         private string GetInstallationDirectory([NotNull] IModification mod)
         {
+            if (PackageDirectory == null)
+            {
+                return Path.Combine(mod.Id, mod.Version.ToString());
+            }
+
             return Path.Combine(PackageDirectory, mod.Id, mod.Version.ToString());
         }
     }

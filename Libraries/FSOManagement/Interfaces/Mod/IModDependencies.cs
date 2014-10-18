@@ -1,11 +1,14 @@
 ﻿using System.Collections.Generic;
+using FSOManagement.Annotations;
 
 namespace FSOManagement.Interfaces.Mod
 {
     public interface IModDependencies
     {
-        IEnumerable<string> PrimaryDependencies { get; }
+        [NotNull]
+        IEnumerable<string> GetPrimaryDependencies([NotNull] string rootPath);
 
-        IEnumerable<string> SecondayDependencies { get; }
+        [NotNull]
+        IEnumerable<string> GetSecondayDependencies([NotNull] string rootPath);
     }
 }

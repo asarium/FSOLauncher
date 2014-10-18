@@ -9,9 +9,9 @@ namespace ModInstallation.Interfaces
     public interface ILocalModManager
     {
         [CanBeNull]
-        IReadOnlyReactiveList<IInstalledModification> Modifications { get; }
+        IEnumerable<IInstalledModification> Modifications { get; }
 
-        [NotNull]
+        [CanBeNull]
         string PackageDirectory { get; set; }
 
         [NotNull]

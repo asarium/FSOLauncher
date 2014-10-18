@@ -23,7 +23,7 @@ namespace FSOManagement.Implementations.Mod
 
     public class ModManager : IModManager, INotifyPropertyChanged
     {
-        private readonly ReactiveList<ILocalModification> _modifications = new ReactiveList<ILocalModification>();
+        private readonly ReactiveList<IEnumerable<ILocalModification>> _modifications = new ReactiveList<IEnumerable<ILocalModification>>();
 
         public ModManager()
         {
@@ -37,7 +37,7 @@ namespace FSOManagement.Implementations.Mod
 
         public string RootFolder { set; private get; }
 
-        public IReadOnlyReactiveList<ILocalModification> Modifications
+        public IReadOnlyReactiveList<IEnumerable<ILocalModification>> ModificationLists
         {
             get { return _modifications; }
         }
@@ -49,7 +49,7 @@ namespace FSOManagement.Implementations.Mod
             var loaded = await Task.WhenAll(loadTasks);
 
             _modifications.Clear();
-            _modifications.AddRange(loaded.SelectMany(x => x));
+            _modifications.AddRange(loaded);
         }
 
         #endregion

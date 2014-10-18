@@ -8,7 +8,7 @@
                       xmlns:converters="clr-namespace:UI.WPF.Modules.Mods.Converters"
                       xmlns:Mods="clr-namespace:UI.WPF.Modules.Mods"
                       x:Class="UI.WPF.Modules.Mods.Views.ModInformationDialog" mc:Ignorable="d" d:DesignHeight="300"
-                      d:DesignWidth="600" d:DataContext="{d:DesignInstance {x:Type viewModels:ModViewModel}}">
+                      d:DesignWidth="600" d:DataContext="{d:DesignInstance {x:Type viewModels:IniModViewModel}}">
     <dialogs:SimpleDialog.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

@@ -4,9 +4,7 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
-using System.Runtime.Serialization;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using FSOManagement.Annotations;
 using FSOManagement.Interfaces.Mod;
@@ -19,8 +17,7 @@ using IniParser.Model;
 
 namespace FSOManagement.Implementations.Mod
 {
-    [Serializable]
-    public class IniModification : INotifyPropertyChanged, ISerializable, ILocalModification
+    public class IniModification : INotifyPropertyChanged, ILocalModification
     {
         #region Fields
 
@@ -39,26 +36,22 @@ namespace FSOManagement.Implementations.Mod
         [NonSerialized]
         private string _infotext;
 
+        private string _modRootPath;
+
         [NonSerialized]
         private string _name;
 
         [NonSerialized]
         private string _website;
 
-        private string _modRootPath;
-
         #endregion
 
         public IniModification(string path)
         {
-            OnCreate(path);
-        }
+            Name = Path.GetFileName(path);
+            ModRootPath = path;
 
-        protected IniModification(SerializationInfo info, StreamingContext context)
-        {
-            _modRootPath = info.GetString("modPath");
-
-            OnCreate(_modRootPath);
+            Dependencies = new NoModDependencies();
         }
 
         #region Properties
@@ -168,29 +161,30 @@ namespace FSOManagement.Implementations.Mod
 
         #endregion
 
+        #region ILocalModification Members
+
+        public string ModRootPath
+        {
+            get { return _modRootPath; }
+            private set
+            {
+                if (value == _modRootPath)
+                {
+                    return;
+                }
+                _modRootPath = value;
+                OnPropertyChanged();
+            }
+        }
+
+        #endregion
+
         #region INotifyPropertyChanged Members
 
         [field: NonSerialized]
         public event PropertyChangedEventHandler PropertyChanged;
 
         #endregion
-
-        #region ISerializable Members
-
-        public void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            info.AddValue("modPath", _modRootPath);
-        }
-
-        #endregion
-
-        private void OnCreate(string modPath)
-        {
-            Name = Path.GetFileName(modPath);
-            ModRootPath = modPath;
-
-            Dependencies = new NoModDependencies();
-        }
 
         protected bool Equals(IniModification other)
         {
@@ -308,20 +302,6 @@ namespace FSOManagement.Implementations.Mod
             if (handler != null)
             {
                 handler(this, new PropertyChangedEventArgs(propertyName));
-            }
-        }
-
-        public string ModRootPath
-        {
-            get { return _modRootPath; }
-            private set
-            {
-                if (value == _modRootPath)
-                {
-                    return;
-                }
-                _modRootPath = value;
-                OnPropertyChanged();
             }
         }
     }

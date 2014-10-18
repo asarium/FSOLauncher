@@ -7,7 +7,7 @@
              xmlns:views="clr-namespace:UI.WPF.Modules.Mods.Views"
              xmlns:blendHelpers="clr-namespace:UI.WPF.Modules.Mods.BlendHelpers" mc:Ignorable="d"
              x:Class="UI.WPF.Modules.Mods.ModDisplayControl" x:Name="UserControl" d:DesignWidth="581.187"
-             d:DesignHeight="275" d:DataContext="{d:DesignInstance {x:Type ViewModels:ModViewModel}}">
+             d:DesignHeight="275" d:DataContext="{d:DesignInstance {x:Type ViewModels:IniModViewModel}}">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

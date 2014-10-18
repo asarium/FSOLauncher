@@ -1,26 +1,17 @@
 ﻿#region Usings
 
-using System.IO;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using Caliburn.Micro;
-using FSOManagement.Implementations.Mod;
-using ReactiveUI;
-using Splat;
-using UI.WPF.Launcher.Common.Interfaces;
-using UI.WPF.Modules.Mods.Views;
+using System;
+using FSOManagement.Annotations;
+using FSOManagement.Interfaces.Mod;
+using UI.WPF.Launcher.Common.Classes;
 
 #endregion
 
 namespace UI.WPF.Modules.Mods.ViewModels
 {
-    public class ModViewModel : PropertyChangedBase
+    public abstract class ModViewModel : ReactiveObjectBase
     {
-        private string _displayName;
-
-        private string _imagePath;
-
-        private string _infoText;
+        private bool _visible;
 
         private bool _isActiveMod;
 
@@ -28,156 +19,72 @@ namespace UI.WPF.Modules.Mods.ViewModels
 
         private bool _isSecondaryMod;
 
-        private Task _readModIniTask;
+        private ILocalModification _mod;
 
-        public ModViewModel(IniModification mod)
+        protected ModViewModel([NotNull] ILocalModification mod, [NotNull] IObservable<string> filterObservable)
         {
-            Mod = mod;
+            _mod = mod;
 
-            mod.WhenAny(x => x.ModRootPath, x => x.Image, GetImagePath).BindTo(this, x => x.ImagePath);
-
-            mod.WhenAny(x => x.Name, x => x.FolderName, (name, folderName) => string.IsNullOrEmpty(name.Value) ? folderName.Value : name.Value)
-                .BindTo(this, x => x.DisplayName);
-
-            mod.WhenAny(x => x.Infotext, val => val.Value ?? "<no description>").BindTo(this, x => x.InfoText);
-
-            ActivateCommand = ReactiveCommand.CreateAsyncTask(async _ => await ActivateThisMod());
-
-            var moreInfoCommand = ReactiveCommand.CreateAsyncTask(async x => await OpenMoreInfoDialog());
-
-            MoreInfoCommand = moreInfoCommand;
-
-            InteractionService = Locator.Current.GetService<IInteractionService>();
-            ProfileManager = Locator.Current.GetService<IProfileManager>();
-        }
-
-        private IInteractionService InteractionService { get; set; }
-
-        private IProfileManager ProfileManager { get; set; }
-
-        public ICommand ActivateCommand { get; private set; }
-
-        public ICommand MoreInfoCommand { get; private set; }
-
-        public string InfoText
-        {
-            get { return _infoText; }
-            private set
-            {
-                if (value == _infoText)
-                {
-                    return;
-                }
-                _infoText = value;
-                NotifyOfPropertyChange();
-            }
-        }
-
-        public string ImagePath
-        {
-            get { return _imagePath; }
-            set
-            {
-                if (value == _imagePath)
-                {
-                    return;
-                }
-                _imagePath = value;
-                NotifyOfPropertyChange();
-            }
-        }
-
-        public string DisplayName
-        {
-            get { return _displayName; }
-            private set
-            {
-                if (value == _displayName)
-                {
-                    return;
-                }
-                _displayName = value;
-                NotifyOfPropertyChange();
-            }
+            filterObservable.Subscribe(filter => Visible = IsVisible(filter));
         }
 
         public bool IsPrimaryMod
         {
             get { return _isPrimaryMod; }
-            set
-            {
-                if (value.Equals(_isPrimaryMod))
-                {
-                    return;
-                }
-                _isPrimaryMod = value;
-                NotifyOfPropertyChange();
-            }
+            set { RaiseAndSetIfPropertyChanged(ref _isPrimaryMod, value); }
         }
 
         public bool IsActiveMod
         {
             get { return _isActiveMod; }
-            set
-            {
-                if (value.Equals(_isActiveMod))
-                {
-                    return;
-                }
-                _isActiveMod = value;
-                NotifyOfPropertyChange();
-            }
+            set { RaiseAndSetIfPropertyChanged(ref _isActiveMod, value); }
         }
 
         public bool IsSecondaryMod
         {
             get { return _isSecondaryMod; }
-            set
+            set { RaiseAndSetIfPropertyChanged(ref _isSecondaryMod, value); }
+        }
+
+        [NotNull]
+        public virtual ILocalModification Mod
+        {
+            get { return _mod; }
+            protected set { RaiseAndSetIfPropertyChanged(ref _mod, value); }
+        }
+
+        public bool Visible
+        {
+            get { return _visible; }
+            private set { RaiseAndSetIfPropertyChanged(ref _visible, value); }
+        }
+
+        protected abstract bool IsVisible([CanBeNull] string filterString);
+    }
+
+    public abstract class ModViewModel<TMod> : ModViewModel where TMod : ILocalModification
+    {
+        protected ModViewModel([NotNull] TMod mod, [NotNull] IObservable<string> filterObservable) : base(mod, filterObservable)
+        {
+        }
+
+        public TMod ModInstance
+        {
+            get { return (TMod) Mod; }
+        }
+
+        public override ILocalModification Mod
+        {
+            get { return base.Mod; }
+            protected set
             {
-                if (value.Equals(_isSecondaryMod))
+                if (!(value is TMod))
                 {
-                    return;
+                    throw new ArgumentException("Mod instance is not of the right type!");
                 }
-                _isSecondaryMod = value;
-                NotifyOfPropertyChange();
+
+                base.Mod = value;
             }
-        }
-
-        public IniModification Mod { get; private set; }
-
-        private async Task ActivateThisMod()
-        {
-            // If the mod ini hasn't yet been read, do it
-            await ReadModIniAsync();
-
-            ProfileManager.CurrentProfile.ModActivationManager.ActiveMod = Mod;
-        }
-
-        private async Task OpenMoreInfoDialog()
-        {
-            var dialog = new ModInformationDialog(this);
-
-            await InteractionService.ShowDialog(dialog);
-        }
-
-        public async Task ReadModIniAsync()
-        {
-            if (_readModIniTask == null)
-            {
-                _readModIniTask = Mod.ReadModIniAsync();
-            }
-
-            await _readModIniTask;
-        }
-
-        private static string GetImagePath(IObservedChange<IniModification, string> path, IObservedChange<IniModification, string> image)
-        {
-            if (string.IsNullOrEmpty(image.Value))
-            {
-                return null;
-            }
-
-            return image.Value == null ? null : Path.Combine(path.Value, image.Value);
         }
     }
 }

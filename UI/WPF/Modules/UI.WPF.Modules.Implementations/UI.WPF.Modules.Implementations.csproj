@@ -100,6 +100,10 @@
       <Project>{73342923-20EE-4F2C-B9AB-9A03341F782A}</Project>
       <Name>FSOManagement</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Libraries\Utilities\Utilities.csproj">
+      <Project>{8A55D865-DFC1-4CE1-B56F-54D249ABD3F7}</Project>
+      <Name>Utilities</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\UI.WPF.Launcher.Common\UI.WPF.Launcher.Common.csproj">
       <Project>{ECBE6F2B-423C-47BC-AA36-26CD3B5E8F81}</Project>
       <Name>UI.WPF.Launcher.Common</Name>

@@ -123,6 +123,7 @@
     <Compile Include="Util\DLLLoader\WindowsLoader.cs" />
     <Compile Include="Util\FlagStructs.cs" />
     <Compile Include="Util\FsoConstants.cs" />
+    <Compile Include="Util\IModManagerExtensions.cs" />
     <Compile Include="Util\IniDataExtensions.cs" />
     <Compile Include="Util\ProcessExtensions.cs" />
     <Compile Include="Util\StreamExtensions.cs" />

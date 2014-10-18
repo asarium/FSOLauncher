@@ -101,7 +101,9 @@
     <Compile Include="Implementations\DefaultPackageInstaller.cs" />
     <Compile Include="Implementations\Extractors\DefaultExtractionProgress.cs" />
     <Compile Include="Implementations\Extractors\SharpCompressExtractor.cs" />
-    <Compile Include="Implementations\LocalModManagerListLoader.cs" />
+    <Compile Include="Implementations\Management\InstalledModification.cs" />
+    <Compile Include="Implementations\Management\LocalModManagerListLoader.cs" />
+    <Compile Include="Implementations\Management\ModificationDependencies.cs" />
     <Compile Include="Implementations\Mods\CpuFeatureEnvironmentConstraint.cs" />
     <Compile Include="Implementations\Mods\DefaultFileInformation.cs" />
     <Compile Include="Implementations\Mods\DefaultModDependency.cs" />
@@ -143,6 +145,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\DataClassExtensions.cs" />
     <Compile Include="Util\Extensions.cs" />
+    <Compile Include="Util\IDependencyResolverExtensions.cs" />
     <Compile Include="Util\IModDependencyExtensions.cs" />
     <Compile Include="Util\IModificationExtensions.cs" />
     <Compile Include="Util\IVersionConstraintExtensions.cs" />

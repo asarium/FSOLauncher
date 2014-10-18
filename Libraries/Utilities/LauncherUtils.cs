@@ -1,12 +1,12 @@
-﻿#region Usings
+#region Usings
 
 using System;
 using System.Reflection;
-using FSOManagement.Annotations;
+using Utilities.Annotations;
 
 #endregion
 
-namespace UI.WPF.Launcher.Common.Util
+namespace Utilities
 {
     public static class LauncherUtils
     {

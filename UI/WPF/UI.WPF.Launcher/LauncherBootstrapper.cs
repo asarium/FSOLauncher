@@ -30,6 +30,7 @@ using UI.WPF.Modules.Implementations;
 using UI.WPF.Modules.Installation;
 using UI.WPF.Modules.Mods;
 using UI.WPF.Modules.Update;
+using Utilities;
 using LogManager = NLog.LogManager;
 
 #endregion

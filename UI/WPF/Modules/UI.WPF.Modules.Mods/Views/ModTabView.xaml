@@ -4,9 +4,10 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:viewModels="clr-namespace:UI.WPF.Modules.Mods.ViewModels"
-             xmlns:mods="clr-namespace:UI.WPF.Modules.Mods" x:Class="UI.WPF.Modules.Mods.Views.ModTabView"
-             mc:Ignorable="d" d:DataContext="{d:DesignInstance {x:Type viewModels:ModTabViewModel}}"
-             d:DesignHeight="300" d:DesignWidth="450">
+             xmlns:mods="clr-namespace:UI.WPF.Modules.Mods" xmlns:views="clr-namespace:UI.WPF.Modules.Mods.Views"
+             x:Class="UI.WPF.Modules.Mods.Views.ModTabView" mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance {x:Type viewModels:ModTabViewModel}}" d:DesignHeight="300"
+             d:DesignWidth="450">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
@@ -21,36 +22,26 @@
                  Text="{Binding FilterString, Delay=200, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                  controls:TextboxHelper.Watermark="Search..." controls:TextboxHelper.ClearTextButton="True"
                  Grid.Column="1" />
-        
-        <controls:ToggleSwitch Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Margin="10,10,5,5"
-                               VerticalAlignment="Center" OnLabel="Downloaded" OffLabel="Standard" Width="154"
-                               IsChecked="True" />
 
-        <ItemsControl ItemsSource="{Binding StandardModificationsView}" Grid.Row="1" VirtualizingPanel.IsVirtualizing="True"
-                      ScrollViewer.CanContentScroll="True" Grid.ColumnSpan="2" Grid.Column="0">
-            <ItemsControl.ItemTemplate>
-                <DataTemplate DataType="viewModels:ModViewModel">
-                    <Grid>
-                        <mods:ModDisplayControl VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
-                    </Grid>
+        <controls:MetroAnimatedSingleRowTabControl Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="1"
+                                                   TabStripPlacement="Left" VerticalAlignment="Top"
+                                                   ItemsSource="{Binding ModLists}">
+            <TabControl.ItemTemplate>
+                <DataTemplate DataType="{x:Type viewModels:ModListViewModel}">
+                    <StackPanel Orientation="Horizontal" Margin="0,10">
+                        <TextBlock Text="{Binding DisplayString}">
+                            <TextBlock.LayoutTransform>
+                                <RotateTransform Angle="270" />
+                            </TextBlock.LayoutTransform>
+                        </TextBlock>
+                    </StackPanel>
                 </DataTemplate>
-            </ItemsControl.ItemTemplate>
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <VirtualizingStackPanel />
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.Template>
-                <ControlTemplate>
-                    <Border BorderThickness="{TemplateBinding Border.BorderThickness}"
-                            Padding="{TemplateBinding Padding}" BorderBrush="{TemplateBinding Border.BorderBrush}"
-                            Background="{TemplateBinding Panel.Background}" SnapsToDevicePixels="True">
-                        <ScrollViewer Padding="{TemplateBinding Padding}" Focusable="False">
-                            <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
-                        </ScrollViewer>
-                    </Border>
-                </ControlTemplate>
-            </ItemsControl.Template>
-        </ItemsControl>
+            </TabControl.ItemTemplate>
+            <TabControl.ContentTemplate>
+                <DataTemplate DataType="viewModels:ModListViewModel">
+                    <views:ModListView />
+                </DataTemplate>
+            </TabControl.ContentTemplate>
+        </controls:MetroAnimatedSingleRowTabControl>
     </Grid>
 </UserControl>

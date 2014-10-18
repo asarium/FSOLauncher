@@ -244,6 +244,10 @@
       <Project>{589ecbc2-cdfb-42aa-a9df-35d804464711}</Project>
       <Name>SDLGlue</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\Utilities\Utilities.csproj">
+      <Project>{8A55D865-DFC1-4CE1-B56F-54D249ABD3F7}</Project>
+      <Name>Utilities</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Tests\ModInstallation.Tests\ModInstallation.Tests.csproj">
       <Project>{2dfa1deb-f4fc-4a4f-8d26-8319a8993bd9}</Project>
       <Name>ModInstallation.Tests</Name>
