@@ -11,5 +11,7 @@ namespace UI.WPF.Launcher.Common.Interfaces
 
         [NotNull]
         ILauncherViewModel LauncherViewModel { get; }
+
+        bool OverlayVisible { get; set; }
     }
 }

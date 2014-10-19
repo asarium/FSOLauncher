@@ -35,9 +35,9 @@ namespace UI.WPF.Launcher.ViewModels
 
         private ILauncherViewModel _launcherViewModel;
 
-        private bool _settingsLoaded;
-
         private string _title = "FSO Launcher";
+
+        private bool _overlayVisible;
 
         [ImportingConstructor]
         public ShellViewModel(IEventAggregator eventAggregator, ISettings settings, IInteractionService interactionService)
@@ -144,6 +144,20 @@ namespace UI.WPF.Launcher.ViewModels
 
         public ISettings Settings { get; private set; }
 
+        public bool OverlayVisible
+        {
+            get { return _overlayVisible; }
+            set
+            {
+                if (value.Equals(_overlayVisible))
+                {
+                    return;
+                }
+                _overlayVisible = value;
+                NotifyOfPropertyChange();
+            }
+        }
+
         #region IHandle<InstanceLaunchedMessage> Members
 
         void IHandle<InstanceLaunchedMessage>.Handle(InstanceLaunchedMessage message)
@@ -202,76 +216,27 @@ namespace UI.WPF.Launcher.ViewModels
 
         public async void LoadSettingsAsync()
         {
-            if (_settingsLoaded)
-            {
-                return;
-            }
-
-            Task closeTask = null;
-            IProgressController controller = null;
             try
             {
-                var loadTask = Settings.LoadAsync();
-
-                if (Task.WhenAny(loadTask, Task.Delay(2000)) != loadTask)
-                {
-                    // Took too long, show the dialog
-                    controller = await InteractionService.OpenProgressDialogAsync("Loading Settings", "This should only take a few seconds...");
-                    controller.Indeterminate = true;
-                    controller.Cancelable = false;
-
-                    await loadTask;
-                }
+                OverlayVisible = true;
+                await Settings.LoadAsync();
             }
             finally
             {
-                _settingsLoaded = true;
-
-                if (controller != null)
-                {
-                    closeTask = controller.CloseAsync();
-                }
-            }
-
-            if (closeTask != null)
-            {
-                //This is not ideal but it works as  this is an async void function 
-                await closeTask;
+                OverlayVisible = false;
             }
         }
 
         public async Task SaveSettingsAsync()
         {
-            Task closeTask = null;
-            IProgressController controller = null;
             try
             {
-                var saveTask = Settings.SaveAsync();
-
-                if (Task.WhenAny(saveTask, Task.Delay(2000)) != saveTask)
-                {
-                    // Took too long, show the dialog
-                    controller = await InteractionService.OpenProgressDialogAsync("Saving Settings", "This should only take a few seconds...");
-                    controller.Indeterminate = true;
-                    controller.Cancelable = false;
-
-                    await saveTask;
-                }
+                OverlayVisible = true;
+                await Settings.SaveAsync();
             }
             finally
             {
-                _settingsLoaded = true;
-
-                if (controller != null)
-                {
-                    closeTask = controller.CloseAsync();
-                }
-            }
-
-            if (closeTask != null)
-            {
-                //This is not ideal but it works as  this is an async void function 
-                await closeTask;
+                OverlayVisible = false;
             }
         }
 
