@@ -46,7 +46,7 @@ namespace FSOManagement
 
     public sealed class Executable : IEquatable<Executable>, IDataModel<ExecutableData>, IEnableLogger
     {
-        private const string GetFlagsArgument = "-get_flags";
+        private const string GetFlagsArgument = "-get_flags -parse_cmdline_only";
 
         private const string FlagsFile = "flags.lch";
 
