@@ -231,7 +231,7 @@ namespace ModInstallation.Implementations
             }
             catch (IOException e)
             {
-                this.Log().ErrorException("Failed to load " + ModInfoFile + " content!", e);
+                this.Log().ErrorException("Failed to load " + modFile + " content!", e);
                 return;
             }
 
@@ -242,7 +242,7 @@ namespace ModInstallation.Implementations
             }
             catch (Exception e)
             {
-                this.Log().ErrorException(ModInfoFile + " parsing failed!", e);
+                this.Log().ErrorException(modFile + " parsing failed!", e);
                 return;
             }
 

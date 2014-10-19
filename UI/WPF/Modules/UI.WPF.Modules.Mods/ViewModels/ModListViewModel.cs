@@ -3,33 +3,47 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
 using FSOManagement.Annotations;
 using FSOManagement.Implementations.Mod;
 using FSOManagement.Interfaces.Mod;
 using ModInstallation.Implementations.Management;
 using ReactiveUI;
+using UI.WPF.Launcher.Common.Classes;
 
 #endregion
 
 namespace UI.WPF.Modules.Mods.ViewModels
 {
-    public class ModListViewModel
+    public class ModListViewModel : ReactiveObjectBase
     {
         private readonly IReadOnlyReactiveList<ModViewModel> _filteredViewModels;
 
-        public ModListViewModel([NotNull] IEnumerable<ILocalModification> mods, [NotNull] IObservable<string> filterObservable)
+        private string _displayString;
+
+        public ModListViewModel([NotNull] IReactiveCollection<ILocalModification> mods, [NotNull] IObservable<string> filterObservable)
         {
-            var modsList = mods as IList<ILocalModification> ?? mods.ToList();
+            DisplayString = mods.Any() ? GetDisplayString(mods.First()) : "";
 
-            DisplayString = modsList.Any() ? GetDisplayString(modsList.First()) : "";
-
-            var viewModels = modsList.CreateDerivedCollection(mod => GetViewModel(mod, filterObservable));
+            var viewModels = mods.CreateDerivedCollection(mod => GetViewModel(mod, filterObservable));
 
             _filteredViewModels = viewModels.CreateDerivedCollection(model => model, model => model.Visible, null, filterObservable);
+
+            HasModsObservable = _filteredViewModels.CountChanged.Select(c => c > 0);
+
+            // When this changes we might need to update our display string
+            HasModsObservable.Subscribe(_ => DisplayString = mods.Any() ? GetDisplayString(mods.First()) : "");
         }
 
         [NotNull]
-        public string DisplayString { get; private set; }
+        public IObservable<bool> HasModsObservable { get; private set; }
+
+        [NotNull]
+        public string DisplayString
+        {
+            get { return _displayString; }
+            private set { RaiseAndSetIfPropertyChanged(ref _displayString, value); }
+        }
 
         [NotNull]
         public IEnumerable<ModViewModel> ModViewModels

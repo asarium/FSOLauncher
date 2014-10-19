@@ -4,6 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using Caliburn.Micro;
 using FSOManagement.Annotations;
 using FSOManagement.Interfaces.Mod;
@@ -14,12 +17,12 @@ using UI.WPF.Launcher.Common.Interfaces;
 
 namespace UI.WPF.Modules.Mods.ViewModels
 {
-    [Export(typeof(ILauncherTab)), ExportMetadata("Priority", 1)]
+    [Export(typeof(ILauncherTab)), ExportMetadata("Priority", 0)]
     public sealed class ModTabViewModel : Screen, ILauncherTab
     {
-        private readonly IProfileManager _profileManager;
-
         private readonly IObservable<string> _filterObservable;
+
+        private readonly IProfileManager _profileManager;
 
         private string _filterString;
 
@@ -107,9 +110,16 @@ namespace UI.WPF.Modules.Mods.ViewModels
         }
 
         [NotNull]
-        private IReadOnlyReactiveList<ModListViewModel> CreateModListsView([NotNull] IEnumerable<IEnumerable<ILocalModification>> value)
+        private IReadOnlyReactiveList<ModListViewModel> CreateModListsView(
+            [NotNull] IEnumerable<IReadOnlyReactiveList<ILocalModification>> value)
         {
-            return value.CreateDerivedCollection(mods => new ModListViewModel(mods, _filterObservable));
+            var viewModels = value.CreateDerivedCollection(mods => new ModListViewModel(mods, _filterObservable));
+            
+            // This feels like a hack but I don't know how to do it better...
+            var resetSubject = new Subject<bool>();
+            viewModels.CreateDerivedCollection(x => x.HasModsObservable.ObserveOn(RxApp.MainThreadScheduler).Subscribe(resetSubject.OnNext));
+
+            return viewModels.CreateDerivedCollection(x => x, x => x.ModViewModels.Any(), null, resetSubject);
         }
 
         private void OnActiveModChanged([CanBeNull] ILocalModification activeMod)

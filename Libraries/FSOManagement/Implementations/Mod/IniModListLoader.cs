@@ -5,15 +5,16 @@ using System.Linq;
 using System.Threading.Tasks;
 using FSOManagement.Annotations;
 using FSOManagement.Interfaces.Mod;
+using ReactiveUI;
 
 namespace FSOManagement.Implementations.Mod
 {
     [Export(typeof(IModListLoader))]
     public class IniModListLoader : IModListLoader
     {
-        public async Task<IEnumerable<ILocalModification>> LoadModificationListAsync(string searchFolder)
+        public async Task<IReadOnlyReactiveList<ILocalModification>> LoadModificationListAsync(string searchFolder)
         {
-            var modifications = GetModifications(searchFolder).ToList();
+            var modifications = new ReactiveList<ILocalModification>(GetModifications(searchFolder));
 
             await Task.WhenAll(modifications.OfType<IniModification>().Select(mod => mod.ReadModIniAsync()));
 

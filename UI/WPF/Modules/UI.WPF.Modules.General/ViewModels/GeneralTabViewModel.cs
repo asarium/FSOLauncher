@@ -10,7 +10,7 @@ using UI.WPF.Launcher.Common.Util;
 
 namespace UI.WPF.Modules.General.ViewModels
 {
-    [Export(typeof(ILauncherTab)), ExportMetadata("Priority", 0)]
+    [Export(typeof(ILauncherTab)), ExportMetadata("Priority", 1)]
     public sealed class GeneralTabViewModel : Screen, ILauncherTab
     {
         private AudioSettingsViewModel _audioSettingsViewModel;
