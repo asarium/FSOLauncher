@@ -14,7 +14,7 @@
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\</SolutionDir>
-    <ExpressionBlendVersion>12.0.50429.0</ExpressionBlendVersion>
+    <ExpressionBlendVersion>12.0.50716.0</ExpressionBlendVersion>
     <IsWebBootstrapper>true</IsWebBootstrapper>
     <NuGetPackageImportStamp>494094c7</NuGetPackageImportStamp>
     <PublishUrl>publish\</PublishUrl>
@@ -165,6 +165,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Compile Include="Converters\ErrorDialogStyleConverter.cs" />
     <Compile Include="Implementations\MefDependencyResolver.cs" />
     <Compile Include="Implementations\MetroInteractionService.cs" />
     <Compile Include="Implementations\MetroWindowManager.cs" />
@@ -174,6 +175,9 @@
     <Compile Include="ViewModels\GameRootInputViewModel.cs" />
     <Compile Include="ViewModels\ProfileInputViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
+    <Compile Include="Views\ErrorDialog.xaml.cs">
+      <DependentUpon>ErrorDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ProfileInputDialog.xaml.cs">
       <DependentUpon>ProfileInputDialog.xaml</DependentUpon>
     </Compile>
@@ -188,6 +192,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="LauncherBootstrapper.cs" />
+    <Page Include="Views\ErrorDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\ProfileInputDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -309,6 +317,9 @@
       <IncludeHash>True</IncludeHash>
       <FileType>Assembly</FileType>
     </PublishFile>
+  </ItemGroup>
+  <ItemGroup>
+    <DesignData Include="SampleData\UserErrorData.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

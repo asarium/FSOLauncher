@@ -1,9 +1,11 @@
 ﻿#region Usings
 
 using System;
-using System.Threading;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using MahApps.Metro.Controls.Dialogs;
+using ReactiveUI;
 using UI.WPF.Launcher.ViewModels;
 
 #endregion
@@ -19,8 +21,6 @@ namespace UI.WPF.Launcher.Views
 
         public ShellView()
         {
-            InitializeComponent();
-
             this.Events().Closing.Subscribe(args =>
             {
                 if (_closing)
@@ -42,6 +42,23 @@ namespace UI.WPF.Launcher.Views
 
                 shellView.SaveSettingsAsync().ContinueWith(task => Close(), TaskScheduler.FromCurrentSynchronizationContext());
             });
+
+            var disp = UserError.RegisterHandler(async error =>
+            {
+                var dialog = new ErrorDialog(error);
+
+                await this.ShowMetroDialogAsync(dialog);
+
+                await dialog.WaitForCompletionAsync();
+
+                await this.HideMetroDialogAsync(dialog);
+
+                return error.RecoveryOptions.Select(cmd => cmd.RecoveryResult).Where(res => res.HasValue).Select(res => res.Value).FirstOrDefault();
+            });
+
+            this.Events().Closed.Subscribe(e => disp.Dispose());
+
+            InitializeComponent();
         }
     }
 }
