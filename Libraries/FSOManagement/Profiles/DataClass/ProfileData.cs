@@ -11,7 +11,7 @@ namespace FSOManagement.Profiles.DataClass
     public struct ProfileData
     {
         [CanBeNull]
-        public SortedSet<FlagInformation> CommandLineOptions { get; set; }
+        public IEnumerable<FlagInformation> CommandLineOptions { get; set; }
 
         [CanBeNull]
         public string Name { get; set; }
@@ -65,7 +65,7 @@ namespace FSOManagement.Profiles.DataClass
 
             if (CommandLineOptions != null)
             {
-                ret.CommandLineOptions = new SortedSet<FlagInformation>(CommandLineOptions);
+                ret.CommandLineOptions = new List<FlagInformation>(CommandLineOptions);
             }
 
             return ret;

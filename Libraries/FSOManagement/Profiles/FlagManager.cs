@@ -1,6 +1,5 @@
 ﻿#region Usings
 
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -16,21 +15,17 @@ namespace FSOManagement.Profiles
     {
         private readonly SortedSet<FlagInformation> _flagInformations;
 
-        private readonly Profile _profile;
-
         private string _commandLine;
 
         public FlagManager([NotNull] Profile profile)
         {
-            _profile = profile;
-            _flagInformations = profile.CommandLineOptions ?? new SortedSet<FlagInformation>();
+            _flagInformations = new SortedSet<FlagInformation>(profile.CommandLineOptions ?? Enumerable.Empty<FlagInformation>());
 
-            _profile.CommandLineOptions = _flagInformations;
+            profile.CommandLineOptions = _flagInformations;
         }
 
         #region IFlagManager Members
 
-        [NotNull]
         public string CommandLine
         {
             get { return _commandLine; }
@@ -45,18 +40,29 @@ namespace FSOManagement.Profiles
             }
         }
 
-        [field: NonSerialized]
+        public IEnumerable<FlagInformation> Flags
+        {
+            get { return _flagInformations; }
+            set
+            {
+                _flagInformations.Clear();
+                foreach (var flagInformation in value)
+                {
+                    AddFlag(flagInformation.Name, flagInformation.Value);
+                }
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
-        [field: NonSerialized]
         public event FlagChangedHandler FlagChanged;
 
-        public bool IsFlagSet([NotNull] string name)
+        public bool IsFlagSet(string name)
         {
             return _flagInformations.Contains(new FlagInformation(name));
         }
 
-        public void AddFlag([NotNull] string name, [CanBeNull] object value = null)
+        public void AddFlag(string name, object value = null)
         {
             _flagInformations.Add(new FlagInformation(name, value));
 
@@ -64,7 +70,7 @@ namespace FSOManagement.Profiles
             UpdateCommandLine();
         }
 
-        public bool RemoveFlag([NotNull] string name)
+        public bool RemoveFlag(string name)
         {
             var eventArgs =
                 _flagInformations.Where(info => info.Name == name).Select(info => new FlagChangedEventArgs(name, false, info.Value)).ToList();
@@ -80,7 +86,7 @@ namespace FSOManagement.Profiles
             return result;
         }
 
-        public void SetFlag([NotNull] string name, bool present = true)
+        public void SetFlag(string name, bool present = true)
         {
             if (present)
             {

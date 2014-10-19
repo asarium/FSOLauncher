@@ -1,32 +1,25 @@
-﻿using System;
+﻿#region Usings
+
+using System;
 using FSOManagement.Annotations;
+
+#endregion
 
 namespace FSOManagement.Profiles
 {
-    [Serializable]
-    public struct FlagInformation : IComparable<FlagInformation>
+    public class FlagInformation : IComparable<FlagInformation>
     {
-        private readonly string _name;
-
-        private readonly object _value;
-
         public FlagInformation([NotNull] string name, [CanBeNull] object value = null)
         {
-            _name = name;
-            _value = value;
+            Name = name;
+            Value = value;
         }
 
         [NotNull]
-        public string Name
-        {
-            get { return _name; }
-        }
+        public string Name { get; private set; }
 
         [CanBeNull]
-        public object Value
-        {
-            get { return _value; }
-        }
+        public object Value { get; private set; }
 
         #region IComparable<FlagInformation> Members
 

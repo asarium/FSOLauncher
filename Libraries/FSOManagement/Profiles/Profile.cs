@@ -30,13 +30,13 @@ namespace FSOManagement.Profiles
 
         private readonly ModActivationManager _modActivationManager;
 
+        private string _commandLine;
+
         private ProfileData _profileData;
 
         private Executable _selectedExecutable;
 
         private TotalConversion _selectedTotalConversion;
-
-        private string _commandLine;
 
         public Profile()
         {
@@ -60,7 +60,7 @@ namespace FSOManagement.Profiles
         }
 
         [CanBeNull]
-        internal SortedSet<FlagInformation> CommandLineOptions
+        internal IEnumerable<FlagInformation> CommandLineOptions
         {
             get { return _profileData.CommandLineOptions; }
             set
@@ -403,21 +403,19 @@ namespace FSOManagement.Profiles
             {
                 SelectedExecutable = null;
             }
+
+            _flagManager.Flags = data.CommandLineOptions ?? Enumerable.Empty<FlagInformation>();
         }
 
         public ProfileData GetData()
         {
             var ret = _profileData.Clone();
 
-            if (SelectedExecutable != null)
-            {
-                ret.SelectedExecutable = SelectedExecutable.GetData();
-            }
+            ret.SelectedExecutable = SelectedExecutable != null ? SelectedExecutable.GetData() : default(ExecutableData);
 
-            if (SelectedTotalConversion != null)
-            {
-                ret.SelectedTotalConversion = SelectedTotalConversion.GetData();
-            }
+            ret.SelectedTotalConversion = SelectedTotalConversion != null ? SelectedTotalConversion.GetData() : default(TcData);
+
+            ret.CommandLineOptions = new List<FlagInformation>(_flagManager.Flags);
 
             return ret;
         }
