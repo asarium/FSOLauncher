@@ -15,8 +15,14 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding Mod.Title}" VerticalAlignment="Top"
-                   Margin="5,5,0,0" FontWeight="Bold" FontSize="14.667" />
+
+        <StackPanel Orientation="Horizontal">
+            <CheckBox Margin="12,2,0,2" IsChecked="{Binding ModChecked, Mode=TwoWay}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+            
+            <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding Mod.Title}" VerticalAlignment="Center"
+                   Margin="2,2,2,2" FontWeight="Bold" FontSize="14.667" />
+        </StackPanel>
+        
         <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding Mod.Description}"
                    VerticalAlignment="Top" Grid.Row="1" Margin="5,5,0,0"
                    Visibility="{Binding HasDescription, Converter={StaticResource BooleanToVisibilityConverter}}" />
