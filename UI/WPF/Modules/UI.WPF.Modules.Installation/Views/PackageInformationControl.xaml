@@ -22,7 +22,8 @@
         </Grid.RowDefinitions>
 
         <CheckBox VerticalAlignment="Center" Margin="2,5" HorizontalAlignment="Left"
-                  IsChecked="{Binding Selected, Mode=TwoWay}" VerticalContentAlignment="Center" Grid.RowSpan="2" />
+                  IsChecked="{Binding Selected, Mode=TwoWay}" VerticalContentAlignment="Center" Grid.RowSpan="2"
+                  IsEnabled="{Binding IsChangeable}" />
 
         <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding Package.Name}" VerticalAlignment="Bottom"
                    Grid.Row="0" Grid.Column="1" Margin="0,0,0,2" ToolTip="{Binding OperationMessage}" />
