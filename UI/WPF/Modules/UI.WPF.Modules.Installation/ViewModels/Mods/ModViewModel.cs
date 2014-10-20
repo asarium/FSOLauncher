@@ -1,5 +1,6 @@
 ﻿#region Usings
 
+using System;
 using System.Collections.Generic;
 using ModInstallation.Annotations;
 using ModInstallation.Interfaces.Mods;
@@ -12,9 +13,11 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
 {
     public class ModViewModel : ReactiveObjectBase
     {
+        private bool _hasDescription;
+
         private IModification _mod;
 
-        private bool _hasDescription;
+        private bool _modChecked;
 
         private IEnumerable<PackageViewModel> _packages;
 
@@ -22,9 +25,34 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
         {
             _mod = mod;
 
+            Packages = mod.Packages.CreateDerivedCollection(p => new PackageViewModel(p, installationTabViewModel));
+
             mod.WhenAny(x => x.Description, val => !string.IsNullOrEmpty(val.Value)).BindTo(this, x => x.HasDescription);
 
-            Packages = mod.Packages.CreateDerivedCollection(p => new PackageViewModel(p, installationTabViewModel));
+            this.WhenAnyValue(x => x.ModChecked).Subscribe(selected =>
+            {
+                if (!selected)
+                {
+                    foreach (var packageViewModel in Packages)
+                    {
+                        packageViewModel.Selected = false;
+                    }
+                }
+                else
+                {
+                    foreach (var packageViewModel in Packages)
+                    {
+                        packageViewModel.Selected = packageViewModel.Package.Status == PackageStatus.Required ||
+                                                    packageViewModel.Package.Status == PackageStatus.Recommended;
+                    }
+                }
+            });
+        }
+
+        public bool ModChecked
+        {
+            get { return _modChecked; }
+            set { RaiseAndSetIfPropertyChanged(ref _modChecked, value); }
         }
 
         public bool HasDescription
