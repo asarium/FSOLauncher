@@ -31,14 +31,14 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
 
         private bool _selected;
 
+        private bool _isChangeable;
+
         public PackageViewModel([NotNull] IPackage package, [NotNull] InstallationTabViewModel installationTabViewModel)
         {
             _installationTabViewModel = installationTabViewModel;
             Package = package;
 
             ProgressReporter = new Progress<IInstallationProgress>(ProgressHandler);
-
-            this.WhenAnyValue(x => x.Selected).Subscribe(SelectedChanged);
 
             var cancelCommand = ReactiveCommand.Create(this.WhenAnyValue(x => x.Installing));
             cancelCommand.Subscribe(_ =>
@@ -50,7 +50,15 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
             });
 
             CancelCommand = cancelCommand;
+            IsSelectedObservable = this.WhenAnyValue(x => x.Selected);
+
+            IsSelectedObservable.Subscribe(SelectedChanged);
+
+            IsChangeable = package.Status != PackageStatus.Required;
         }
+
+        [NotNull]
+        public IObservable<bool> IsSelectedObservable { get; private set; }
 
         public bool ProgressIdeterminate
         {
@@ -90,6 +98,12 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
         {
             get { return _selected; }
             set { RaiseAndSetIfPropertyChanged(ref _selected, value); }
+        }
+
+        public bool IsChangeable
+        {
+            get { return _isChangeable; }
+            private set { RaiseAndSetIfPropertyChanged(ref _isChangeable, value); }
         }
 
         [NotNull]
