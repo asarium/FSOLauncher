@@ -2,18 +2,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:converters="clr-namespace:UI.WPF.Modules.Mods.Converters"
-             xmlns:views="clr-namespace:UI.WPF.Modules.Mods.Views" mc:Ignorable="d"
+             xmlns:views="clr-namespace:UI.WPF.Modules.Mods.Views"
+             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls" mc:Ignorable="d"
              x:Class="UI.WPF.Modules.Mods.Views.ModImageDisplayControl" x:Name="UserControl" d:DesignWidth="70.997"
              d:DesignHeight="120">
 
     <UserControl.Resources>
-        <converters:BitmapConverter x:Key="BitmapConverter" />
-
         <ControlTemplate x:Key="ImageTemplate" TargetType="{x:Type ContentControl}">
             <Grid>
                 <Image HorizontalAlignment="Center" VerticalAlignment="Center"
-                       Source="{Binding ImagePath, Converter={StaticResource BitmapConverter}, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type views:ModImageDisplayControl}}}" />
+                       Source="{Binding ImageSource, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type views:ModImageDisplayControl}}}" />
             </Grid>
         </ControlTemplate>
 
@@ -24,12 +22,23 @@
             </Grid>
         </ControlTemplate>
 
+        <ControlTemplate x:Key="LoadingImageTemplate" TargetType="{x:Type ContentControl}">
+            <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Background="{x:Null}">
+                <controls:ProgressRing IsActive="True" />
+            </Grid>
+        </ControlTemplate>
+
         <Style x:Key="ImageStyle" TargetType="{x:Type ContentControl}">
-            <Setter Property="Template" Value="{DynamicResource ImageTemplate}" />
+            <Setter Property="Template" Value="{StaticResource ImageTemplate}" />
             <Style.Triggers>
                 <Trigger Property="Content" Value="{x:Null}">
-                    <Setter Property="Template" Value="{DynamicResource NoImageTemplate}" />
+                    <Setter Property="Template" Value="{StaticResource NoImageTemplate}" />
                 </Trigger>
+                <DataTrigger
+                    Binding="{Binding LoadingImage, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type views:ModImageDisplayControl}}}"
+                    Value="True">
+                    <Setter Property="Template" Value="{StaticResource LoadingImageTemplate}" />
+                </DataTrigger>
             </Style.Triggers>
         </Style>
 
@@ -37,7 +46,7 @@
 
     <Grid>
         <ContentControl
-            Content="{Binding ImagePath, Converter={StaticResource BitmapConverter}, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type views:ModImageDisplayControl}}}"
+            Content="{Binding ImageSource, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type views:ModImageDisplayControl}}}"
             MinHeight="120" Style="{StaticResource ImageStyle}" />
     </Grid>
 </UserControl>

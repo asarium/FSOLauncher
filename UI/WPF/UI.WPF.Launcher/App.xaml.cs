@@ -4,7 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 using Caliburn.Micro;
+using FSOManagement.Annotations;
+using Launcher.Shared.Startup;
 using Microsoft.Shell;
+using Splat;
 using UI.WPF.Launcher.Common.Classes;
 
 #endregion
@@ -27,7 +30,7 @@ namespace UI.WPF.Launcher
 
         bool ISingleInstanceApp.SignalExternalCommandLineArgs(IList<string> args)
         {
-            IoC.Get<IEventAggregator>().PublishOnUIThreadAsync(new InstanceLaunchedMessage(args));
+            Locator.Current.GetService<IEventAggregator>().PublishOnUIThreadAsync(new InstanceLaunchedMessage(args));
 
             return true;
         }
@@ -35,8 +38,13 @@ namespace UI.WPF.Launcher
         #endregion
 
         [STAThread]
-        public static void Main()
+        public static void Main([NotNull] string[] args)
         {
+            if (!CommandlineHandler.HandleCommandLine(args))
+            {
+                return;
+            }
+
             // This application needs to be single instance as 
             //     1) The SDL DLL can not be used by two instances
             //     2) Later launching a second instance with commandline arguments should change the state of the main application

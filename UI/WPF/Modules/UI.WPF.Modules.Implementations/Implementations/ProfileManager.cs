@@ -2,11 +2,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.ComponentModel.Composition;
 using System.Linq;
-using System.Reactive.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using FSOManagement.Annotations;
 using FSOManagement.Interfaces;
@@ -21,33 +18,45 @@ namespace UI.WPF.Modules.Implementations.Implementations
     [Export(typeof(IProfileManager))]
     public sealed class ProfileManager : ReactiveObject, IProfileManager
     {
-        private IProfile _currentProfile;
-
         private readonly IReactiveList<IProfile> _profiles;
 
+        private IProfile _currentProfile;
+
         [ImportingConstructor]
-        public ProfileManager(ILauncherSettings settings)
+        public ProfileManager([NotNull] ISettings settings)
         {
             _profiles = new ReactiveList<IProfile>();
             _profiles.Changed.Subscribe(_ => settings.Profiles = _profiles);
 
             CurrentProfileObservable = this.WhenAny(x => x.CurrentProfile, x => x.Value);
 
-            if (settings.Profiles != null)
-            {
-                _profiles.AddRange(settings.Profiles);
-            }
-            else
-            {
-                var defaultProfile = CreateNewProfile("Default");
-                defaultProfile.PullConfigurationAsync(CancellationToken.None);
-
-                _profiles.Add(defaultProfile);
-            }
-
-            CurrentProfile = settings.SelectedProfile ?? _profiles.FirstOrDefault();
-
             this.WhenAnyValue(x => x.CurrentProfile).BindTo(settings, x => x.SelectedProfile);
+
+            settings.SettingsLoaded.Subscribe(newSettings =>
+            {
+                if (newSettings == null)
+                {
+                    return;
+                }
+
+                using (_profiles.SuppressChangeNotifications())
+                {
+                    _profiles.Clear();
+                    if (newSettings.Profiles.Any())
+                    {
+                        _profiles.AddRange(newSettings.Profiles);
+                    }
+                    else
+                    {
+                        var defaultProfile = CreateNewProfile("Default");
+                        defaultProfile.PullConfigurationAsync(CancellationToken.None);
+
+                        _profiles.Add(defaultProfile);
+                    }
+
+                    CurrentProfile = newSettings.SelectedProfile ?? _profiles.FirstOrDefault();
+                }
+            });
         }
 
         #region IProfileManager Members
@@ -72,7 +81,10 @@ namespace UI.WPF.Modules.Implementations.Implementations
 
         public IProfile CreateNewProfile(string name)
         {
-            return new Profile(name);
+            return new Profile
+            {
+                Name = name
+            };
         }
 
         #endregion

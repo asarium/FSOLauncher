@@ -2,14 +2,14 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.ComponentModel.Composition;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Data;
+using System.Reactive;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using Caliburn.Micro;
-using FSOManagement;
+using FSOManagement.Annotations;
+using FSOManagement.Interfaces.Mod;
 using ReactiveUI;
 using UI.WPF.Launcher.Common.Interfaces;
 
@@ -17,60 +17,37 @@ using UI.WPF.Launcher.Common.Interfaces;
 
 namespace UI.WPF.Modules.Mods.ViewModels
 {
-    [Export(typeof(ILauncherTab)), ExportMetadata("Priority", 1)]
+    [Export(typeof(ILauncherTab)), ExportMetadata("Priority", 0)]
     public sealed class ModTabViewModel : Screen, ILauncherTab
     {
+        private readonly IObservable<string> _filterObservable;
+
+        private readonly IProfileManager _profileManager;
+
         private string _filterString;
 
-        private ICollectionView _modificationsView;
-
-        private CancellationTokenSource _readInisCancellationTokenSource;
-
-        private Task _readModInisTask;
+        private IReadOnlyReactiveList<ModListViewModel> _modLists;
 
         [ImportingConstructor]
-        public ModTabViewModel(IProfileManager profileManager)
+        public ModTabViewModel([NotNull] IProfileManager profileManager)
         {
+            _profileManager = profileManager;
             DisplayName = "Mods";
 
-            profileManager.WhenAny(x => x.CurrentProfile.SelectedTotalConversion.ModManager.Modifications, val => CreateModificationsView(val.Value))
-                .BindTo(this, x => x.ModificationsView);
+            InitializeLoadMods(profileManager);
 
-            profileManager.WhenAnyValue(x => x.CurrentProfile.ModActivationManager.PrimaryModifications).Subscribe(OnPrimaryModificationsChanges);
+            InitializeModLists(profileManager);
+
+            _filterObservable = this.WhenAnyValue(x => x.FilterString);
+
+            profileManager.WhenAnyValue(x => x.CurrentProfile.ModActivationManager.PrimaryModifications).Subscribe(OnPrimaryModificationsChanged);
 
             profileManager.WhenAnyValue(x => x.CurrentProfile.ModActivationManager.ActiveMod).Subscribe(OnActiveModChanged);
 
-            profileManager.WhenAnyValue(x => x.CurrentProfile.ModActivationManager.SecondaryModifications).Subscribe(OnSecondaryModificationsChanges);
+            profileManager.WhenAnyValue(x => x.CurrentProfile.ModActivationManager.SecondaryModifications).Subscribe(OnSecondaryModificationsChanged);
         }
 
-        public ICollectionView ModificationsView
-        {
-            get { return _modificationsView; }
-            private set
-            {
-                if (Equals(value, _modificationsView))
-                {
-                    return;
-                }
-                _modificationsView = value;
-                NotifyOfPropertyChange();
-
-                if (_readModInisTask != null)
-                {
-                    // Canel the previous task
-                    _readInisCancellationTokenSource.Cancel();
-
-                    _readInisCancellationTokenSource = null;
-                    _readModInisTask = null;
-                }
-
-                _readInisCancellationTokenSource = new CancellationTokenSource();
-                _readModInisTask =
-                    Task.WhenAll(_modificationsView.Cast<ModViewModel>()
-                        .Select(model => model.ReadModIniAsync(_readInisCancellationTokenSource.Token)));
-            }
-        }
-
+        [CanBeNull]
         public string FilterString
         {
             get { return _filterString; }
@@ -82,109 +59,116 @@ namespace UI.WPF.Modules.Mods.ViewModels
                 }
                 _filterString = value;
                 NotifyOfPropertyChange();
-
-                _modificationsView.Refresh();
             }
         }
 
-        private void OnActiveModChanged(Modification activeMod)
+        [CanBeNull]
+        public IReadOnlyReactiveList<ModListViewModel> ModLists
         {
-            if (ModificationsView == null)
+            get { return _modLists; }
+            private set
             {
-                return;
-            }
-
-            if (activeMod == null)
-            {
-                // If the active mod is null, activate the first mod and deactivate the others.
-                var first = ModificationsView.Cast<ModViewModel>().FirstOrDefault();
-
-                if (first != null)
+                if (Equals(value, _modLists))
                 {
-                    first.IsActiveMod = true;
+                    return;
                 }
-
-                ModificationsView.Cast<ModViewModel>().Skip(1).Apply(mod => mod.IsActiveMod = false);
-
-                return;
+                _modLists = value;
+                NotifyOfPropertyChange();
             }
-
-            ModificationsView.Cast<ModViewModel>().Apply(view => view.IsActiveMod = view.Mod == activeMod);
         }
 
-        private void OnPrimaryModificationsChanges(IEnumerable<Modification> modifications)
+        private void InitializeLoadMods([NotNull] IProfileManager profileManager)
         {
-            if (ModificationsView == null)
+            profileManager.WhenAnyValue(x => x.CurrentProfile.SelectedTotalConversion.ModManager).Subscribe(LoadMods);
+        }
+
+        private async void LoadMods([NotNull] IModManager manager)
+        {
+            await manager.RefreshModsAsync();
+
+            UpdateViewModelStatus();
+        }
+
+        private void UpdateViewModelStatus()
+        {
+            if (_profileManager.CurrentProfile == null)
             {
                 return;
             }
 
+            OnActiveModChanged(_profileManager.CurrentProfile.ModActivationManager.ActiveMod);
+
+            OnPrimaryModificationsChanged(_profileManager.CurrentProfile.ModActivationManager.PrimaryModifications);
+
+            OnSecondaryModificationsChanged(_profileManager.CurrentProfile.ModActivationManager.SecondaryModifications);
+        }
+
+        private void InitializeModLists([NotNull] IProfileManager profileManager)
+        {
+            profileManager.WhenAny(x => x.CurrentProfile.SelectedTotalConversion.ModManager.ModificationLists, val => CreateModListsView(val.Value))
+                .BindTo(this, x => x.ModLists);
+        }
+
+        [NotNull]
+        private IReadOnlyReactiveList<ModListViewModel> CreateModListsView(
+            [NotNull] IEnumerable<IReadOnlyReactiveList<ILocalModification>> value)
+        {
+            var viewModels = value.CreateDerivedCollection(mods => new ModListViewModel(mods, _filterObservable));
+            
+            // This feels like a hack but I don't know how to do it better...
+            var resetSubject = new Subject<bool>();
+            viewModels.CreateDerivedCollection(x => x.HasModsObservable.ObserveOn(RxApp.MainThreadScheduler).Subscribe(resetSubject.OnNext));
+
+            return viewModels.CreateDerivedCollection(x => x, x => x.ModViewModels.Any(), null, resetSubject);
+        }
+
+        private void OnActiveModChanged([CanBeNull] ILocalModification activeMod)
+        {
+            if (_modLists == null)
+            {
+                return;
+            }
+
+            foreach (var modListViewModel in _modLists)
+            {
+                modListViewModel.OnActiveModChanged(activeMod);
+            }
+        }
+
+        private void OnPrimaryModificationsChanged([CanBeNull] IEnumerable<ILocalModification> modifications)
+        {
+            if (_modLists == null)
+            {
+                return;
+            }
             if (modifications == null)
             {
                 return;
             }
 
-            ModificationsView.Cast<ModViewModel>().Apply(view => view.IsPrimaryMod = modifications.Any(mod => mod == view.Mod));
+            var localModifications = modifications as IList<ILocalModification> ?? modifications.ToList();
+            foreach (var modListViewModel in _modLists)
+            {
+                modListViewModel.OnPrimaryModificationsChanged(localModifications);
+            }
         }
 
-        private void OnSecondaryModificationsChanges(IEnumerable<Modification> modifications)
+        private void OnSecondaryModificationsChanged([CanBeNull] IEnumerable<ILocalModification> modifications)
         {
-            if (ModificationsView == null)
+            if (_modLists == null)
             {
                 return;
             }
-
             if (modifications == null)
             {
                 return;
             }
 
-            ModificationsView.Cast<ModViewModel>().Apply(view => view.IsSecondaryMod = modifications.Any(mod => mod == view.Mod));
-        }
-
-        private bool FilterModification(object item)
-        {
-            var modViewModel = item as ModViewModel;
-
-            if (modViewModel == null)
+            var localModifications = modifications as IList<ILocalModification> ?? modifications.ToList();
+            foreach (var modListViewModel in _modLists)
             {
-                return false;
+                modListViewModel.OnSecondaryModificationsChanged(localModifications);
             }
-
-            if (string.IsNullOrEmpty(FilterString))
-            {
-                return true;
-            }
-
-            if (modViewModel.DisplayName.IndexOf(FilterString, StringComparison.InvariantCultureIgnoreCase) >= 0)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        private ICollectionView CreateModificationsView(IEnumerable<Modification> value)
-        {
-            var viewModelCollection = value.CreateDerivedCollection(CreateModViewModel);
-
-            var collectionView = CollectionViewSource.GetDefaultView(viewModelCollection);
-
-            if (collectionView.CanFilter)
-            {
-                collectionView.Filter = FilterModification;
-            }
-
-            return collectionView;
-        }
-
-        private static ModViewModel CreateModViewModel(Modification mod)
-        {
-            var modViewModel = new ModViewModel(mod);
-
-            IoC.BuildUp(modViewModel);
-
-            return modViewModel;
         }
     }
 }

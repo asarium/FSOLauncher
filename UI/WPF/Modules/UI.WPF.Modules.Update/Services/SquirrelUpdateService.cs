@@ -29,6 +29,17 @@ namespace UI.WPF.Modules.Update.Services
             }
         }
 
+        public bool IsFirstRun
+        {
+            get
+            {
+                using (var mgr = new UpdateManager(@"http://localhost/squirrel", "FSOLauncher", FrameworkVersion.Net45))
+                {
+                    mgr.
+                }
+            }
+        }
+
         public async Task<IUpdateStatus> CheckForUpdateAsync()
         {
             try

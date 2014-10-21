@@ -2,7 +2,6 @@
 
 using FSOManagement;
 using FSOManagement.Interfaces;
-using FSOManagement.Profiles;
 using Moq;
 using NUnit.Framework;
 using UI.WPF.Modules.Advanced.ViewModels;

@@ -1,49 +1,47 @@
-﻿<UserControl x:Class="UI.WPF.Modules.Mods.Views.ModTabView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<UserControl xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:viewModels="clr-namespace:UI.WPF.Modules.Mods.ViewModels"
-             xmlns:mods="clr-namespace:UI.WPF.Modules.Mods"
-             xmlns:converters="clr-namespace:UI.WPF.Modules.Mods.Converters" mc:Ignorable="d"
-             d:DataContext="{d:DesignInstance viewModels:ModTabViewModel}" d:DesignHeight="300" d:DesignWidth="300">
+             xmlns:mods="clr-namespace:UI.WPF.Modules.Mods" xmlns:views="clr-namespace:UI.WPF.Modules.Mods.Views"
+             x:Class="UI.WPF.Modules.Mods.Views.ModTabView" mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance {x:Type viewModels:ModTabViewModel}}" d:DesignHeight="300"
+             d:DesignWidth="450">
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition />
         </Grid.RowDefinitions>
 
         <TextBox Margin="5" Grid.Row="0" Width="150" HorizontalAlignment="Right" VerticalAlignment="Center"
-                 Text="{Binding FilterString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Delay=200}"
-                 controls:TextboxHelper.Watermark="Search..." controls:TextboxHelper.ClearTextButton="True" />
+                 Text="{Binding FilterString, Delay=200, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                 controls:TextboxHelper.Watermark="Search..." controls:TextboxHelper.ClearTextButton="True"
+                 Grid.Column="1" />
 
-        <ItemsControl ItemsSource="{Binding ModificationsView}" Grid.Row="1"
-                      VirtualizingStackPanel.IsVirtualizing="True" ScrollViewer.CanContentScroll="True">
-            <ItemsControl.ItemTemplate>
-                <DataTemplate DataType="viewModels:ModViewModel">
-                    <Grid>
-                        <mods:ModDisplayControl VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
-                    </Grid>
+        <controls:MetroAnimatedSingleRowTabControl Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="1"
+                                                   TabStripPlacement="Left" VerticalAlignment="Top"
+                                                   ItemsSource="{Binding ModLists}">
+            <TabControl.ItemTemplate>
+                <DataTemplate DataType="{x:Type viewModels:ModListViewModel}">
+                    <StackPanel Orientation="Horizontal" Margin="0,10">
+                        <TextBlock Text="{Binding DisplayString}">
+                            <TextBlock.LayoutTransform>
+                                <RotateTransform Angle="270" />
+                            </TextBlock.LayoutTransform>
+                        </TextBlock>
+                    </StackPanel>
                 </DataTemplate>
-            </ItemsControl.ItemTemplate>
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <VirtualizingStackPanel />
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.Template>
-                <ControlTemplate>
-                    <Border BorderThickness="{TemplateBinding Border.BorderThickness}"
-                            Padding="{TemplateBinding Control.Padding}"
-                            BorderBrush="{TemplateBinding Border.BorderBrush}"
-                            Background="{TemplateBinding Panel.Background}" SnapsToDevicePixels="True">
-                        <ScrollViewer Padding="{TemplateBinding Control.Padding}" Focusable="False">
-                            <ItemsPresenter SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
-                        </ScrollViewer>
-                    </Border>
-                </ControlTemplate>
-            </ItemsControl.Template>
-        </ItemsControl>
+            </TabControl.ItemTemplate>
+            <TabControl.ContentTemplate>
+                <DataTemplate DataType="viewModels:ModListViewModel">
+                    <views:ModListView />
+                </DataTemplate>
+            </TabControl.ContentTemplate>
+        </controls:MetroAnimatedSingleRowTabControl>
     </Grid>
 </UserControl>

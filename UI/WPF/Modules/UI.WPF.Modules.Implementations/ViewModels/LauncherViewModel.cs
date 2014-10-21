@@ -1,7 +1,6 @@
 ﻿#region Usings
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using Caliburn.Micro;
 using FSOManagement;
@@ -21,14 +20,24 @@ namespace UI.WPF.Modules.Implementations.ViewModels
         public LauncherViewModel(ISettings settings)
         {
             _totalConversions = new ReactiveList<TotalConversion>();
-            if (settings.TotalConversions != null)
+
+            settings.SettingsLoaded.Subscribe(newSettings =>
             {
-                _totalConversions.AddRange(settings.TotalConversions);
-            }
+                if (newSettings == null)
+                {
+                    return;
+                }
+
+                using (_totalConversions.SuppressChangeNotifications())
+                {
+                    _totalConversions.Clear();
+                    _totalConversions.AddRange(newSettings.TotalConversions);
+                }
+            });
 
             _totalConversions.Changed.Subscribe(_ => settings.TotalConversions = _totalConversions);
         }
-        
+
         #region ILauncherViewModel Members
 
         public IReactiveList<TotalConversion> TotalConversions
@@ -38,7 +47,7 @@ namespace UI.WPF.Modules.Implementations.ViewModels
 
         [Import]
         public IProfileManager ProfileManager { get; private set; }
-        
+
         #endregion
     }
 }

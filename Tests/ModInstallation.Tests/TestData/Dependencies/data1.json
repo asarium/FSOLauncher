@@ -1,0 +1,30 @@
+﻿{
+  "mods": [
+    {
+      "id": "test1",
+      "version": "",
+      "packages": [
+        {
+          "name": "package1",
+          "status": "required",
+          "files": [],
+          "dependencies": [
+            {
+              "id": "test1",
+              "version": "*",
+              "packages": [
+                "package2"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "package2",
+          "status": "optional",
+          "files": [],
+          "dependencies": []
+        }
+      ]
+    }
+  ]
+}

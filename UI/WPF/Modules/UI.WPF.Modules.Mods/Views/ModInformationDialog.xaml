@@ -5,10 +5,8 @@
                       xmlns:dialogs="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
                       xmlns:views="clr-namespace:UI.WPF.Modules.Mods.Views"
                       xmlns:viewModels="clr-namespace:UI.WPF.Modules.Mods.ViewModels"
-                      xmlns:converters="clr-namespace:UI.WPF.Modules.Mods.Converters"
-                      xmlns:Mods="clr-namespace:UI.WPF.Modules.Mods"
                       x:Class="UI.WPF.Modules.Mods.Views.ModInformationDialog" mc:Ignorable="d" d:DesignHeight="300"
-                      d:DesignWidth="600" d:DataContext="{d:DesignInstance {x:Type viewModels:ModViewModel}}">
+                      d:DesignWidth="600" d:DataContext="{d:DesignInstance {x:Type viewModels:IniModViewModel}}">
     <dialogs:SimpleDialog.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -36,7 +34,7 @@
                 <TextBlock DataContext="{Binding}" TextWrapping="Wrap" Text="{Binding DisplayName}" FontWeight="Bold"
                            FontSize="15" Margin="0,5,0,10" HorizontalAlignment="Center" VerticalAlignment="Center" />
 
-                <views:ModImageDisplayControl DataContext="{Binding}" ImagePath="{Binding ImagePath}" Margin="10" />
+                <views:ModImageDisplayControl DataContext="{Binding}" ImageSource="{Binding LogoSource}" Margin="10" />
             </StackPanel>
 
             <TextBlock TextWrapping="Wrap" Text="{Binding InfoText}" HorizontalAlignment="Left" Margin="0" Grid.Row="1" />

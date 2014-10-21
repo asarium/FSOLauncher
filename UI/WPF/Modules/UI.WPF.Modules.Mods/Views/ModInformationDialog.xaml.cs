@@ -6,6 +6,8 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using FSOManagement;
+using FSOManagement.Annotations;
+using FSOManagement.Implementations.Mod;
 using MahApps.Metro.Controls.Dialogs;
 using ReactiveUI;
 using UI.WPF.Launcher.Common.Interfaces;
@@ -15,33 +17,6 @@ using UI.WPF.Modules.Mods.ViewModels;
 
 namespace UI.WPF.Modules.Mods.Views
 {
-    public class RootDialogResult
-    {
-        #region Button enum
-
-        public enum Button
-        {
-            Accepted,
-
-            Canceled
-        }
-
-        #endregion
-
-        public RootDialogResult(string name, string path, Button selectedButton)
-        {
-            Name = name;
-            Path = path;
-            SelectedButton = selectedButton;
-        }
-
-        public string Name { get; private set; }
-
-        public string Path { get; private set; }
-
-        public Button SelectedButton { get; private set; }
-    }
-
     /// <summary>
     ///     Interaction logic for ModInformationDialog.xaml
     /// </summary>
@@ -49,7 +24,7 @@ namespace UI.WPF.Modules.Mods.Views
     {
         private readonly TaskCompletionSource<bool> _dialogCompletionSource;
 
-        public ModInformationDialog(ModViewModel modViewModel)
+        public ModInformationDialog([NotNull] IniModViewModel iniModViewModel)
         {
             InitializeComponent();
 
@@ -60,25 +35,30 @@ namespace UI.WPF.Modules.Mods.Views
 
             AcceptCommand = acceptCommand;
 
-            DataContext = modViewModel;
+            DataContext = iniModViewModel;
 
-            OpenWebsiteCommand = CreateLinkCommand(modViewModel.Mod, x => x.Website);
+            OpenWebsiteCommand = CreateLinkCommand(iniModViewModel.ModInstance, x => x.Website);
 
-            OpenForumCommand = CreateLinkCommand(modViewModel.Mod, x => x.Forum);
+            OpenForumCommand = CreateLinkCommand(iniModViewModel.ModInstance, x => x.Forum);
 
-            OpenBugtrackerCommand = CreateLinkCommand(modViewModel.Mod, x => x.Bugtracker);
+            OpenBugtrackerCommand = CreateLinkCommand(iniModViewModel.ModInstance, x => x.Bugtracker);
         }
 
+        [NotNull]
         public ICommand AcceptCommand { get; private set; }
 
+        [NotNull]
         public ICommand OpenWebsiteCommand { get; set; }
 
+        [NotNull]
         public ICommand OpenForumCommand { get; set; }
 
+        [NotNull]
         public ICommand OpenBugtrackerCommand { get; set; }
 
         #region IDialogControl<bool> Members
 
+        [NotNull]
         public Task<bool> WaitForCompletionAsync()
         {
             return _dialogCompletionSource.Task;
@@ -86,7 +66,8 @@ namespace UI.WPF.Modules.Mods.Views
 
         #endregion
 
-        private static ICommand CreateLinkCommand(Modification viewModel, Expression<Func<Modification, string>> propertyExpression)
+        [NotNull]
+        private static ICommand CreateLinkCommand([NotNull] IniModification viewModel, [NotNull] Expression<Func<IniModification, string>> propertyExpression)
         {
             var observable = viewModel.WhenAny(propertyExpression, val => !string.IsNullOrEmpty(val.Value));
             var propertyAccessor = propertyExpression.Compile();

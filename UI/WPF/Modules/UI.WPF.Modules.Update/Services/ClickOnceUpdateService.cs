@@ -22,6 +22,11 @@ namespace UI.WPF.Modules.Update.Services
             get { return ApplicationDeployment.IsNetworkDeployed; }
         }
 
+        public bool IsFirstRun
+        {
+            get { return ApplicationDeployment.IsNetworkDeployed && ApplicationDeployment.CurrentDeployment.IsFirstRun; }
+        }
+
         public async Task<IUpdateStatus> CheckForUpdateAsync()
         {
             if (!IsUpdatePossible)

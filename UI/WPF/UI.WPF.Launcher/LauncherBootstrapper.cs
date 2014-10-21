@@ -9,22 +9,35 @@ using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Threading;
+using System.Xml;
+using Akavache;
 using Caliburn.Micro;
-using Ookii.Dialogs.Wpf;
+using FSOManagement;
+using ModInstallation.Interfaces;
+using ModInstallation.Windows.Implementations.Extractors;
+using NLog.Config;
+using ReactiveUI;
 using SDLGlue;
+using Splat;
+using UI.WPF.Launcher.Common.Classes;
 using UI.WPF.Launcher.Common.Interfaces;
+using UI.WPF.Launcher.Common.Util;
+using UI.WPF.Launcher.Implementations;
 using UI.WPF.Launcher.Properties;
 using UI.WPF.Modules.Advanced;
 using UI.WPF.Modules.General;
 using UI.WPF.Modules.Implementations;
+using UI.WPF.Modules.Installation;
 using UI.WPF.Modules.Mods;
 using UI.WPF.Modules.Update;
+using Utilities;
+using LogManager = NLog.LogManager;
 
 #endregion
 
 namespace UI.WPF.Launcher
 {
-    public class LauncherBootstrapper : BootstrapperBase
+    public class LauncherBootstrapper : BootstrapperBase, IEnableLogger
     {
         private CompositionContainer _container;
 
@@ -44,16 +57,20 @@ namespace UI.WPF.Launcher
             var batch = new CompositionBatch();
 
             batch.AddExportedValue<IEventAggregator>(new EventAggregator());
+            batch.AddExportedValue<IArchiveExtractor>(new SevenZipArchiveExtractor());
             batch.AddExportedValue(_container);
 
             _container.Compose(batch);
+
+            Locator.CurrentMutable = new MefDependencyResolver(_container, Locator.CurrentMutable);
         }
 
         protected override void OnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
             // Only handle exceptions in non-debug mode so the debugger can break at the location where the exception was generated
+            this.Log().FatalException("Unhandled exception!", e.Exception);
 #if !DEBUG
-            // Only ever allow one window to open.
+    // Only ever allow one window to open.
             if (_unhandledExceptionCaught)
             {
                 return;
@@ -102,20 +119,12 @@ namespace UI.WPF.Launcher
 
         protected override object GetInstance(Type serviceType, string key)
         {
-            var contract = string.IsNullOrEmpty(key) ? AttributedModelServices.GetContractName(serviceType) : key;
-            var export = _container.GetExportedValues<object>(contract).FirstOrDefault();
-
-            if (export != null)
-            {
-                return export;
-            }
-
-            throw new Exception(string.Format("Could not locate any instances of contract {0}.", contract));
+            return Locator.Current.GetService(serviceType, key);
         }
 
         protected override IEnumerable<object> GetAllInstances(Type serviceType)
         {
-            return _container.GetExportedValues<object>(AttributedModelServices.GetContractName(serviceType));
+            return Locator.Current.GetServices(serviceType);
         }
 
         protected override IEnumerable<Assembly> SelectAssemblies()
@@ -130,27 +139,64 @@ namespace UI.WPF.Launcher
                 typeof(GeneralTabModule).Assembly,
                 typeof(AdvancedTabModule).Assembly,
                 typeof(ModTabModule).Assembly,
-                typeof(UpdateModule).Assembly
+                typeof(UpdateModule).Assembly,
+                typeof(InstallationModule).Assembly,
+
+                // Libraries
+                typeof(IRemoteModManager).Assembly,
+                typeof(FSOUtilities).Assembly
             };
         }
 
         protected override void BuildUp(object instance)
         {
-            _container.SatisfyImportsOnce(instance);
+            throw new InvalidOperationException("BuildUp should not be used!");
         }
 
         protected override void OnStartup(object sender, StartupEventArgs e)
         {
+            InitializeLogging();
+
+            this.Log().Info("Starting application");
+
             SDLLibrary.Init(SDLLibrary.InitMode.Joystick | SDLLibrary.InitMode.Video);
             SDLJoystick.Init();
             SDLVideo.Init();
 
-            var timer = new DispatcherTimer {Interval = TimeSpan.FromMilliseconds(1000)};
+            var timer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(1000)
+            };
             timer.Tick += SDLUpdate;
 
             timer.Start();
 
+            BlobCache.EnsureInitialized();
+            BlobCache.ApplicationName = LauncherUtils.GetApplicationName();
+
             DisplayRootViewFor<IShellViewModel>();
+
+            Locator.Current.GetService<IEventAggregator>().PublishOnUIThread(new MainWindowOpenedMessage());
+        }
+
+        private static void InitializeLogging()
+        {
+            Locator.CurrentMutable.Register(() => new NLogLogManager(), typeof(ILogManager));
+
+            var assembly = Assembly.GetExecutingAssembly();
+
+            using (var stream = assembly.GetManifestResourceStream("UI.WPF.Launcher.NLog.config"))
+            {
+                if (stream == null)
+                {
+                    return;
+                }
+
+                using (var reader = XmlReader.Create(stream))
+                {
+                    LogManager.Configuration = new XmlLoggingConfiguration(reader, "NLog.config");
+                }
+            }
         }
 
         private static void SDLUpdate(object sender, EventArgs eventArgs)
@@ -160,7 +206,7 @@ namespace UI.WPF.Launcher
 
         protected override void OnExit(object sender, EventArgs e)
         {
-            Settings.Default.Save();
+            BlobCache.Shutdown().Wait();
 
             SDLVideo.Quit();
             SDLJoystick.Quit();

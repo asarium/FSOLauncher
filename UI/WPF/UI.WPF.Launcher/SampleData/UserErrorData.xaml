@@ -1,0 +1,13 @@
+﻿<ReactiveUI:UserError xmlns:ReactiveUI="clr-namespace:ReactiveUI;assembly=ReactiveUI"
+                      xmlns:System="clr-namespace:System;assembly=mscorlib"
+                      ErrorCauseOrResolution="Nam maecenas class aliquam sed dis integer praesent quisque accumsan aenean curae cras duis mauris vivamus donec aliquam etiam est fusce nunc amet aliquet"
+                      ErrorMessage="Class maecenas cras">
+    <ReactiveUI:UserError.InnerException>
+        <System:Exception HelpLink="Curabitur aenean" Source="Quisque mauris nullam curae" />
+    </ReactiveUI:UserError.InnerException>
+    <ReactiveUI:UserError.RecoveryOptions>
+        <ReactiveUI:RecoveryCommand CommandName="Test" IsCancel="True" IsDefault="False" />
+        <ReactiveUI:RecoveryCommand CommandName="Test2" IsCancel="False" IsDefault="True" />
+        <ReactiveUI:RecoveryCommand CommandName="Test3" IsCancel="False" IsDefault="False" />
+    </ReactiveUI:UserError.RecoveryOptions>
+</ReactiveUI:UserError>

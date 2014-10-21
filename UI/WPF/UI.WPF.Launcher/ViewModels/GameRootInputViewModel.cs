@@ -10,6 +10,7 @@ using System.Windows.Input;
 using Caliburn.Micro;
 using FSOManagement;
 using ReactiveUI;
+using Splat;
 using UI.WPF.Launcher.Common.Services;
 using UI.WPF.Launcher.Common.Util;
 
@@ -133,7 +134,7 @@ namespace UI.WPF.Launcher.ViewModels
 
         private async Task BrowseForRoot()
         {
-            var interactionService = IoC.Get<IInteractionService>();
+            var interactionService = Locator.Current.GetService<IInteractionService>();
 
             var path = await interactionService.OpenDirectoryDialog("Please select a directory");
 
