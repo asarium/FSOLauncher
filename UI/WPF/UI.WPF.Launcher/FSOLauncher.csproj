@@ -240,6 +240,10 @@
       <Project>{73342923-20ee-4f2c-b9ab-9a03341f782a}</Project>
       <Name>FSOManagement</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\Launcher.Shared\Launcher.Shared.csproj">
+      <Project>{BF86D333-D55C-4723-9840-E5BA1A46A17E}</Project>
+      <Name>Launcher.Shared</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Libraries\ModInstallation.Windows\ModInstallation.Windows.csproj">
       <Project>{93358CAD-81C8-4B1F-A494-05EA168E3427}</Project>
       <Name>ModInstallation.Windows</Name>
