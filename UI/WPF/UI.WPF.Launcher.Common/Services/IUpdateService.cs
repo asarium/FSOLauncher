@@ -89,6 +89,8 @@ namespace UI.WPF.Launcher.Common.Services
     {
         bool IsUpdatePossible { get; }
 
+        bool IsFirstRun { get; }
+
         Task<IUpdateStatus> CheckForUpdateAsync();
 
         Task DoUpdateAsync(IProgress<IUpdateProgress> progressReporter);
