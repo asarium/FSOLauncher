@@ -16,6 +16,7 @@ using FSOManagement;
 using ModInstallation.Interfaces;
 using ModInstallation.Windows.Implementations.Extractors;
 using NLog.Config;
+using Ookii.Dialogs.Wpf;
 using ReactiveUI;
 using SDLGlue;
 using Splat;
