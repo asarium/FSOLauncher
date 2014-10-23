@@ -11,7 +11,7 @@ namespace UI.WPF.Launcher.Common.Classes
     public abstract class ReactiveObjectBase : ReactiveObject
     {
         [NotifyPropertyChangedInvocator]
-        protected void RaiseAndSetIfPropertyChanged<T>(ref T obj, T value, [CallerMemberName] string propertyName = null)
+        protected void RaiseAndSetIfPropertyChanged<T>(ref T obj, T value, [NotNull,CallerMemberName] string propertyName = null)
         {
             this.RaiseAndSetIfChanged(ref obj, value, propertyName);
         }
