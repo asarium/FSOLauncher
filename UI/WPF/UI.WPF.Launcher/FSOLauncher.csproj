@@ -88,11 +88,12 @@
       <HintPath>..\..\..\packages\Caliburn.Micro.2.0.1\lib\net45\Caliburn.Micro.Platform.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Ionic.Zip">
-      <HintPath>..\..\..\packages\squirrel.windows.0.5.2\lib\Net45\Ionic.Zip.dll</HintPath>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>..\..\..\packages\squirrel.windows.0.5.5\lib\Net45\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
     <Reference Include="MahApps.Metro">
-      <HintPath>..\..\..\packages\MahApps.Metro.0.14.0-ALPHA98\lib\net45\MahApps.Metro.dll</HintPath>
+      <HintPath>..\..\..\packages\MahApps.Metro.0.14.0.0\lib\net45\MahApps.Metro.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Expression.Drawing" />
     <Reference Include="Microsoft.Web.XmlTransform">
@@ -132,12 +133,13 @@
     <Reference Include="ReactiveUI.Events">
       <HintPath>..\..\..\packages\reactiveui-events.6.1.0\lib\net45\ReactiveUI.Events.dll</HintPath>
     </Reference>
-    <Reference Include="Squirrel">
-      <HintPath>..\..\..\packages\squirrel.windows.0.5.2\lib\Net45\Squirrel.dll</HintPath>
-    </Reference>
     <Reference Include="Splat">
       <HintPath>..\..\..\packages\Splat.1.5.1\lib\Net45\Splat.dll</HintPath>
       <Private>True</Private>
+    </Reference>
+    <Reference Include="Squirrel, Version=0.5.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\squirrel.windows.0.5.5\lib\Net45\Squirrel.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -163,8 +165,9 @@
       <HintPath>..\..\..\packages\Rx-XAML.2.2.5\lib\net45\System.Reactive.Windows.Threading.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Remoting" />
-    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="System.Windows.Interactivity">
       <HintPath>..\..\..\packages\MahApps.Metro.0.14.0.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
