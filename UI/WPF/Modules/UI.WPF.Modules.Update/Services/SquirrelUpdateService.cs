@@ -92,8 +92,6 @@ namespace UI.WPF.Modules.Update.Services
 
                 await mgr.ApplyReleases(_updateInfo, p => progressReporter.Report(new UpdateProgress(p / 100.0, UpdateState.Installing)));
 
-                await mgr.CreateUninstallerRegistryEntry();
-
                 var releaseNotes = _updateInfo.FetchReleaseNotes().ToDictionary(p => p.Key.Version, p => p.Value);
 
                 progressReporter.Report(UpdateProgress.Finished(releaseNotes));
