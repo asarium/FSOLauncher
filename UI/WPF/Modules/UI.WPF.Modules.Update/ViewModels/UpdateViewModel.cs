@@ -1,33 +1,42 @@
 ﻿#region Usings
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Linq;
 using System.Threading.Tasks;
 using Caliburn.Micro;
+using FSOManagement.Annotations;
 using UI.WPF.Launcher.Common;
+using UI.WPF.Launcher.Common.Classes;
 using UI.WPF.Launcher.Common.Interfaces;
 using UI.WPF.Launcher.Common.Services;
+using UI.WPF.Modules.Update.Views;
 
 #endregion
 
 namespace UI.WPF.Modules.Update.ViewModels
 {
     [Export(ContractNames.RightWindowCommandsContract, typeof(IWindowCommand)), ExportMetadata("Priority", 0)]
-    public sealed class UpdateViewModel : Screen, IWindowCommand, IPartImportsSatisfiedNotification
+    public sealed class UpdateViewModel : Screen, IWindowCommand, IHandle<MainWindowOpenedMessage>
     {
-        public UpdateViewModel()
-        {
-            DisplayName = "Update";
-        }
-
         private object _status;
 
-        [Import]
+        [ImportingConstructor]
+        public UpdateViewModel([NotNull] IEventAggregator aggregator)
+        {
+            DisplayName = "Update";
+
+            aggregator.Subscribe(this);
+        }
+
+        [NotNull,Import]
         public IUpdateService UpdateService { private get; set; }
 
-        [Import]
+        [NotNull,Import]
         public ISettings Settings { private get; set; }
+
+        [NotNull,Import]
+        public IInteractionService InteractionService { private get; set; }
 
         public object Status
         {
@@ -43,16 +52,16 @@ namespace UI.WPF.Modules.Update.ViewModels
             }
         }
 
-        #region IPartImportsSatisfiedNotification Members
+        #region IHandle<MainWindowOpenedMessage> Members
 
-        public async void OnImportsSatisfied()
+        void IHandle<MainWindowOpenedMessage>.Handle([NotNull] MainWindowOpenedMessage message)
         {
-            await StartUpdateCheck();
+            StartUpdateCheck();
         }
 
         #endregion
 
-        public async Task StartUpdateCheck()
+        public async void StartUpdateCheck()
         {
             if (!UpdateService.IsUpdatePossible)
             {
@@ -60,7 +69,7 @@ namespace UI.WPF.Modules.Update.ViewModels
                 return;
             }
 
-            if (Settings != null && !Settings.CheckForUpdates)
+            if (!Settings.CheckForUpdates)
             {
                 Status = new SuccessfullStatus("Not checking for updates.");
                 return;
@@ -90,13 +99,19 @@ namespace UI.WPF.Modules.Update.ViewModels
             }
         }
 
-        public async Task DoUpdate(UpdateVersion version)
+        [NotNull]
+        public async Task DoUpdate([CanBeNull] Version version)
         {
             // Update available
             Status = new UpdatingStatus();
+            IUpdateProgress last = null;
             try
             {
-                await UpdateService.DoUpdateAsync(new Progress<IUpdateProgress>(((UpdatingStatus) Status).UpdateProgress));
+                await UpdateService.DoUpdateAsync(new Progress<IUpdateProgress>(progress =>
+                {
+                    last = progress;
+                    ((UpdatingStatus) Status).UpdateProgress(progress);
+                }));
             }
             catch (Exception e)
             {
@@ -112,6 +127,23 @@ namespace UI.WPF.Modules.Update.ViewModels
             {
                 Status = new SuccessfullStatus("Update was successfull.");
             }
+
+            if (last.State == UpdateState.Finished)
+            {
+                OpenChangelogDialog(last);
+            }
+        }
+
+        private void OpenChangelogDialog([NotNull] IUpdateProgress last)
+        {
+            if (last.ReleaseNotes == null)
+            {
+                return;
+            }
+
+            var dialog = new ChangelogDialog(last.ReleaseNotes);
+
+            InteractionService.ShowDialog(dialog);
         }
     }
 }

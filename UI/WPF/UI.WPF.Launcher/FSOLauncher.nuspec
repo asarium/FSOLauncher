@@ -9,38 +9,9 @@
         <description>A launcher for FreeSpace Open</description>
     </metadata>
     <files>
-        <file src="bin\Release\Caliburn.Micro.dll" target="lib\net45\Caliburn.Micro.dll" />
-        <file src="bin\Release\Caliburn.Micro.Platform.dll" target="lib\net45\Caliburn.Micro.Platform.dll" />
+        <file src="bin\Release\**\*.dll" target="lib\net45\" />
         <file src="bin\Release\FSOLauncher.exe" target="lib\net45\FSOLauncher.exe" />
         <file src="bin\Release\FSOLauncher.exe.config" target="lib\net45\FSOLauncher.exe.config" />
         <file src="bin\Release\FSOLauncher.exe.manifest" target="lib\net45\FSOLauncher.exe.manifest" />
-        <file src="bin\Release\FSOManagement.dll" target="lib\net45\FSOManagement.dll" />
-        <file src="bin\Release\INIFileParser.dll" target="lib\net45\INIFileParser.dll" />
-        <file src="bin\Release\Ionic.Zip.dll" target="lib\net45\Ionic.Zip.dll" />
-        <file src="bin\Release\MahApps.Metro.dll" target="lib\net45\MahApps.Metro.dll" />
-        <file src="bin\Release\Microsoft.Expression.Drawing.dll" target="lib\net45\Microsoft.Expression.Drawing.dll" />
-        <file src="bin\Release\Microsoft.Web.XmlTransform.dll" target="lib\net45\Microsoft.Web.XmlTransform.dll" />
-        <file src="bin\Release\Mono.Cecil.dll" target="lib\net45\Mono.Cecil.dll" />
-        <file src="bin\Release\Mono.Cecil.Mdb.dll" target="lib\net45\Mono.Cecil.Mdb.dll" />
-        <file src="bin\Release\Mono.Cecil.Pdb.dll" target="lib\net45\Mono.Cecil.Pdb.dll" />
-        <file src="bin\Release\Mono.Cecil.Rocks.dll" target="lib\net45\Mono.Cecil.Rocks.dll" />
-        <file src="bin\Release\NuGet.Core.dll" target="lib\net45\NuGet.Core.dll" />
-        <file src="bin\Release\Ookii.Dialogs.Wpf.dll" target="lib\net45\Ookii.Dialogs.Wpf.dll" />
-        <file src="bin\Release\ReactiveUI.dll" target="lib\net45\ReactiveUI.dll" />
-        <file src="bin\Release\SDLGlue.dll" target="lib\net45\SDLGlue.dll" />
-        <file src="bin\Release\Splat.dll" target="lib\net45\Splat.dll" />
-        <file src="bin\Release\Squirrel.dll" target="lib\net45\Squirrel.dll" />
-        <file src="bin\Release\System.Reactive.Core.dll" target="lib\net45\System.Reactive.Core.dll" />
-        <file src="bin\Release\System.Reactive.Interfaces.dll" target="lib\net45\System.Reactive.Interfaces.dll" />
-        <file src="bin\Release\System.Reactive.Linq.dll" target="lib\net45\System.Reactive.Linq.dll" />
-        <file src="bin\Release\System.Reactive.PlatformServices.dll" target="lib\net45\System.Reactive.PlatformServices.dll" />
-        <file src="bin\Release\System.Reactive.Windows.Threading.dll" target="lib\net45\System.Reactive.Windows.Threading.dll" />
-        <file src="bin\Release\System.Windows.Interactivity.dll" target="lib\net45\System.Windows.Interactivity.dll" />
-        <file src="bin\Release\UI.WPF.Launcher.Common.dll" target="lib\net45\UI.WPF.Launcher.Common.dll" />
-        <file src="bin\Release\UI.WPF.Modules.Advanced.dll" target="lib\net45\UI.WPF.Modules.Advanced.dll" />
-        <file src="bin\Release\UI.WPF.Modules.General.dll" target="lib\net45\UI.WPF.Modules.General.dll" />
-        <file src="bin\Release\UI.WPF.Modules.Implementations.dll" target="lib\net45\UI.WPF.Modules.Implementations.dll" />
-        <file src="bin\Release\UI.WPF.Modules.Mods.dll" target="lib\net45\UI.WPF.Modules.Mods.dll" />
-        <file src="bin\Release\UI.WPF.Modules.Update.dll" target="lib\net45\UI.WPF.Modules.Update.dll" />
     </files>
 </package>

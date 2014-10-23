@@ -12,7 +12,7 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\..\</SolutionDir>
-    <ExpressionBlendVersion>12.0.50429.0</ExpressionBlendVersion>
+    <ExpressionBlendVersion>12.0.50716.0</ExpressionBlendVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -36,11 +36,12 @@
       <HintPath>..\..\..\..\packages\Caliburn.Micro.Core.2.0.1\lib\net45\Caliburn.Micro.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Ionic.Zip">
-      <HintPath>..\..\..\..\packages\squirrel.windows.0.5.2\lib\Net45\Ionic.Zip.dll</HintPath>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>..\..\..\..\packages\squirrel.windows.0.5.5\lib\Net45\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
     <Reference Include="MahApps.Metro">
-      <HintPath>..\..\..\..\packages\MahApps.Metro.0.14.0-ALPHA98\lib\net45\MahApps.Metro.dll</HintPath>
+      <HintPath>..\..\..\..\packages\MahApps.Metro.0.14.0.0\lib\net45\MahApps.Metro.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Web.XmlTransform">
       <HintPath>..\..\..\..\packages\Microsoft.Web.Xdt.2.1.1\lib\net40\Microsoft.Web.XmlTransform.dll</HintPath>
@@ -70,17 +71,19 @@
     </Reference>
     <Reference Include="Splat, Version=1.4.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\packages\Splat.1.4.0\lib\Net45\Splat.dll</HintPath>
+      <HintPath>..\..\..\..\packages\Splat.1.5.1\lib\Net45\Splat.dll</HintPath>
     </Reference>
-    <Reference Include="Squirrel">
-      <HintPath>..\..\..\..\packages\squirrel.windows.0.5.2\lib\Net45\Squirrel.dll</HintPath>
+    <Reference Include="Squirrel, Version=0.5.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\packages\squirrel.windows.0.5.5\lib\Net45\Squirrel.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="System.Deployment" />
-    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="System.Windows.Interactivity">
       <HintPath>..\..\..\..\packages\MahApps.Metro.0.14.0.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
@@ -96,16 +99,19 @@
     </Compile>
     <Compile Include="Converters\BorderBrushConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\ClickOnceUpdateService.cs" />
     <Compile Include="Services\SquirrelUpdateService.cs" />
     <Compile Include="Services\UpdateProgress.cs" />
     <Compile Include="Services\UpdateStatus.cs" />
     <Compile Include="UpdateModule.cs" />
+    <Compile Include="ViewModels\ChangeLogViewModel.cs" />
     <Compile Include="ViewModels\ErrorStatus.cs" />
     <Compile Include="ViewModels\SuccessfullStatus.cs" />
     <Compile Include="ViewModels\UpdateCheckStatus.cs" />
     <Compile Include="ViewModels\UpdateViewModel.cs" />
     <Compile Include="ViewModels\UpdatingStatus.cs" />
+    <Compile Include="Views\ChangelogDialog.xaml.cs">
+      <DependentUpon>ChangelogDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\UpdateView.xaml.cs">
       <DependentUpon>UpdateView.xaml</DependentUpon>
     </Compile>
@@ -114,6 +120,10 @@
     <ProjectReference Include="..\..\..\..\Libraries\FSOManagement\FSOManagement.csproj">
       <Project>{73342923-20EE-4F2C-B9AB-9A03341F782A}</Project>
       <Name>FSOManagement</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Libraries\Utilities\Utilities.csproj">
+      <Project>{8A55D865-DFC1-4CE1-B56F-54D249ABD3F7}</Project>
+      <Name>Utilities</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\UI.WPF.Launcher.Common\UI.WPF.Launcher.Common.csproj">
       <Project>{ECBE6F2B-423C-47BC-AA36-26CD3B5E8F81}</Project>
@@ -124,10 +134,21 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Properties\DesignTimeResources.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\ChangelogDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\UpdateView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <DesignData Include="SampleData\ChangeLogDialogData.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

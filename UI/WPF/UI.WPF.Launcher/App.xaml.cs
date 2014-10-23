@@ -8,7 +8,9 @@ using FSOManagement.Annotations;
 using Launcher.Shared.Startup;
 using Microsoft.Shell;
 using Splat;
+using Squirrel;
 using UI.WPF.Launcher.Common.Classes;
+using UI.WPF.Modules.Update.Services;
 
 #endregion
 
@@ -45,6 +47,8 @@ namespace UI.WPF.Launcher
                 return;
             }
 
+            SquirrelUpdateService.UpdaterMain();
+
             // This application needs to be single instance as 
             //     1) The SDL DLL can not be used by two instances
             //     2) Later launching a second instance with commandline arguments should change the state of the main application
@@ -52,6 +56,8 @@ namespace UI.WPF.Launcher
             {
                 var application = new App();
                 application.InitializeComponent();
+
+                new LauncherBootstrapper();
                 application.Run();
 
                 // Allow single instance code to perform cleanup operations

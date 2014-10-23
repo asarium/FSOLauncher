@@ -1,0 +1,65 @@
+﻿<ViewModels:ChangeLogViewModel xmlns:ViewModels="clr-namespace:UI.WPF.Modules.Update.ViewModels"
+                               xmlns:System="clr-namespace:System;assembly=mscorlib">
+    <ViewModels:ChangeLogViewModel.ChangeLogElements>
+        <ViewModels:ChangeLogElement
+            Content="Aliquam class nam cras integer duis curae sed quisque vivamus dis maecenas aenean mauris donec etiam fusce">
+            <ViewModels:ChangeLogElement.Version>
+                <System:Version />
+            </ViewModels:ChangeLogElement.Version>
+        </ViewModels:ChangeLogElement>
+        <ViewModels:ChangeLogElement
+            Content="Praesent aliquam accumsan nullam est aptent bibendum aliquet auctor hac nunc blandit dictumst leo eleifend lorem morbi">
+            <ViewModels:ChangeLogElement.Version>
+                <System:Version />
+            </ViewModels:ChangeLogElement.Version>
+        </ViewModels:ChangeLogElement>
+        <ViewModels:ChangeLogElement
+            Content="Mus commodo amet ante facilisi nec conubia arcu faucibus habitant cubilia non diam eget congue cursus inceptos dapibus per elit enim dictum interdum erat lectus eros sed nibh nisi lobortis">
+            <ViewModels:ChangeLogElement.Version>
+                <System:Version />
+            </ViewModels:ChangeLogElement.Version>
+        </ViewModels:ChangeLogElement>
+        <ViewModels:ChangeLogElement
+            Content="Egestas sem libero nisl nulla euismod sit nunc nascetur feugiat vel odio orci gravida nam ligula proin iaculis litora pede pharetra quam lacinia sed dis augue laoreet est luctus natoque">
+            <ViewModels:ChangeLogElement.Version>
+                <System:Version />
+            </ViewModels:ChangeLogElement.Version>
+        </ViewModels:ChangeLogElement>
+        <ViewModels:ChangeLogElement
+            Content="Placerat magnis pulvinar hac leo posuere dolor sagittis potenti senectus fames pretium sociosqu felis quis suscipit ipsum urna cras torquent rhoncus">
+            <ViewModels:ChangeLogElement.Version>
+                <System:Version />
+            </ViewModels:ChangeLogElement.Version>
+        </ViewModels:ChangeLogElement>
+        <ViewModels:ChangeLogElement
+            Content="Duis mattis mus ultrices justo nunc lacus nec non vehicula per mauris sed sodales lorem magna sem mollis amet">
+            <ViewModels:ChangeLogElement.Version>
+                <System:Version />
+            </ViewModels:ChangeLogElement.Version>
+        </ViewModels:ChangeLogElement>
+        <ViewModels:ChangeLogElement
+            Content="Ante massa sit viverra volutpat arcu metus morbi maecenas diam vel montes praesent nostra nam aliquam sed accumsan dis ornare platea est bibendum integer dictumst eget hac eleifend primis quisque rutrum">
+            <ViewModels:ChangeLogElement.Version>
+                <System:Version />
+            </ViewModels:ChangeLogElement.Version>
+        </ViewModels:ChangeLogElement>
+        <ViewModels:ChangeLogElement
+            Content="Elit sapien facilisi vivamus enim erat aliquam eros aliquet leo blandit semper faucibus habitant nibh nisi inceptos interdum mus neque sociis nec non commodo per taciti">
+            <ViewModels:ChangeLogElement.Version>
+                <System:Version />
+            </ViewModels:ChangeLogElement.Version>
+        </ViewModels:ChangeLogElement>
+        <ViewModels:ChangeLogElement
+            Content="Nisl lobortis tellus sed netus conubia sem cubilia nascetur sit pharetra placerat dapibus nulla nunc egestas odio porta euismod tempor vel feugiat tempus pulvinar orci sagittis tortor purus nam sed turpis dis varius gravida">
+            <ViewModels:ChangeLogElement.Version>
+                <System:Version />
+            </ViewModels:ChangeLogElement.Version>
+        </ViewModels:ChangeLogElement>
+        <ViewModels:ChangeLogElement
+            Content="Senectus sociosqu aenean iaculis mauris est risus pede hac quam quis leo urna nullam cras lacinia suscipit aptent mus auctor congue velit duis laoreet natoque cursus nunc">
+            <ViewModels:ChangeLogElement.Version>
+                <System:Version />
+            </ViewModels:ChangeLogElement.Version>
+        </ViewModels:ChangeLogElement>
+    </ViewModels:ChangeLogViewModel.ChangeLogElements>
+</ViewModels:ChangeLogViewModel>

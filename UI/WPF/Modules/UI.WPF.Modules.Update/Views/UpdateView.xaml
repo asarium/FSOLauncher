@@ -54,8 +54,8 @@
                         BorderBrush="{Binding UnknownProgress, Converter={StaticResource BorderBrushConverter}}"
                         VerticalAlignment="Center">
 
-                    <controls:MetroProgressBar Maximum="{Binding Maximum}" IsIndeterminate="{Binding UnknownProgress}"
-                                               Value="{Binding Current}" Background="Transparent" Foreground="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
+                    <controls:MetroProgressBar Maximum="1.0" IsIndeterminate="{Binding UnknownProgress}"
+                                               Value="{Binding Value}" Background="Transparent" Foreground="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
                                                Height="10" />
                 </Border>
             </Grid>
