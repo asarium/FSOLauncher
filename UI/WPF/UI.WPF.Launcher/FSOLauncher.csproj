@@ -249,6 +249,7 @@
     <EmbeddedResource Include="NLog.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
+    <None Include="FSOLauncher.nuspec" />
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>
     </None>

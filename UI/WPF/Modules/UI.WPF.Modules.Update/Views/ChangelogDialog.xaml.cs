@@ -2,9 +2,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Xml.Linq;
 using FSOManagement.Annotations;
 using UI.WPF.Launcher.Common.Interfaces;
 using UI.WPF.Modules.Update.ViewModels;
@@ -44,8 +46,17 @@ namespace UI.WPF.Modules.Update.Views
             return changeLog.OrderByDescending(p => p.Key).Select(p => new ChangeLogElement
             {
                 Version = p.Key,
-                Content = p.Value
+                Content = GetHtmlContent(p.Value)
             }).ToList();
+        }
+
+        [NotNull]
+        private static string GetHtmlContent([NotNull] string value)
+        {
+            var doc = XDocument.Load(new StringReader("<xml>" + value + "</xml>"));
+            var cdata = doc.DescendantNodes().OfType<XCData>().FirstOrDefault();
+
+            return cdata == null ? "" : cdata.Value;
         }
 
         private void CloseButtonClick(object sender, RoutedEventArgs e)

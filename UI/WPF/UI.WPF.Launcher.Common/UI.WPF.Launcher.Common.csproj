@@ -119,6 +119,9 @@
     <Content Include="Resources\WindowsIcons-license.txt" />
   </ItemGroup>
   <ItemGroup>
+    <DesignData Include="Resources\MahAppsResources.xaml">
+      <SubType>Designer</SubType>
+    </DesignData>
     <Page Include="Resources\Icons.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

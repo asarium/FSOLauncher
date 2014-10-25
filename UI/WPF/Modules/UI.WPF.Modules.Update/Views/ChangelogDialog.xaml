@@ -5,7 +5,8 @@
                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                       xmlns:dialogs="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
                       xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
-                      xmlns:viewModels="clr-namespace:UI.WPF.Modules.Update.ViewModels" mc:Ignorable="d"
+                      xmlns:viewModels="clr-namespace:UI.WPF.Modules.Update.ViewModels"
+                      xmlns:behaviors="clr-namespace:UI.WPF.Modules.Update.Behaviors" mc:Ignorable="d"
                       d:DesignHeight="450" d:DesignWidth="600"
                       d:DataContext="{d:DesignData /SampleData/ChangeLogDialogData.xaml}">
     <Grid>
@@ -15,11 +16,12 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Update was successfull!" VerticalAlignment="Top"
-                   FontWeight="Bold" Margin="5" FontSize="18.667" Foreground="{DynamicResource AccentColorBrush}" />
-                   
-        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Changelog:" VerticalAlignment="Top" Grid.Row="1"
-                   FontWeight="Bold" Margin="2" FontSize="12.5" Foreground="{DynamicResource BlackBrush}" />
+        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Update was successfull!"
+                   VerticalAlignment="Top" FontWeight="Bold" Margin="5" FontSize="18.667"
+                   Foreground="{DynamicResource AccentColorBrush}" />
+
+        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Changelog:" VerticalAlignment="Top"
+                   Grid.Row="1" FontWeight="Bold" Margin="2" FontSize="12.5" Foreground="{DynamicResource BlackBrush}" />
 
         <ScrollViewer Focusable="False" VerticalScrollBarVisibility="Auto" Grid.Row="2" Margin="5"
                       DataContext="{Binding}" MaxHeight="200">
@@ -31,8 +33,8 @@
                                        Text="{Binding Version, StringFormat=Version {0}}" VerticalAlignment="Top"
                                        FontWeight="Bold" Margin="2" FontSize="11"
                                        Foreground="{DynamicResource BlackBrush}" />
-                            <TextBlock TextWrapping="Wrap" Text="{Binding Content}"
-                                       Foreground="{DynamicResource BlackBrush}" Margin="5,0,2,0" />
+                            
+                            <TextBlock Margin="5,0,2,0" behaviors:HtmlTextBoxProperties.HtmlText="{Binding Content}" />
                         </StackPanel>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>

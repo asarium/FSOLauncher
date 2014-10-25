@@ -3,9 +3,12 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Reactive;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Caliburn.Micro;
 using FSOManagement.Annotations;
+using ReactiveUI;
 using UI.WPF.Launcher.Common;
 using UI.WPF.Launcher.Common.Classes;
 using UI.WPF.Launcher.Common.Interfaces;
@@ -21,22 +24,32 @@ namespace UI.WPF.Modules.Update.ViewModels
     {
         private object _status;
 
+        private readonly ReactiveCommand<Unit> _checkForUpdatesCommand;
+
         [ImportingConstructor]
         public UpdateViewModel([NotNull] IEventAggregator aggregator)
         {
             DisplayName = "Update";
 
             aggregator.Subscribe(this);
+
+            _checkForUpdatesCommand = ReactiveCommand.CreateAsyncTask((_, token) => StartUpdateCheck());
         }
 
-        [NotNull,Import]
+        [NotNull, Import]
         public IUpdateService UpdateService { private get; set; }
 
-        [NotNull,Import]
+        [NotNull, Import]
         public ISettings Settings { private get; set; }
 
-        [NotNull,Import]
+        [NotNull, Import]
         public IInteractionService InteractionService { private get; set; }
+
+        [NotNull]
+        public ICommand CheckForUpdatesCommand
+        {
+            get { return _checkForUpdatesCommand; }
+        }
 
         public object Status
         {
@@ -56,12 +69,13 @@ namespace UI.WPF.Modules.Update.ViewModels
 
         void IHandle<MainWindowOpenedMessage>.Handle([NotNull] MainWindowOpenedMessage message)
         {
-            StartUpdateCheck();
+            _checkForUpdatesCommand.Execute(null);
         }
 
         #endregion
 
-        public async void StartUpdateCheck()
+        [NotNull]
+        public async Task StartUpdateCheck()
         {
             if (!UpdateService.IsUpdatePossible)
             {
@@ -100,7 +114,7 @@ namespace UI.WPF.Modules.Update.ViewModels
         }
 
         [NotNull]
-        public async Task DoUpdate([CanBeNull] Version version)
+        private async Task DoUpdate([CanBeNull] Version version)
         {
             // Update available
             Status = new UpdatingStatus();
@@ -119,7 +133,11 @@ namespace UI.WPF.Modules.Update.ViewModels
                 return;
             }
 
-            if (version != null)
+            if (last.State == UpdateState.Finished && last.ReleaseNotes != null)
+            {
+                Status = new ChangeLogStatus(last.ReleaseNotes, InteractionService);
+            }
+            else if (version != null)
             {
                 Status = new SuccessfullStatus(string.Format("Update to version {0} was successfull.", version));
             }
@@ -127,21 +145,19 @@ namespace UI.WPF.Modules.Update.ViewModels
             {
                 Status = new SuccessfullStatus("Update was successfull.");
             }
-
-            if (last.State == UpdateState.Finished)
-            {
-                OpenChangelogDialog(last);
-            }
         }
 
         private void OpenChangelogDialog([NotNull] IUpdateProgress last)
         {
-            if (last.ReleaseNotes == null)
-            {
-                return;
-            }
+//            if (last.ReleaseNotes == null)
+//            {
+//                return;
+//            }
 
-            var dialog = new ChangelogDialog(last.ReleaseNotes);
+            var dialog = new ChangelogDialog(new[] {new KeyValuePair<Version, string>(new Version(1, 0), @"<![CDATA[
+<p>Test release</p>
+
+]]>")});
 
             InteractionService.ShowDialog(dialog);
         }

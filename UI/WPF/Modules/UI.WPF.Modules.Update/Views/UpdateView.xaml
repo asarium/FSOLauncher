@@ -10,16 +10,13 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary
-                    Source="pack://application:,,,/UI.WPF.Launcher.Common;component/Resources/Icons.xaml" />
-
                 <ResourceDictionary>
                     <DataTemplate DataType="{x:Type viewModels:ErrorStatus}">
                         <Button>
-                            <Rectangle Width="22" Height="22" ToolTip="{Binding Message}"
+                            <Rectangle Width="15" Height="15" ToolTip="{Binding Message}"
                                        Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}">
                                 <Rectangle.OpacityMask>
-                                    <VisualBrush Stretch="Uniform" Visual="{StaticResource appbar_warning}" />
+                                    <VisualBrush Stretch="Uniform" Visual="{DynamicResource appbar_warning}" />
                                 </Rectangle.OpacityMask>
                             </Rectangle>
                         </Button>
@@ -27,10 +24,10 @@
 
                     <DataTemplate DataType="{x:Type viewModels:SuccessfullStatus}">
                         <Button>
-                            <Rectangle Width="22" Height="22" ToolTip="{Binding Message}"
+                            <Rectangle Width="15" Height="15" ToolTip="{Binding Message}"
                                        Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}">
                                 <Rectangle.OpacityMask>
-                                    <VisualBrush Stretch="Uniform" Visual="{StaticResource appbar_check}" />
+                                    <VisualBrush Stretch="Uniform" Visual="{DynamicResource appbar_check}" />
                                 </Rectangle.OpacityMask>
                             </Rectangle>
                         </Button>
@@ -74,10 +71,10 @@
                     <DataTemplate DataType="{x:Type viewModels:ChangeLogStatus}">
                         <Button ToolTip="The Update was successful!&#10;Click here to see the changelog."
                                 Command="{Binding OpenChangeLogCommand}">
-                            <Rectangle Width="22" Height="22"
+                            <Rectangle Width="15" Height="15"
                                        Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}">
                                 <Rectangle.OpacityMask>
-                                    <VisualBrush Stretch="Uniform" Visual="{StaticResource appbar_clipboard}" />
+                                    <VisualBrush Stretch="Uniform" Visual="{DynamicResource appbar_clipboard}" />
                                 </Rectangle.OpacityMask>
                             </Rectangle>
                         </Button>
