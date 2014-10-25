@@ -30,15 +30,19 @@ namespace UI.WPF.Modules.Installation.ViewModels
         private IEnumerable<ModViewModel> _modificationViewModels;
 
         [ImportingConstructor]
-        public InstallationTabViewModel([NotNull] IRepositoryFactory repositoryFactory, [NotNull] IRemoteModManager remoteManager,
-            [NotNull] ILocalModManager localManager, [NotNull] IProfileManager profileManager, [NotNull] IPackageInstaller packageInstaller)
+        public InstallationTabViewModel([NotNull] IRepositoryFactory repositoryFactory,
+            [NotNull] IRemoteModManager remoteManager,
+            [NotNull] ILocalModManager localManager,
+            [NotNull] IProfileManager profileManager,
+            [NotNull] IPackageInstaller packageInstaller,
+            [NotNull] ILauncherViewModel launcherVm)
         {
             DisplayName = "Update/Install mods";
 
             ProfileManager = profileManager;
 
             RemoteModManager = remoteManager;
-            RemoteModManager.AddModRepository(repositoryFactory.ConstructRepository("http://nebula.tproxy.de/nebula/hellzed/mediavps_2014/master/current.json"));
+            RemoteModManager.Repositories = launcherVm.ModRepositories.CreateDerivedCollection(vm => vm.Repository);
 
             LocalModManager = localManager;
 

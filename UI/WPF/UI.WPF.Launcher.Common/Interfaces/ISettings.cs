@@ -17,6 +17,9 @@ namespace UI.WPF.Launcher.Common.Interfaces
         [NotNull]
         IEnumerable<TotalConversion> TotalConversions { get; set; }
 
+        [CanBeNull]
+        IEnumerable<IModRepositoryViewModel> ModRepositories { get; set; }
+
         int Width { get; set; }
 
         int Height { get; set; }

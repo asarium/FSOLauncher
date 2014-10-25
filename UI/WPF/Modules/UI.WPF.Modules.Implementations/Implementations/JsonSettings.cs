@@ -13,10 +13,11 @@ using FSOManagement.Annotations;
 using FSOManagement.Interfaces;
 using FSOManagement.Profiles;
 using FSOManagement.Profiles.DataClass;
+using ModInstallation.Interfaces;
 using Newtonsoft.Json;
 using UI.WPF.Launcher.Common.Classes;
 using UI.WPF.Launcher.Common.Interfaces;
-using UI.WPF.Launcher.Common.Util;
+using UI.WPF.Modules.Implementations.Implementations.DataClasses;
 using Utilities;
 
 #endregion
@@ -34,6 +35,8 @@ namespace UI.WPF.Modules.Implementations.Implementations
 
         private int _height;
 
+        private IEnumerable<IModRepositoryViewModel> _modRepositories;
+
         private IEnumerable<IProfile> _profiles = Enumerable.Empty<IProfile>();
 
         private IProfile _selectedProfile;
@@ -47,6 +50,9 @@ namespace UI.WPF.Modules.Implementations.Implementations
             _settingsLoaded = new BehaviorSubject<ISettings>(null);
             SetDefaultValues();
         }
+
+        [Import, NotNull]
+        public IRepositoryFactory RepositoryFactory { get; private set; }
 
         #region ISettings Members
 
@@ -66,6 +72,12 @@ namespace UI.WPF.Modules.Implementations.Implementations
         {
             get { return _totalConversions; }
             set { RaiseAndSetIfPropertyChanged(ref _totalConversions, value); }
+        }
+
+        public IEnumerable<IModRepositoryViewModel> ModRepositories
+        {
+            get { return _modRepositories; }
+            set { RaiseAndSetIfPropertyChanged(ref _modRepositories, value); }
         }
 
         public int Width
@@ -169,6 +181,7 @@ namespace UI.WPF.Modules.Implementations.Implementations
             TotalConversions = Enumerable.Empty<TotalConversion>();
             Profiles = Enumerable.Empty<IProfile>();
             SelectedProfile = null;
+            ModRepositories = null;
         }
 
         private void SetValuesFromData([NotNull] SettingsData data)
@@ -191,6 +204,15 @@ namespace UI.WPF.Modules.Implementations.Implementations
             {
                 SelectedProfile = Profiles.FirstOrDefault(p => p.Name == data.SelectedProfile);
             }
+
+            if (data.Repositories != null)
+            {
+                ModRepositories = data.Repositories.Where(r => r.Location != null && r.Name != null).Select(repo => new ModRepositoryViewModel
+                {
+                    Name = repo.Name,
+                    Repository = RepositoryFactory.ConstructRepository(repo.Location)
+                }).ToList();
+            }
         }
 
         [NotNull]
@@ -203,7 +225,12 @@ namespace UI.WPF.Modules.Implementations.Implementations
                 CheckForUpdates = CheckForUpdates,
                 TotalConversoins = TotalConversions.Select(tc => tc.GetData()),
                 Profiles = Profiles.Select(p => p.GetData()),
-                SelectedProfile = SelectedProfile == null ? null : SelectedProfile.Name
+                SelectedProfile = SelectedProfile == null ? null : SelectedProfile.Name,
+                Repositories = ModRepositories.Select(vm => new RepositoryData
+                {
+                    Name = vm.Name,
+                    Location = vm.Repository.Name
+                })
             };
         }
 
@@ -224,26 +251,5 @@ namespace UI.WPF.Modules.Implementations.Implementations
 
             return profile;
         }
-
-        #region Nested type: SettingsData
-
-        private class SettingsData
-        {
-            [CanBeNull]
-            public IEnumerable<ProfileData> Profiles { get; set; }
-
-            public string SelectedProfile { get; set; }
-
-            [CanBeNull]
-            public IEnumerable<TcData> TotalConversoins { get; set; }
-
-            public int Width { get; set; }
-
-            public int Height { get; set; }
-
-            public bool CheckForUpdates { get; set; }
-        }
-
-        #endregion
     }
 }

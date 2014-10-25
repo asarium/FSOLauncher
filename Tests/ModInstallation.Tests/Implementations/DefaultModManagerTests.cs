@@ -19,8 +19,10 @@ namespace ModInstallation.Tests.Implementations
         [Test, NotNull]
         public async Task TestRetrieveInformationAsync()
         {
-            var modManager = new DefaultRemoteModManager();
-            modManager.AddModRepository(new TestRepository("Test"));
+            var modManager = new DefaultRemoteModManager
+            {
+                Repositories = new[] {new TestRepository("Test")}
+            };
 
             await modManager.RetrieveInformationAsync(new Progress<string>(), CancellationToken.None);
 

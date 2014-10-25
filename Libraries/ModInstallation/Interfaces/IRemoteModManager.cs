@@ -18,8 +18,9 @@ namespace ModInstallation.Interfaces
         IEnumerable<IModification> Modifications { get; }
 
         [NotNull]
-        Task RetrieveInformationAsync([NotNull] IProgress<string> progressReporter, CancellationToken token);
+        IEnumerable<IModRepository> Repositories { get; set; }
 
-        void AddModRepository([NotNull] IModRepository repo);
+        [NotNull]
+        Task RetrieveInformationAsync([NotNull] IProgress<string> progressReporter, CancellationToken token);
     }
 }
