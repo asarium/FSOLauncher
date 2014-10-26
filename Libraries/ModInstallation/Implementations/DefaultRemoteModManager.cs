@@ -17,9 +17,12 @@ namespace ModInstallation.Implementations
     [Export(typeof(IRemoteModManager))]
     public class DefaultRemoteModManager : PropertyChangeBase, IRemoteModManager
     {
-        private readonly List<IModRepository> _repositories = new List<IModRepository>();
-
         private IEnumerable<IModification> _modifications;
+
+        public DefaultRemoteModManager()
+        {
+            Repositories = new List<IModRepository>();
+        }
 
         #region IRemoteModManager Members
 
@@ -37,11 +40,13 @@ namespace ModInstallation.Implementations
             }
         }
 
+        public IEnumerable<IModRepository> Repositories { get; set; }
+
         public async Task RetrieveInformationAsync(IProgress<string> progressReporter, CancellationToken token)
         {
             progressReporter.Report("Starting information retrieval...");
 
-            foreach (var modRepository in _repositories)
+            foreach (var modRepository in Repositories)
             {
                 progressReporter.Report(string.Format("Retrieving information from repository '{0}'.", modRepository.Name));
 
@@ -49,19 +54,9 @@ namespace ModInstallation.Implementations
             }
 
             Modifications =
-                _repositories.Where(modRepository => modRepository.Modifications != null)
+                Repositories.Where(modRepository => modRepository.Modifications != null)
                     .SelectMany(modRepository => modRepository.Modifications)
                     .ToList();
-        }
-
-        public void AddModRepository(IModRepository repo)
-        {
-            if (repo == null)
-            {
-                throw new ArgumentNullException("repo");
-            }
-
-            _repositories.Add(repo);
         }
 
         #endregion
