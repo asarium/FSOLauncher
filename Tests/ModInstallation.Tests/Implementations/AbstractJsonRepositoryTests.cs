@@ -14,17 +14,10 @@ namespace ModInstallation.Tests.Implementations
 {
     public class AbstractJsonRepositoryTests
     {
-        [Test]
-        public void TestName()
-        {
-            var repo = new TestRepository("Test");
-            Assert.AreEqual("Test", repo.Name);
-        }
-
         [NotNull, Test]
         public async Task TestRetrieveRepositoryInformationAsync()
         {
-            var repo = new TestRepository("Test");
+            var repo = new TestRepository("test://host");
 
             await repo.RetrieveRepositoryInformationAsync(new Progress<string>(), CancellationToken.None);
 

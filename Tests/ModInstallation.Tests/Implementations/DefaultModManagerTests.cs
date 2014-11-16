@@ -21,7 +21,7 @@ namespace ModInstallation.Tests.Implementations
         {
             var modManager = new DefaultRemoteModManager
             {
-                Repositories = new[] {new TestRepository("Test")}
+                Repositories = new[] {new TestRepository("test://host")}
             };
 
             await modManager.RetrieveInformationAsync(new Progress<string>(), CancellationToken.None);
