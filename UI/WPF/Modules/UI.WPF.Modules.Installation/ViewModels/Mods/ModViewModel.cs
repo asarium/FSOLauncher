@@ -17,7 +17,7 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
 
         private IModification _mod;
 
-        private bool _modChecked;
+        private bool _modSelected;
 
         private IEnumerable<PackageViewModel> _packages;
 
@@ -29,7 +29,7 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
 
             mod.WhenAny(x => x.Description, val => !string.IsNullOrEmpty(val.Value)).BindTo(this, x => x.HasDescription);
 
-            this.WhenAnyValue(x => x.ModChecked).Subscribe(selected =>
+            this.WhenAnyValue(x => x.ModSelected).Subscribe(selected =>
             {
                 if (!selected)
                 {
@@ -49,10 +49,10 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
             });
         }
 
-        public bool ModChecked
+        public bool ModSelected
         {
-            get { return _modChecked; }
-            set { RaiseAndSetIfPropertyChanged(ref _modChecked, value); }
+            get { return _modSelected; }
+            set { RaiseAndSetIfPropertyChanged(ref _modSelected, value); }
         }
 
         public bool HasDescription
