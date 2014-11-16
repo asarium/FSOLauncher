@@ -3,6 +3,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -11,7 +13,6 @@ using ModInstallation.Interfaces;
 using ModInstallation.Interfaces.Mods;
 using ReactiveUI;
 using UI.WPF.Launcher.Common.Classes;
-using UI.WPF.Launcher.Common.Services;
 
 #endregion
 
@@ -23,6 +24,8 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
 
         private bool _installing;
 
+        private bool _isChangeable;
+
         private string _operationMessage;
 
         private double _operationProgress;
@@ -30,8 +33,6 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
         private bool _progressIdeterminate;
 
         private bool _selected;
-
-        private bool _isChangeable;
 
         public PackageViewModel([NotNull] IPackage package, [NotNull] InstallationTabViewModel installationTabViewModel)
         {
@@ -52,10 +53,15 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
             CancelCommand = cancelCommand;
             IsSelectedObservable = this.WhenAnyValue(x => x.Selected);
 
-            IsSelectedObservable.Subscribe(SelectedChanged);
+            SelectDependenciesCommand = ReactiveCommand.CreateAsyncTask(_ => HandleSelectedChanged());
+
+            IsSelectedObservable.InvokeCommand(SelectDependenciesCommand);
 
             IsChangeable = package.Status != PackageStatus.Required;
         }
+
+        [NotNull]
+        private ReactiveCommand<Unit> SelectDependenciesCommand { get; set; }
 
         [NotNull]
         public IObservable<bool> IsSelectedObservable { get; private set; }
@@ -158,9 +164,9 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
             }
         }
 
-        private async void SelectedChanged(bool selected)
+        private async Task HandleSelectedChanged()
         {
-            if (!selected)
+            if (!Selected)
             {
                 return;
             }
@@ -201,25 +207,22 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
 
             var result =
                 await
-                    _installationTabViewModel.InteractionService.ShowQuestion(MessageType.Error, QuestionType.YesNo,
-                        "Failed to resolve dependencies",
-                        "The installer was unable to resolve the dependencies of the selected package.\nDo you want to continue with your current selection?\n(This will probably cause issues later)",
-                        new QuestionSettings
+                    UserError.Throw(new UserError("Failed to resolve dependencies",
+                        "The installer was unable to resolve the dependencies of the selected package.\n" +
+                        "Do you want to continue with your current selection?\n" + "(This will probably cause issues later)",
+                        new[]
                         {
-                            YesText = "Continue",
-                            NoText = "Abort"
-                        });
+                            new RecoveryCommand("Continue", _ => RecoveryOptionResult.RetryOperation) {IsDefault = true},
+                            new RecoveryCommand("Abort", _ => RecoveryOptionResult.CancelOperation)
+                        }));
 
             switch (result)
             {
-                case QuestionAnswer.Yes:
-                    // Don't do anything, the mod is already selected
-                    break;
-                case QuestionAnswer.No:
-                    Selected = false;
+                case RecoveryOptionResult.RetryOperation:
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    Selected = false;
+                    break;
             }
         }
 
