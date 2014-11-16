@@ -4,7 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewModels="clr-namespace:UI.WPF.Modules.Installation.ViewModels"
-             xmlns:mods="clr-namespace:ModInstallation.Interfaces.Mods;assembly=ModInstallation"
              xmlns:views="clr-namespace:UI.WPF.Modules.Installation.Views"
              xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:mods1="clr-namespace:UI.WPF.Modules.Installation.ViewModels.Mods" mc:Ignorable="d"
@@ -15,10 +14,10 @@
     </UserControl.Resources>
     <Grid>
         <Grid ZIndex="1">
-        	<Grid.RowDefinitions>
-        		<RowDefinition Height="*"/>
-        		<RowDefinition Height="Auto"/>
-        	</Grid.RowDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
             <ItemsControl ItemsSource="{Binding ModificationViewModels}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="mods1:ModViewModel">
@@ -46,17 +45,30 @@
                     </ControlTemplate>
                 </ItemsControl.Template>
             </ItemsControl>
-            <Button Content="Install" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Grid.Row="1" Margin="5" Command="{Binding InstallModsCommand}"/>
+            <Button ToolTip="Start download and installation" HorizontalAlignment="Right" VerticalAlignment="Top"
+                    Grid.Row="1" Margin="5" Command="{Binding InstallModsCommand}">
+                <StackPanel Orientation="Horizontal">
+                    <Rectangle Width="20" Height="20"
+                               Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}">
+                        <Rectangle.OpacityMask>
+                            <VisualBrush Stretch="Fill" Visual="{DynamicResource appbar_download}" />
+                        </Rectangle.OpacityMask>
+                    </Rectangle>
+                    <TextBlock Text="Install" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,2,2,2"
+                               FontSize="18" FontWeight="Bold" />
+                </StackPanel>
+            </Button>
         </Grid>
         <Grid ZIndex="2"
-              Visibility="{Binding HasManagerStatusMessage, Converter={StaticResource BooleanToVisibilityConverter}}"
-              Background="{DynamicResource WhiteBrush}" Opacity="0.5">
-            <Grid VerticalAlignment="Center" HorizontalAlignment="Center" Opacity="1.0">
+              Visibility="{Binding HasManagerStatusMessage, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Rectangle Fill="{DynamicResource WhiteBrush}" Opacity="0.5" />
+            <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <controls:ProgressRing IsActive="{Binding HasManagerStatusMessage}" />
+
+                <controls:ProgressRing Grid.Row="0" IsActive="{Binding HasManagerStatusMessage}" />
                 <TextBlock Text="{Binding ManagerStatusMessage}" VerticalAlignment="Center"
                            HorizontalAlignment="Center" Margin="5" Grid.Row="1" FontSize="14.667" FontWeight="Bold"
                            TextWrapping="Wrap" TextAlignment="Center" />
