@@ -22,13 +22,17 @@ namespace ModInstallation.Implementations
     [Export(typeof(IFileDownloader))]
     public class DefaultFileDownloader : IFileDownloader
     {
-        private const long BufferSize = 81920L;
+        private const long BufferSize = 64L * 1024L;
 
         private const int DefaultMaxConcurrentDownloads = 1;
 
         private SemaphoreSlim _downloadSemaphore;
 
-        private int _maxConcurrentDownloads;
+        [NotNull]
+        private SemaphoreSlim DownloadSemaphore
+        {
+            get { return _downloadSemaphore ?? (_downloadSemaphore = new SemaphoreSlim(MaxConcurrentDownloads)); }
+        }
 
         public DefaultFileDownloader()
         {
@@ -42,28 +46,14 @@ namespace ModInstallation.Implementations
 
         public string DownloadDirectory { get; set; }
 
-        public int MaxConcurrentDownloads
-        {
-            get { return _maxConcurrentDownloads; }
-            set
-            {
-                _maxConcurrentDownloads = value;
-
-                if (_downloadSemaphore != null)
-                {
-                    _downloadSemaphore.Dispose();
-                }
-
-                _downloadSemaphore = new SemaphoreSlim(value);
-            }
-        }
+        public int MaxConcurrentDownloads { get; set; }
 
         public async Task<FileInfo> DownloadFileAsync(IFileInformation fileInfo, IProgress<IDownloadProgress> progressReporter,
             CancellationToken cancellationToken)
         {
             progressReporter.Report(DefaultDownloadProgress.Waiting());
 
-            await _downloadSemaphore.WaitAsync(cancellationToken);
+            await DownloadSemaphore.WaitAsync(cancellationToken);
 
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -128,7 +118,7 @@ namespace ModInstallation.Implementations
             }
             finally
             {
-                _downloadSemaphore.Release();
+                DownloadSemaphore.Release();
             }
         }
 
