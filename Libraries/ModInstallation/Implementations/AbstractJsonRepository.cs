@@ -20,6 +20,8 @@ namespace ModInstallation.Implementations
 {
     public abstract class AbstractJsonRepository : PropertyChangeBase, IModRepository
     {
+        private readonly Uri _initialLocation;
+
         private readonly JsonSerializer _jsonSerializer;
 
         private List<IModification> _modifications;
@@ -29,6 +31,11 @@ namespace ModInstallation.Implementations
             Name = name;
 
             _jsonSerializer = new JsonSerializer();
+
+            if (!Uri.TryCreate(name, UriKind.Absolute, out _initialLocation))
+            {
+                throw new ArgumentException("name is not a valid URI!");
+            }
         }
 
         #region IModRepository Members
@@ -42,24 +49,47 @@ namespace ModInstallation.Implementations
 
         public async Task RetrieveRepositoryInformationAsync(IProgress<string> progressReporter, CancellationToken token)
         {
-            var jsonContent = await GetRepositoryJsonAsync(progressReporter, token);
+            var locationQueue = new Queue<Uri>();
+            locationQueue.Enqueue(_initialLocation);
 
-            if (token.IsCancellationRequested)
+            var modifications = new List<IModification>();
+            while (locationQueue.Count > 0)
             {
-                return;
+                var location = locationQueue.Dequeue();
+                var jsonContent = await GetRepositoryJsonAsync(location, progressReporter, token);
+
+                if (token.IsCancellationRequested)
+                {
+                    return;
+                }
+
+                // This may take a while so do this in the background
+                var repoData = await Task.Run(() => _jsonSerializer.Deserialize<Repository>(new JsonTextReader(new StringReader(jsonContent))), token);
+
+                if (repoData.mods != null)
+                {
+                    modifications.AddRange(repoData.mods.Select(mod => DefaultModification.InitializeFromData(mod)));
+                }
+
+                if (repoData.includes == null)
+                {
+                    continue;
+                }
+
+                foreach (var uri in repoData.includes.Where(uri => Uri.IsWellFormedUriString(uri, UriKind.Absolute)).Select(uri => new Uri(uri)))
+                {
+                    locationQueue.Enqueue(uri);
+                }
             }
 
-            // This may take a while so do this in the background
-            var repoData = await Task.Run(() => _jsonSerializer.Deserialize<Repository>(new JsonTextReader(new StringReader(jsonContent))), token);
-
-            _modifications = repoData.mods == null
-                ? null
-                : new List<IModification>(repoData.mods.Select(mod => DefaultModification.InitializeFromData(mod)));
+            _modifications = modifications;
         }
 
         #endregion
 
         [NotNull]
-        protected abstract Task<string> GetRepositoryJsonAsync([NotNull] IProgress<string> reporter, CancellationToken token);
+        protected abstract Task<string> GetRepositoryJsonAsync([NotNull] Uri repoLocation,
+            [NotNull] IProgress<string> reporter,
+            CancellationToken token);
     }
 }

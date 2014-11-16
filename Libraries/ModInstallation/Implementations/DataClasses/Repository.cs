@@ -7,6 +7,9 @@ namespace ModInstallation.Implementations.DataClasses
     public class Repository
     {
         [CanBeNull]
+        public IEnumerable<string> includes { get; set; }
+
+        [CanBeNull]
         public List<Modification> mods { get; set; }
     }
 }
