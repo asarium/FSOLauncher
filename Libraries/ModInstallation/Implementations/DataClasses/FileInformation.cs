@@ -1,11 +1,18 @@
-﻿using System.Collections.Generic;
+﻿#region Usings
+
+using System.Collections.Generic;
 using ModInstallation.Annotations;
+
+#endregion
 
 namespace ModInstallation.Implementations.DataClasses
 {
     [UsedImplicitly]
     public class FileInformation
     {
+        [CanBeNull]
+        public string filename { get; set; }
+
         [CanBeNull]
         public string md5sum { get; set; }
 

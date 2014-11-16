@@ -12,6 +12,9 @@ namespace ModInstallation.Interfaces.Mods
     public interface IFileInformation : INotifyPropertyChanged
     {
         [CanBeNull]
+        string FileName { get; }
+
+        [CanBeNull]
         IEnumerable<IFileVerifier> FileVerifiers { get; }
 
         [CanBeNull]

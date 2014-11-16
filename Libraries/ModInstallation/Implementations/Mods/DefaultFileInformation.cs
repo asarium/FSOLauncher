@@ -15,6 +15,8 @@ namespace ModInstallation.Implementations.Mods
     {
         #region IFileInformation Members
 
+        public string FileName { get; private set; }
+
         public IEnumerable<IFileVerifier> FileVerifiers { get; private set; }
 
         public string Destination { get; private set; }
@@ -29,12 +31,18 @@ namespace ModInstallation.Implementations.Mods
             if (fileInfo.urls == null)
             {
                 if (errorHandler != null)
+                {
                     errorHandler.HandleError(fileInfo, "URL element must be present!");
-                
+                }
+
                 return null;
             }
 
-            var newInstance = new DefaultFileInformation {Destination = fileInfo.dest};
+            var newInstance = new DefaultFileInformation
+            {
+                Destination = fileInfo.dest,
+                FileName = fileInfo.filename
+            };
 
             if (!string.IsNullOrEmpty(fileInfo.md5sum))
             {
