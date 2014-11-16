@@ -11,7 +11,7 @@
     <AssemblyName>UI.WPF.Modules.Installation</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <ExpressionBlendVersion>12.0.50716.0</ExpressionBlendVersion>
+    <ExpressionBlendVersion>12.0.51020.0</ExpressionBlendVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -116,6 +116,10 @@
     <ProjectReference Include="..\UI.WPF.Modules.Mods\UI.WPF.Modules.Mods.csproj">
       <Project>{638DA46F-90D8-43FD-8090-2AF8598D53DB}</Project>
       <Name>UI.WPF.Modules.Mods</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UI.WPF.Modules.Update\UI.WPF.Modules.Update.csproj">
+      <Project>{85DDB6E7-BF9F-447C-8BB9-60081222A130}</Project>
+      <Name>UI.WPF.Modules.Update</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

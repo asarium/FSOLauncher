@@ -3,6 +3,9 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 	<ResourceDictionary.MergedDictionaries>
 		<ResourceDictionary Source="/UI.WPF.Launcher.Common;component/Resources/Icons.xaml"/>
+		<ResourceDictionary Source="/UI.WPF.Launcher.Common;component/Resources/MahAppsResources.xaml"/>
+		<ResourceDictionary Source="/UI.WPF.Modules.Mods;component/Properties/DesignTimeResources.xaml"/>
+		<ResourceDictionary Source="/UI.WPF.Modules.Update;component/Properties/DesignTimeResources.xaml"/>
 	</ResourceDictionary.MergedDictionaries>
 	<!-- Resource dictionary entries should be defined here. -->
 </ResourceDictionary>

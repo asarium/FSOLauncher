@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mods="clr-namespace:UI.WPF.Modules.Installation.ViewModels.Mods"
              xmlns:views="clr-namespace:UI.WPF.Modules.Installation.Views" mc:Ignorable="d"
-             d:DataContext="{d:DesignInstance mods:ModViewModel}" d:DesignHeight="300" d:DesignWidth="300">
+             d:DataContext="{d:DesignData /SampleData/ModViewModelData.xaml}" d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </UserControl.Resources>
@@ -15,18 +15,22 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
+        <Expander Grid.Row="2" IsExpanded="False" Margin="2,2,2,0" MaxHeight="300">
+            <Expander.Header>
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox Margin="2,2,0,2" IsChecked="{Binding ModChecked, Mode=TwoWay}"
+                                  VerticalAlignment="Center" HorizontalAlignment="Center" />
 
-        <StackPanel Orientation="Horizontal">
-            <CheckBox Margin="12,2,0,2" IsChecked="{Binding ModChecked, Mode=TwoWay}" VerticalAlignment="Center" HorizontalAlignment="Center" />
-            
-            <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding Mod.Title}" VerticalAlignment="Center"
-                   Margin="2,2,2,2" FontWeight="Bold" FontSize="14.667" />
-        </StackPanel>
-        
-        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding Mod.Description}"
-                   VerticalAlignment="Top" Grid.Row="1" Margin="5,5,0,0"
-                   Visibility="{Binding HasDescription, Converter={StaticResource BooleanToVisibilityConverter}}" />
-        <Expander Header="Available Packages" Grid.Row="2" IsExpanded="True" Margin="10,5,5,0" MaxHeight="300">
+                        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding Mod.Title}"
+                                   VerticalAlignment="Center" Margin="2,2,2,2" FontWeight="Bold" FontSize="14.667" />
+                    </StackPanel>
+
+                    <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding Mod.Description}"
+                               VerticalAlignment="Top" Margin="5,5,0,0"
+                               Visibility="{Binding HasDescription, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                </StackPanel>
+            </Expander.Header>
             <Grid>
                 <ItemsControl ItemsSource="{Binding Packages}">
                     <ItemsControl.ItemTemplate>

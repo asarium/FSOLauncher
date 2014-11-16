@@ -1,0 +1,39 @@
+﻿<Mods:ModViewModel xmlns:Mods="clr-namespace:UI.WPF.Modules.Installation.ViewModels.Mods" xmlns:Threading="clr-namespace:System.Threading;assembly=mscorlib" HasDescription="False" ModChecked="True">
+	<Mods:ModViewModel.Packages>
+		<Mods:PackageViewModel Installing="True" IsChangeable="False" OperationMessage="Maecenas vestibulum aenean nam" OperationProgress="0.2169" ProgressIdeterminate="False" Selected="True">
+			<Mods:PackageViewModel.TokenSource>
+				<Threading:CancellationTokenSource/>
+			</Mods:PackageViewModel.TokenSource>
+		</Mods:PackageViewModel>
+		<Mods:PackageViewModel Installing="True" IsChangeable="False" OperationMessage="Praesent adipiscing class" OperationProgress="0.18897" ProgressIdeterminate="False" Selected="True">
+			<Mods:PackageViewModel.TokenSource>
+				<Threading:CancellationTokenSource/>
+			</Mods:PackageViewModel.TokenSource>
+		</Mods:PackageViewModel>
+		<Mods:PackageViewModel Installing="True" IsChangeable="False" OperationMessage="Parturient aliquam" OperationProgress="0.41482" ProgressIdeterminate="False" Selected="True">
+			<Mods:PackageViewModel.TokenSource>
+				<Threading:CancellationTokenSource/>
+			</Mods:PackageViewModel.TokenSource>
+		</Mods:PackageViewModel>
+		<Mods:PackageViewModel Installing="False" IsChangeable="False" OperationMessage="Sed curabitur phasellus dis" OperationProgress="0.46012" ProgressIdeterminate="False" Selected="True">
+			<Mods:PackageViewModel.TokenSource>
+				<Threading:CancellationTokenSource/>
+			</Mods:PackageViewModel.TokenSource>
+		</Mods:PackageViewModel>
+		<Mods:PackageViewModel Installing="True" IsChangeable="False" OperationMessage="Mauris accumsan cras bibendum est" OperationProgress="0.39949" ProgressIdeterminate="True" Selected="True">
+			<Mods:PackageViewModel.TokenSource>
+				<Threading:CancellationTokenSource/>
+			</Mods:PackageViewModel.TokenSource>
+		</Mods:PackageViewModel>
+		<Mods:PackageViewModel Installing="False" IsChangeable="False" OperationMessage="Duis nullam" OperationProgress="0.36014" ProgressIdeterminate="True" Selected="False">
+			<Mods:PackageViewModel.TokenSource>
+				<Threading:CancellationTokenSource/>
+			</Mods:PackageViewModel.TokenSource>
+		</Mods:PackageViewModel>
+		<Mods:PackageViewModel Installing="True" IsChangeable="False" OperationMessage="Integer hac quisque" OperationProgress="0.97394" ProgressIdeterminate="True" Selected="False">
+			<Mods:PackageViewModel.TokenSource>
+				<Threading:CancellationTokenSource/>
+			</Mods:PackageViewModel.TokenSource>
+		</Mods:PackageViewModel>
+	</Mods:ModViewModel.Packages>
+</Mods:ModViewModel>

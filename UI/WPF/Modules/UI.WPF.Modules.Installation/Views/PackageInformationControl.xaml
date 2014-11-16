@@ -24,13 +24,21 @@
         <CheckBox VerticalAlignment="Center" Margin="2,5" HorizontalAlignment="Left"
                   IsChecked="{Binding Selected, Mode=TwoWay}" VerticalContentAlignment="Center" Grid.RowSpan="2"
                   IsEnabled="{Binding IsChangeable}" />
+        <Grid Grid.Row="0" Grid.Column="1" Margin="0,0,0,2" ToolTip="{Binding OperationMessage}">
+        	<Grid.ColumnDefinitions>
+        		<ColumnDefinition Width="Auto" />
+        		<ColumnDefinition Width="*" />
+        	</Grid.ColumnDefinitions>
+        	<TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding Package.Name}" />
 
-        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding Package.Name}" VerticalAlignment="Bottom"
-                   Grid.Row="0" Grid.Column="1" Margin="0,0,0,2" ToolTip="{Binding OperationMessage}" />
+        	<TextBlock HorizontalAlignment="Right" Grid.Column="1" Text="{Binding OperationMessage}"
+			Visibility="{Binding Installing, Converter={StaticResource BooleanToVisibilityConverter}}" TextTrimming="CharacterEllipsis"/>
+        </Grid>
 
         <Custom:MetroProgressBar VerticalAlignment="Center" BorderThickness="0,1" Height="Auto" Grid.Row="1"
                                  Minimum="0.0" Maximum="1.0" Value="{Binding OperationProgress}" Grid.Column="1"
-                                 Visibility="{Binding Installing, Converter={StaticResource BooleanToVisibilityConverter}}" ToolTip="{Binding OperationMessage}" IsIndeterminate="{Binding ProgressIdeterminate}" />
+                                 Visibility="{Binding Installing, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                 ToolTip="{Binding OperationMessage}" IsIndeterminate="{Binding ProgressIdeterminate}" />
 
         <Button HorizontalAlignment="Center" Margin="3" Grid.Row="0" Grid.Column="2" Grid.RowSpan="2"
                 Command="{Binding CancelCommand}" ToolTip="Cancel installation" VerticalAlignment="Center" Width="30"
