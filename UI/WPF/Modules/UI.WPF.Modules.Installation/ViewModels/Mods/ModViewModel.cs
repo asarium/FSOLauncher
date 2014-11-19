@@ -2,7 +2,7 @@
 
 using System;
 using System.Collections.Generic;
-using ModInstallation.Annotations;
+using FSOManagement.Annotations;
 using ModInstallation.Interfaces.Mods;
 using ReactiveUI;
 using UI.WPF.Launcher.Common.Classes;
@@ -15,6 +15,8 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
     {
         private bool _hasDescription;
 
+        private double _installationProgress;
+
         private IModification _mod;
 
         private bool _modSelected;
@@ -23,6 +25,7 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
 
         public ModViewModel([NotNull] IModification mod, [NotNull] InstallationTabViewModel installationTabViewModel)
         {
+            InstallationTabViewModel = installationTabViewModel;
             _mod = mod;
 
             Packages = mod.Packages.CreateDerivedCollection(p => new PackageViewModel(p, installationTabViewModel));
@@ -48,6 +51,9 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
                 }
             });
         }
+
+        [NotNull]
+        public InstallationTabViewModel InstallationTabViewModel { get; private set; }
 
         public bool ModSelected
         {

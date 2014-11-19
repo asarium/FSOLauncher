@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mods="clr-namespace:UI.WPF.Modules.Installation.ViewModels.Mods"
              xmlns:views="clr-namespace:UI.WPF.Modules.Installation.Views" mc:Ignorable="d"
-             d:DataContext="{d:DesignData /SampleData/ModViewModelData.xaml}" d:DesignHeight="300" d:DesignWidth="300">
+             d:DataContext="{d:DesignInstance mods:ModViewModel}" d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </UserControl.Resources>
@@ -19,8 +19,9 @@
             <Expander.Header>
                 <StackPanel>
                     <StackPanel Orientation="Horizontal">
-                        <CheckBox Margin="2,2,0,2" IsChecked="{Binding ModChecked, Mode=TwoWay}"
-                                  VerticalAlignment="Center" HorizontalAlignment="Center" />
+                        <CheckBox Margin="2,2,0,2" IsChecked="{Binding ModSelected, Mode=TwoWay}"
+                                  VerticalAlignment="Center" HorizontalAlignment="Center"
+                                  IsEnabled="{Binding InstallationTabViewModel.InteractionEnabled}" />
 
                         <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding Mod.Title}"
                                    VerticalAlignment="Center" Margin="2,2,2,2" FontWeight="Bold" FontSize="14.667" />

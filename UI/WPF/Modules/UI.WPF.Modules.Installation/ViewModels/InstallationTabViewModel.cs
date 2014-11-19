@@ -25,9 +25,15 @@ namespace UI.WPF.Modules.Installation.ViewModels
     {
         private bool _hasManagerStatusMessage;
 
+        private bool _installationInProgress;
+
+        private double _installationProgress;
+
         private string _managerStatusMessage;
 
-        private IEnumerable<ModViewModel> _modificationViewModels;
+        private IReadOnlyReactiveList<ModViewModel> _modificationViewModels;
+
+        private bool _interactionEnabled;
 
         [ImportingConstructor]
         public InstallationTabViewModel([NotNull] IRepositoryFactory repositoryFactory,
@@ -58,9 +64,14 @@ namespace UI.WPF.Modules.Installation.ViewModels
                 LocalModManager.PackageDirectory = Path.Combine(rootFolder, "mods", "packages");
             });
 
-            var updateModsCommand = ReactiveCommand.CreateAsyncTask(_ => UpdateMods());
+            this.WhenAnyValue(x => x.InstallationInProgress).Select(b => !b).BindTo(this, x => x.InteractionEnabled);
+            InteractionEnabledObservable = this.WhenAnyValue(x => x.InteractionEnabled);
+            UpdateModsCommand = ReactiveCommand.CreateAsyncTask(_ => UpdateMods());
+
+            InstallationInProgress = false;
         }
 
+        [NotNull]
         public ICommand UpdateModsCommand { get; private set; }
 
         [NotNull]
@@ -77,6 +88,20 @@ namespace UI.WPF.Modules.Installation.ViewModels
 
         [NotNull, Import]
         public IDependencyResolver DependencyResolver { get; private set; }
+
+        public double InstallationProgress
+        {
+            get { return _installationProgress; }
+            private set
+            {
+                if (value.Equals(_installationProgress))
+                {
+                    return;
+                }
+                _installationProgress = value;
+                NotifyOfPropertyChange();
+            }
+        }
 
         public bool HasManagerStatusMessage
         {
@@ -111,7 +136,7 @@ namespace UI.WPF.Modules.Installation.ViewModels
         public IRemoteModManager RemoteModManager { get; private set; }
 
         [NotNull]
-        public IEnumerable<ModViewModel> ModificationViewModels
+        public IReadOnlyReactiveList<ModViewModel> ModificationViewModels
         {
             get { return _modificationViewModels; }
             private set
@@ -125,8 +150,36 @@ namespace UI.WPF.Modules.Installation.ViewModels
             }
         }
 
-        [NotNull, Import]
-        public IInteractionService InteractionService { get; private set; }
+        public bool InstallationInProgress
+        {
+            get { return _installationInProgress; }
+            private set
+            {
+                if (value.Equals(_installationInProgress))
+                {
+                    return;
+                }
+                _installationInProgress = value;
+                NotifyOfPropertyChange();
+            }
+        }
+
+        public bool InteractionEnabled
+        {
+            get { return _interactionEnabled; }
+            private set
+            {
+                if (value.Equals(_interactionEnabled))
+                {
+                    return;
+                }
+                _interactionEnabled = value;
+                NotifyOfPropertyChange();
+            }
+        }
+
+        [NotNull]
+        public IObservable<bool> InteractionEnabledObservable { get; private set; }
 
         [NotNull]
         private async Task InstallMods()
@@ -141,11 +194,26 @@ namespace UI.WPF.Modules.Installation.ViewModels
                 return;
             }
 
-            var packageViewModels = ModificationViewModels.SelectMany(mod => mod.Packages).Where(pack => pack.Selected);
+            InstallationInProgress = true;
 
-            var installTasks = packageViewModels.Select(packageViewModel => packageViewModel.Install(PackageInstaller));
+            var progressDict = new Dictionary<PackageViewModel, double>();
+            try
+            {
+                var packageViewModels = ModificationViewModels.SelectMany(mod => mod.Packages).Where(pack => pack.Selected);
 
-            await Task.WhenAll(installTasks);
+                var installTasks = packageViewModels.Select(packageViewModel => packageViewModel.Install(PackageInstaller,
+                    progress =>
+                    {
+                        progressDict[packageViewModel] = progress;
+                        InstallationProgress = progressDict.Aggregate(0.0, (sum, pair) => sum + pair.Value) / progressDict.Count;
+                    }));
+
+                await Task.WhenAll(installTasks);
+            }
+            finally
+            {
+                InstallationInProgress = false;
+            }
         }
 
         [NotNull]

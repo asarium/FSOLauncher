@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using ModInstallation.Annotations;
+using ModInstallation.Implementations;
 using ModInstallation.Interfaces;
 using ModInstallation.Interfaces.Mods;
 using ReactiveUI;
@@ -39,8 +40,6 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
             _installationTabViewModel = installationTabViewModel;
             Package = package;
 
-            ProgressReporter = new Progress<IInstallationProgress>(ProgressHandler);
-
             var cancelCommand = ReactiveCommand.Create(this.WhenAnyValue(x => x.Installing));
             cancelCommand.Subscribe(_ =>
             {
@@ -57,7 +56,8 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
 
             IsSelectedObservable.InvokeCommand(SelectDependenciesCommand);
 
-            IsChangeable = package.Status != PackageStatus.Required;
+            installationTabViewModel.InteractionEnabledObservable.Select(b => b && package.Status != PackageStatus.Required)
+                .BindTo(this, x => x.IsChangeable);
         }
 
         [NotNull]
@@ -112,9 +112,6 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
             private set { RaiseAndSetIfPropertyChanged(ref _isChangeable, value); }
         }
 
-        [NotNull]
-        public IProgress<IInstallationProgress> ProgressReporter { get; private set; }
-
         private void ProgressHandler([NotNull] IInstallationProgress installationProgress)
         {
             OperationMessage = installationProgress.Message;
@@ -132,7 +129,7 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
         }
 
         [NotNull]
-        public async Task Install([NotNull] IPackageInstaller installer)
+        public async Task Install([NotNull] IPackageInstaller installer, [NotNull] Action<double> progressReporter)
         {
             if (Installing)
             {
@@ -146,10 +143,16 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
 
             TokenSource = new CancellationTokenSource();
 
+            var reporter = new Progress<IInstallationProgress>(p =>
+            {
+                ProgressHandler(p);
+                progressReporter(p.OverallProgress);
+            });
+
             Installing = true;
             try
             {
-                await installer.InstallPackageAsync(Package, ProgressReporter, TokenSource.Token);
+                await installer.InstallPackageAsync(Package, reporter, TokenSource.Token);
 
                 await _installationTabViewModel.LocalModManager.AddPackageAsync(Package);
 
@@ -157,6 +160,13 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
             }
             catch (OperationCanceledException)
             {
+                // Report that this operation is finished
+                ((IProgress<IInstallationProgress>)reporter).Report(new DefaultInstallationProgress
+                {
+                    Message = "Canceled",
+                    OverallProgress = 1.0,
+                    SubProgress = 1.0
+                });
             }
             finally
             {
@@ -164,6 +174,7 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
             }
         }
 
+        [NotNull]
         private async Task HandleSelectedChanged()
         {
             if (!Selected)
@@ -212,7 +223,10 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
                         "Do you want to continue with your current selection?\n" + "(This will probably cause issues later)",
                         new[]
                         {
-                            new RecoveryCommand("Continue", _ => RecoveryOptionResult.RetryOperation) {IsDefault = true},
+                            new RecoveryCommand("Continue", _ => RecoveryOptionResult.RetryOperation)
+                            {
+                                IsDefault = true
+                            },
                             new RecoveryCommand("Abort", _ => RecoveryOptionResult.CancelOperation)
                         }));
 

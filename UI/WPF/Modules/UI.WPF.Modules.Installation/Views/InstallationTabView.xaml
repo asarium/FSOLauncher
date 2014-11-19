@@ -45,19 +45,34 @@
                     </ControlTemplate>
                 </ItemsControl.Template>
             </ItemsControl>
-            <Button ToolTip="Start download and installation" HorizontalAlignment="Right" VerticalAlignment="Top"
-                    Grid.Row="1" Margin="5" Command="{Binding InstallModsCommand}">
-                <StackPanel Orientation="Horizontal">
-                    <Rectangle Width="20" Height="20"
-                               Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}">
-                        <Rectangle.OpacityMask>
-                            <VisualBrush Stretch="Fill" Visual="{DynamicResource appbar_download}" />
-                        </Rectangle.OpacityMask>
-                    </Rectangle>
-                    <TextBlock Text="Install" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,2,2,2"
-                               FontSize="18" FontWeight="Bold" />
-                </StackPanel>
-            </Button>
+            <Grid Margin="0" Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Grid Margin="3" VerticalAlignment="Center" Visibility="{Binding InstallationInProgress, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Installation in progress..."
+                               VerticalAlignment="Top" Margin="2,0,0,2" />
+                    <controls:MetroProgressBar VerticalAlignment="Center" Grid.Row="1" Margin="0,2" Maximum="1" Value="{Binding InstallationProgress}" />
+                </Grid>
+                <Button ToolTip="Start download and installation" HorizontalAlignment="Right" VerticalAlignment="Top"
+                        Command="{Binding InstallModsCommand}" Margin="3" Grid.Column="1">
+                    <StackPanel Orientation="Horizontal">
+                        <Rectangle Width="20" Height="20"
+                                   Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}">
+                            <Rectangle.OpacityMask>
+                                <VisualBrush Stretch="Fill" Visual="{DynamicResource appbar_download}" />
+                            </Rectangle.OpacityMask>
+                        </Rectangle>
+                        <TextBlock Text="Install" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   Margin="5,2,2,2" FontSize="18" FontWeight="Bold" />
+                    </StackPanel>
+                </Button>
+            </Grid>
         </Grid>
         <Grid ZIndex="2"
               Visibility="{Binding HasManagerStatusMessage, Converter={StaticResource BooleanToVisibilityConverter}}">
