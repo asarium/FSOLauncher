@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -13,7 +14,6 @@ using ModInstallation.Annotations;
 using ModInstallation.Interfaces;
 using ReactiveUI;
 using UI.WPF.Launcher.Common.Interfaces;
-using UI.WPF.Launcher.Common.Services;
 using UI.WPF.Modules.Installation.ViewModels.Mods;
 
 #endregion
@@ -57,7 +57,11 @@ namespace UI.WPF.Modules.Installation.ViewModels
                 PackageInstaller.InstallationDirectory = Path.Combine(rootFolder, "mods");
                 LocalModManager.PackageDirectory = Path.Combine(rootFolder, "mods", "packages");
             });
+
+            var updateModsCommand = ReactiveCommand.CreateAsyncTask(_ => UpdateMods());
         }
+
+        public ICommand UpdateModsCommand { get; private set; }
 
         [NotNull]
         public ILocalModManager LocalModManager { get; private set; }
@@ -144,7 +148,8 @@ namespace UI.WPF.Modules.Installation.ViewModels
             await Task.WhenAll(installTasks);
         }
 
-        private async void UpdateMods()
+        [NotNull]
+        private async Task UpdateMods()
         {
             await RemoteModManager.RetrieveInformationAsync(new Progress<string>(msg => ManagerStatusMessage = msg), CancellationToken.None);
 
@@ -154,7 +159,28 @@ namespace UI.WPF.Modules.Installation.ViewModels
             }
             else
             {
-                await InteractionService.ShowMessage(MessageType.Error, "Retrieval failed!", "The mod information download failed!");
+                var result =
+                    await
+                        UserError.Throw(new UserError("Mod information retrieval failed!",
+                            "There was an error while retrieving the modification information.\n" +
+                            "Please check if your internet connection is working.",
+                            new[]
+                            {
+                                new RecoveryCommand("Retry", _ => RecoveryOptionResult.RetryOperation)
+                                {
+                                    IsDefault = true
+                                },
+                                new RecoveryCommand("Cancel", _ => RecoveryOptionResult.CancelOperation)
+                            }));
+
+                switch (result)
+                {
+                    case RecoveryOptionResult.CancelOperation:
+                        break;
+                    case RecoveryOptionResult.RetryOperation:
+                        UpdateModsCommand.Execute(null);
+                        break;
+                }
             }
 
             ManagerStatusMessage = null;
@@ -166,7 +192,7 @@ namespace UI.WPF.Modules.Installation.ViewModels
 
             if (RemoteModManager.Modifications == null)
             {
-                UpdateMods();
+                UpdateModsCommand.Execute(null);
             }
         }
     }
