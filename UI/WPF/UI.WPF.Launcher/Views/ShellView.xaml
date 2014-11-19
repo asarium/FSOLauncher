@@ -15,6 +15,9 @@
                       GlowBrush="{DynamicResource AccentColorBrush}" Width="{Binding Settings.Width, Mode=TwoWay}"
                       Height="{Binding Settings.Height, Mode=TwoWay}" TitleCaps="False" SaveWindowPosition="False"
                       WindowStartupLocation="CenterScreen">
+    <controls:MetroWindow.TaskbarItemInfo>
+        <TaskbarItemInfo />
+    </controls:MetroWindow.TaskbarItemInfo>
     <controls:MetroWindow.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </controls:MetroWindow.Resources>

@@ -196,6 +196,8 @@
     <Compile Include="Converters\ErrorDialogStyleConverter.cs" />
     <Compile Include="Implementations\MefDependencyResolver.cs" />
     <Compile Include="Implementations\MetroInteractionService.cs" />
+    <Compile Include="Implementations\MetroTaskbarController.cs" />
+    <Compile Include="Implementations\MetroWindowController.cs" />
     <Compile Include="Implementations\MetroWindowManager.cs" />
     <Compile Include="Implementations\NLogLogManager.cs" />
     <Compile Include="Properties\Settings.cs" />

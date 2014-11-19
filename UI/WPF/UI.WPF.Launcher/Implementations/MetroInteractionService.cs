@@ -66,28 +66,8 @@ namespace UI.WPF.Launcher.Implementations
     }
 
     [Export(typeof(IInteractionService))]
-    public class MetroInteractionService : IInteractionService
+    public class MetroInteractionService : MetroWindowController, IInteractionService
     {
-        private static MetroWindow Window
-        {
-            get
-            {
-                if (Application.Current.MainWindow == null)
-                {
-                    return null;
-                }
-
-                var metroWindow = Application.Current.MainWindow as MetroWindow;
-
-                if (metroWindow != null)
-                {
-                    return metroWindow;
-                }
-
-                throw new InvalidOperationException("ApplicationMain window is not a metro window!");
-            }
-        }
-
         #region IInteractionService Members
 
         public async Task ShowMessage(MessageType type, string title, string text)

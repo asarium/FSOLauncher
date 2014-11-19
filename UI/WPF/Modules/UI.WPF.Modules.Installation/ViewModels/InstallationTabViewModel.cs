@@ -14,6 +14,7 @@ using ModInstallation.Annotations;
 using ModInstallation.Interfaces;
 using ReactiveUI;
 using UI.WPF.Launcher.Common.Interfaces;
+using UI.WPF.Launcher.Common.Services;
 using UI.WPF.Modules.Installation.ViewModels.Mods;
 
 #endregion
@@ -181,6 +182,9 @@ namespace UI.WPF.Modules.Installation.ViewModels
         [NotNull]
         public IObservable<bool> InteractionEnabledObservable { get; private set; }
 
+        [NotNull,Import]
+        private ITaskbarController TaskbarController { get; set; }
+
         [NotNull]
         private async Task InstallMods()
         {
@@ -195,6 +199,8 @@ namespace UI.WPF.Modules.Installation.ViewModels
             }
 
             InstallationInProgress = true;
+            TaskbarController.ProgressbarVisible = true;
+            TaskbarController.ProgressvarValue = 0.0;
 
             var progressDict = new Dictionary<PackageViewModel, double>();
             try
@@ -206,6 +212,7 @@ namespace UI.WPF.Modules.Installation.ViewModels
                     {
                         progressDict[packageViewModel] = progress;
                         InstallationProgress = progressDict.Aggregate(0.0, (sum, pair) => sum + pair.Value) / progressDict.Count;
+                        TaskbarController.ProgressvarValue = InstallationProgress;
                     }));
 
                 await Task.WhenAll(installTasks);
@@ -213,6 +220,8 @@ namespace UI.WPF.Modules.Installation.ViewModels
             finally
             {
                 InstallationInProgress = false;
+                TaskbarController.ProgressbarVisible = false;
+                TaskbarController.ProgressvarValue = 0.0;
             }
         }
 
