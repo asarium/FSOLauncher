@@ -32,18 +32,20 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Akavache">
-      <HintPath>..\..\packages\akavache.core.4.0.3.2\lib\net45\Akavache.dll</HintPath>
+      <HintPath>..\..\packages\akavache.core.4.0.4\lib\net45\Akavache.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Akavache.Deprecated">
-      <HintPath>..\..\packages\akavache.deprecated.4.0.3.2\lib\Portable-Net45+Win8+WP8+Wpa81\Akavache.Deprecated.dll</HintPath>
+      <HintPath>..\..\packages\akavache.deprecated.4.0.4\lib\Portable-Net45+Win8+WP8+Wpa81\Akavache.Deprecated.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Newtonsoft.Json.6.0.5\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\packages\Newtonsoft.Json.6.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="ReactiveUI, Version=6.0.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\reactiveui-core.6.1.0\lib\Net45\ReactiveUI.dll</HintPath>
+    <Reference Include="ReactiveUI">
+      <HintPath>..\..\packages\reactiveui-core.6.2.0\lib\Net45\ReactiveUI.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Semver">
       <HintPath>..\..\packages\semver.1.1.2\lib\net45\Semver.dll</HintPath>
