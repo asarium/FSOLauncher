@@ -1,14 +1,12 @@
 ﻿#region Usings
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Net;
 using System.Net.Http;
-using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Akavache;
-using ModInstallation.Annotations;
+using FSOManagement.Annotations;
 using ModInstallation.Interfaces.Net;
 
 #endregion
@@ -16,57 +14,91 @@ using ModInstallation.Interfaces.Net;
 namespace ModInstallation.Implementations.Net
 {
     [Export(typeof(IWebClient))]
-    public class HttpWebClient : IWebClient
+    public class HttpWebClient : CachingWebClient
     {
-        #region IWebClient Members
-
-        public async Task<IResponse> GetAsync(Uri uri, CancellationToken token, TimeSpan? cacheDuration = null)
+        public override async Task DownloadAsync(Uri uri, string destination, Action<DownloadProgress> downloadReporter, CancellationToken token)
         {
-            if (cacheDuration.HasValue)
+            using (var client = new DownloadTaskProvider())
             {
-                return await GetFromCache(uri, token, cacheDuration.Value);
+                token.Register(client.Cancel);
+                await client.StartDownload(uri, destination, downloadReporter);
             }
-
-            return new HttpResponse(await GetResponse(uri, token));
         }
 
-        #endregion
-
-        [NotNull]
-        private static async Task<IResponse> GetFromCache([NotNull] Uri uri, CancellationToken token, TimeSpan cacheDuration)
-        {
-            var cacheKey = uri.ToString();
-            string content = null;
-            try
-            {
-                content = await BlobCache.LocalMachine.GetObject<string>(cacheKey);
-            }
-            catch (KeyNotFoundException)
-            {
-                // Key is not in the cache
-            }
-
-            if (content != null)
-            {
-                return new StringResponse(content);
-            }
-
-            var response = await GetResponse(uri, token);
-
-            content = await response.Content.ReadAsStringAsync();
-
-            await BlobCache.LocalMachine.InsertObject(cacheKey, content, cacheDuration);
-
-            return new HttpResponse(response);
-        }
-
-        [NotNull]
-        private static async Task<HttpResponseMessage> GetResponse([NotNull] Uri uri, CancellationToken token)
+        protected override async Task<string> ActuallyGetStringAsync(Uri uri, CancellationToken token)
         {
             using (var client = new HttpClient())
             {
-                return await client.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead, token);
+                var responseMessage = await client.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead, token);
+                return await responseMessage.Content.ReadAsStringAsync();
             }
         }
+
+        #region Nested type: DownloadTaskProvider
+
+        private class DownloadTaskProvider : IDisposable
+        {
+            private bool _disposed;
+
+            private readonly WebClient _client;
+
+            public DownloadTaskProvider()
+            {
+                _client = new WebClient();
+            }
+
+            #region IDisposable Members
+
+            public void Dispose()
+            {
+                if (_client != null)
+                {
+                    _client.Dispose();
+                }
+
+                _disposed = true;
+            }
+
+            #endregion
+
+            public void Cancel()
+            {
+                if (_client != null && !_disposed)
+                {
+                    _client.CancelAsync();
+                }
+            }
+
+            [NotNull]
+            public Task StartDownload([NotNull] Uri uri, [NotNull] string destination, [NotNull] Action<DownloadProgress> downloadReporter)
+            {
+                _client.DownloadProgressChanged += (sender, args) => downloadReporter(new DownloadProgress
+                {
+                    Current = args.BytesReceived,
+                    Total = args.TotalBytesToReceive
+                });
+
+                var tcs = new TaskCompletionSource<bool>();
+                _client.DownloadFileCompleted += (sender, args) =>
+                {
+                    if (args.Cancelled)
+                    {
+                        tcs.TrySetCanceled();
+                    }
+                    else if (args.Error != null)
+                    {
+                        tcs.TrySetException(args.Error);
+                    }
+                    else
+                    {
+                        tcs.TrySetResult(true);
+                    }
+                };
+
+                return Task.WhenAll(Task.Run(() => _client.DownloadFileAsync(uri, destination)), tcs.Task);
+            }
+        }
+
+        #endregion
     }
 }

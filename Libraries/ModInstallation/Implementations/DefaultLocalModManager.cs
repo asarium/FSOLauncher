@@ -71,6 +71,10 @@ namespace ModInstallation.Implementations
         {
             get { return _wrappedModification.LogoUri; }
         }
+        public IPostInstallActions PostInstallActions
+        {
+            get { return _wrappedModification.PostInstallActions; }
+        }
 
         public string InstallPath
         {

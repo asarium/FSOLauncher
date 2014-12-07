@@ -23,16 +23,7 @@ namespace ModInstallation.Implementations
         protected override async Task<string> GetRepositoryJsonAsync(Uri location, IProgress<string> reporter, CancellationToken token)
         {
             reporter.Report(string.Format("Retrieving information from " + location));
-            using (var response = await WebClient.GetAsync(location, token, TimeSpan.FromHours(3)))
-            {
-                using (var stream = await response.OpenStreamAsync())
-                {
-                    using (var reader = new StreamReader(stream))
-                    {
-                        return await reader.ReadToEndAsync();
-                    }
-                }
-            }
+            return await WebClient.GetStringAsync(location, token, TimeSpan.FromHours(3));
         }
     }
 }

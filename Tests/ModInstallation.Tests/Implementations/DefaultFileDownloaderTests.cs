@@ -10,10 +10,12 @@ using System.Threading.Tasks;
 using ModInstallation.Annotations;
 using ModInstallation.Exceptions;
 using ModInstallation.Implementations;
+using ModInstallation.Implementations.Net;
 using ModInstallation.Interfaces;
 using ModInstallation.Interfaces.Mods;
 using ModInstallation.Tests.TestClasses;
 using ModInstallation.Tests.Util;
+using ModInstallation.Util;
 using Moq;
 using NUnit.Framework;
 
@@ -61,9 +63,20 @@ namespace ModInstallation.Tests.Implementations
             var testClient = new TestWebClient();
             instance.WebClient = testClient;
 
-            testClient.RespondWith(HttpStatusCode.OK, "TestContent");
+            testClient.RespondWith("TestContent");
 
-            var outFile = await instance.DownloadFileAsync(fileInfoMock.Object, progressMock.Object, CancellationToken.None);
+            var outFile = await instance.DownloadFileAsync(fileInfoMock.Object, new Progress<IDownloadProgress>(p =>
+            {
+                var remaining = p.TotalBytes - p.CurrentBytes;
+                var remainingTime = TimeSpan.FromSeconds(remaining / p.Speed);
+
+                var remainingTimeString = remainingTime.ToString(remainingTime.Hours > 0 ? "h\\:mm\\:ss" : "m\\:ss");
+
+                var msg = string.Format("{0} of {1} ({2}/s) {3} remaining", p.CurrentBytes.HumanReadableByteCount(true),
+                    p.TotalBytes.HumanReadableByteCount(true), ((long)p.Speed).HumanReadableByteCount(true), remainingTimeString);
+
+                Console.WriteLine(msg);
+            }), CancellationToken.None);
 
             await AssertEx.FileContent(outFile.FullName, "TestContent");
 
@@ -90,7 +103,7 @@ namespace ModInstallation.Tests.Implementations
             var testClient = new TestWebClient();
             instance.WebClient = testClient;
 
-            testClient.RespondWith(404, "Not found!").RespondWith(200, "TestContent");
+//            testClient.RespondWith(404, "Not found!").RespondWith(200, "TestContent");
 
             var outFile = await instance.DownloadFileAsync(fileInfoMock.Object, progressMock.Object, CancellationToken.None);
 
@@ -150,7 +163,7 @@ namespace ModInstallation.Tests.Implementations
             var testClient = new TestWebClient();
             instance.WebClient = testClient;
 
-            testClient.RespondWith(200, "TestContent");
+//            testClient.RespondWith(200, "TestContent");
 
             await
                 AssertEx.ThrowsAsync<FileVerificationFailedException>(
@@ -184,7 +197,7 @@ namespace ModInstallation.Tests.Implementations
             var testClient = new TestWebClient();
             instance.WebClient = testClient;
 
-            testClient.RespondWith(200, "TestContent");
+//            testClient.RespondWith(200, "TestContent");
 
             var outFile = await instance.DownloadFileAsync(fileInfoMock.Object, progressMock.Object, CancellationToken.None);
 

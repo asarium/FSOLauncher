@@ -55,37 +55,36 @@ namespace ModInstallation.Tests.TestClasses
 
     public class TestWebClient : IWebClient
     {
-        private readonly Queue<TestResponse> _responseQueue = new Queue<TestResponse>();
+        private readonly Queue<string> _responseQueue = new Queue<string>();
 
         #region IWebClient Members
 
-        public Task<IResponse> GetAsync(Uri uri, CancellationToken token, TimeSpan? cacheDuration = null)
+        public Task<string> GetStringAsync(Uri uri, CancellationToken token, TimeSpan? cacheDuration)
         {
             var result = _responseQueue.Dequeue();
 
-            if (!(result is TimeoutResponse))
+            if (result != null)
             {
-                return Task.FromResult<IResponse>(result);
+                return Task.FromResult(result);
             }
 
-            var tcs = new TaskCompletionSource<IResponse>();
+            var tcs = new TaskCompletionSource<string>();
             tcs.SetException(new HttpRequestException("Timeout!"));
 
             return tcs.Task;
         }
 
+        public Task DownloadAsync(Uri uri, string destination, Action<DownloadProgress> downloadReporter, CancellationToken token)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         [NotNull]
-        public TestWebClient RespondWith(int code, [CanBeNull] string content = null)
+        public TestWebClient RespondWith([CanBeNull] string content = null)
         {
-            return RespondWith((HttpStatusCode) code, content);
-        }
-
-        [NotNull]
-        public TestWebClient RespondWith(HttpStatusCode statusCode, [CanBeNull] string content = null)
-        {
-            _responseQueue.Enqueue(new TestResponse {Content = content, StatusCode = statusCode});
+            _responseQueue.Enqueue(content);
 
             return this;
         }
@@ -93,7 +92,7 @@ namespace ModInstallation.Tests.TestClasses
         [NotNull]
         public TestWebClient SimulateTimeout()
         {
-            _responseQueue.Enqueue(new TimeoutResponse());
+            _responseQueue.Enqueue(null);
 
             return this;
         }

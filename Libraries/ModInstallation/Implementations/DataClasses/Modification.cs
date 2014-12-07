@@ -27,5 +27,8 @@ namespace ModInstallation.Implementations.DataClasses
 
         [NotNull]
         public IEnumerable<Package> packages { get; set; }
+
+        [CanBeNull]
+        public IEnumerable<ActionData> actions { get; set; }
     }
 }

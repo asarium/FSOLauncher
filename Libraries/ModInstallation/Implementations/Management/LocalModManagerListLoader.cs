@@ -27,7 +27,7 @@ namespace ModInstallation.Implementations.Management
         {
             var currentDirectory = LocalModManager.PackageDirectory;
 
-            var newDirectory = Path.Combine(searchFolder, "mods", "packages");
+            var newDirectory = Path.Combine(searchFolder, "mods");
 
             if (currentDirectory != null && Path.GetFullPath(currentDirectory) == Path.GetFullPath(newDirectory))
             {

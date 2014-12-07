@@ -82,6 +82,16 @@ namespace ModInstallation.Implementations
 
                 ++installationProgress.Completed;
             }
+
+            if (package.ContainingModification.PostInstallActions == null)
+                return;
+
+            progressReporter.Report(new DefaultInstallationProgress
+            {
+                Message = "Executing post install steps",
+                OverallProgress = 1.0,
+                SubProgress = -1.0f
+            });
         }
 
         #endregion
@@ -156,7 +166,7 @@ namespace ModInstallation.Implementations
         [NotNull]
         private string GetInstallationDirectory([NotNull] IPackage package)
         {
-            return Path.Combine(InstallationDirectory, "packages", package.ContainingModification.Id,
+            return Path.Combine(InstallationDirectory, "mods", package.ContainingModification.Id,
                 package.ContainingModification.Version.ToString());
         }
     }

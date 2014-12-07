@@ -26,5 +26,8 @@ namespace ModInstallation.Interfaces.Mods
 
         [CanBeNull]
         Uri LogoUri { get; }
+
+        [CanBeNull]
+        IPostInstallActions PostInstallActions { get; }
     }
 }

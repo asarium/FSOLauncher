@@ -2,7 +2,6 @@
 
 using System.Collections.Generic;
 using ModInstallation.Annotations;
-using ModInstallation.Interfaces;
 using ModInstallation.Interfaces.Mods;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;

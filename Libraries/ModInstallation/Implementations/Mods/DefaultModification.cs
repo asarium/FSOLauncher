@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO.Abstractions;
 using System.Linq;
 using ModInstallation.Annotations;
 using ModInstallation.Implementations.DataClasses;
@@ -29,6 +30,8 @@ namespace ModInstallation.Implementations.Mods
 
         public Uri LogoUri { get; private set; }
 
+        public IPostInstallActions PostInstallActions { get; private set; }
+
         #endregion
 
         [CanBeNull]
@@ -40,6 +43,11 @@ namespace ModInstallation.Implementations.Mods
                 Title = mod.title,
                 Description = mod.description
             };
+
+            if (mod.actions != null)
+            {
+                newInstance.PostInstallActions = new PostInstallActions(new FileSystem(), mod.actions);
+            }
 
             Uri logo;
             if (Uri.TryCreate(mod.logo, UriKind.Absolute, out logo))
@@ -63,6 +71,10 @@ namespace ModInstallation.Implementations.Mods
                 {
                     return null;
                 }
+            }
+
+            if (mod.actions != null)
+            {
             }
 
             return newInstance;

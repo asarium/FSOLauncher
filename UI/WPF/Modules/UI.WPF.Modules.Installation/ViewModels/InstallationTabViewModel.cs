@@ -61,8 +61,8 @@ namespace UI.WPF.Modules.Installation.ViewModels
 
             ProfileManager.WhenAnyValue(x => x.CurrentProfile.SelectedTotalConversion.RootFolder).Subscribe(rootFolder =>
             {
-                PackageInstaller.InstallationDirectory = Path.Combine(rootFolder, "mods");
-                LocalModManager.PackageDirectory = Path.Combine(rootFolder, "mods", "packages");
+                PackageInstaller.InstallationDirectory = rootFolder;
+                LocalModManager.PackageDirectory = Path.Combine(rootFolder, "mods");
             });
 
             this.WhenAnyValue(x => x.InstallationInProgress).Select(b => !b).BindTo(this, x => x.InteractionEnabled);
