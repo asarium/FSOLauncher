@@ -5,7 +5,6 @@ using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using ModInstallation.Annotations;
@@ -14,13 +13,14 @@ using ModInstallation.Implementations.Util;
 using ModInstallation.Interfaces;
 using ModInstallation.Interfaces.Mods;
 using ModInstallation.Interfaces.Net;
+using Splat;
 
 #endregion
 
 namespace ModInstallation.Implementations
 {
     [Export(typeof(IFileDownloader))]
-    public class DefaultFileDownloader : IFileDownloader
+    public class DefaultFileDownloader : IFileDownloader, IEnableLogger
     {
         private const long BufferSize = 64L * 1024L;
 
@@ -28,8 +28,12 @@ namespace ModInstallation.Implementations
 
         private SemaphoreSlim _downloadSemaphore;
 
-        public DefaultFileDownloader()
+        private readonly IWebClient _webclient;
+
+        [ImportingConstructor]
+        public DefaultFileDownloader(IWebClient webclient)
         {
+            _webclient = webclient;
             MaxConcurrentDownloads = DefaultMaxConcurrentDownloads;
         }
 
@@ -39,8 +43,95 @@ namespace ModInstallation.Implementations
             get { return _downloadSemaphore ?? (_downloadSemaphore = new SemaphoreSlim(MaxConcurrentDownloads)); }
         }
 
-        [NotNull, Import]
-        public IWebClient WebClient { private get; set; }
+        [NotNull]
+        private async Task<string> DownloadFile([NotNull] IProgress<IDownloadProgress> progressReporter,
+            CancellationToken cancellationToken,
+            [NotNull] Uri uri)
+        {
+            var outputFilePath = GetFileOutputPath(Path.GetFileName(uri.LocalPath));
+            try
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                var stopwatch = new Stopwatch();
+                stopwatch.Start();
+
+                long[] lastReport = {0L};
+                await _webclient.DownloadAsync(uri,
+                    outputFilePath,
+                    progress =>
+                    {
+                        var elapsed = stopwatch.Elapsed.TotalSeconds;
+
+                        // Only update 10 times per second
+                        if (elapsed < 0.1)
+                        {
+                            return;
+                        }
+
+                        stopwatch.Restart();
+
+                        progressReporter.Report(DefaultDownloadProgress.Downloading(uri,
+                            progress.Current,
+                            progress.Total,
+                            (progress.Current - lastReport[0]) / elapsed));
+
+                        lastReport[0] = progress.Current;
+                    },
+                    cancellationToken);
+
+                cancellationToken.ThrowIfCancellationRequested();
+
+                var directoryName = Path.GetDirectoryName(outputFilePath);
+                if (directoryName != null)
+                {
+                    Directory.CreateDirectory(directoryName);
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                if (File.Exists(outputFilePath))
+                {
+                    File.Delete(outputFilePath); // Delete the downloaded file
+                }
+
+                throw;
+            }
+
+            return outputFilePath;
+        }
+
+        [NotNull]
+        private static async Task VerifyDownloadedFile([NotNull] IFileInformation fileInfo,
+            [NotNull] IProgress<IDownloadProgress> progressReporter,
+            CancellationToken cancellationToken,
+            [NotNull] string outputFilePath)
+        {
+            Debug.Assert(fileInfo.FileVerifiers != null);
+
+            var verifierCountInv = 1.0 / fileInfo.FileVerifiers.Count();
+            int[] completed = {0};
+            foreach (var verifier in fileInfo.FileVerifiers)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                var verificationHandler =
+                    new Progress<double>(p => progressReporter.Report(DefaultDownloadProgress.Verify(completed[0] * verifierCountInv + p)));
+
+                if (!await verifier.VerifyFilePathAsync(outputFilePath, cancellationToken, verificationHandler))
+                {
+                    throw new FileVerificationFailedException(outputFilePath);
+                }
+
+                ++completed[0];
+            }
+        }
+
+        [NotNull]
+        private string GetFileOutputPath([NotNull] string filename)
+        {
+            return Path.Combine(DownloadDirectory, filename);
+        }
 
         #region IFileDownloader Members
 
@@ -99,9 +190,15 @@ namespace ModInstallation.Implementations
 
                         return new FileInfo(outputFilePath);
                     }
-                    catch (HttpRequestException)
+                    catch (FileVerificationFailedException)
+                    {
+                        // Rethrow this exception
+                        throw;
+                    }
+                    catch (Exception e)
                     {
                         // Ignore exception, probably a timeout...
+                        this.Log().InfoException("Exception while downloading file", e);
                     }
                 }
 
@@ -114,95 +211,5 @@ namespace ModInstallation.Implementations
         }
 
         #endregion
-
-        [NotNull]
-        private async Task<string> DownloadFile([NotNull] IProgress<IDownloadProgress> progressReporter,
-            CancellationToken cancellationToken,
-            [NotNull] Uri uri)
-        {
-            var outputFilePath = GetFileOutputPath(Path.GetFileName(uri.LocalPath));
-            try
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-
-                var stopwatch = new Stopwatch();
-                stopwatch.Start();
-
-                long[] lastReport = {0L};
-                await WebClient.DownloadAsync(uri,
-                    outputFilePath,
-                    progress =>
-                    {
-                        var elapsed = stopwatch.Elapsed.TotalSeconds;
-
-                        // Only update 10 times per second
-                        if (elapsed < 0.1)
-                        {
-                            return;
-                        }
-
-                        stopwatch.Restart();
-
-                        progressReporter.Report(DefaultDownloadProgress.Downloading(uri,
-                            progress.Current,
-                            progress.Total,
-                            (progress.Current - lastReport[0]) / elapsed));
-
-                        lastReport[0] = progress.Current;
-                    },
-                    cancellationToken);
-
-                cancellationToken.ThrowIfCancellationRequested();
-
-                var directoryName = Path.GetDirectoryName(outputFilePath);
-                if (directoryName != null)
-                {
-                    Directory.CreateDirectory(directoryName);
-                }
-            }
-            catch (OperationCanceledException)
-            {
-                if (File.Exists(outputFilePath))
-                {
-                    File.Delete(outputFilePath); // Delete the downloaded file
-                }
-
-                throw;
-            }
-
-            return outputFilePath;
-        }
-
-        [NotNull]
-        private static async Task VerifyDownloadedFile([NotNull] IFileInformation fileInfo,
-            [NotNull] IProgress<IDownloadProgress> progressReporter,
-            CancellationToken cancellationToken,
-            [NotNull] string outputFilePath)
-        {
-            Debug.Assert(fileInfo.FileVerifiers != null);
-
-            var verifierCountInv = 1.0 / fileInfo.FileVerifiers.Count();
-            var completed = 0;
-            foreach (var verifier in fileInfo.FileVerifiers)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-
-                var verificationHandler =
-                    new Progress<double>(p => progressReporter.Report(DefaultDownloadProgress.Verify(completed * verifierCountInv + p)));
-
-                if (!await verifier.VerifyFilePathAsync(outputFilePath, cancellationToken, verificationHandler))
-                {
-                    throw new FileVerificationFailedException(outputFilePath);
-                }
-
-                ++completed;
-            }
-        }
-
-        [NotNull]
-        private string GetFileOutputPath([NotNull] string filename)
-        {
-            return Path.Combine(DownloadDirectory, filename);
-        }
     }
 }

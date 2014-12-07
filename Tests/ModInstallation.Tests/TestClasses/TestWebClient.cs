@@ -76,7 +76,23 @@ namespace ModInstallation.Tests.TestClasses
 
         public Task DownloadAsync(Uri uri, string destination, Action<DownloadProgress> downloadReporter, CancellationToken token)
         {
-            throw new NotImplementedException();
+            var item = _responseQueue.Dequeue();
+
+            if (item == null)
+            {
+                var tcs = new TaskCompletionSource<bool>();
+                tcs.TrySetException(new WebException("Timeout!"));
+
+                return tcs.Task;
+            }
+
+            downloadReporter(new DownloadProgress
+            {
+                Current = item.Length / 2,
+                Total = item.Length
+            });
+
+            return Task.FromResult(true);
         }
 
         #endregion
