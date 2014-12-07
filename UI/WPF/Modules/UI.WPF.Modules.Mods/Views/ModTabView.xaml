@@ -20,7 +20,7 @@
 
         <TextBox Margin="5" Grid.Row="0" Width="150" HorizontalAlignment="Right" VerticalAlignment="Center"
                  Text="{Binding FilterString, Delay=200, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                 controls:TextboxHelper.Watermark="Search..." controls:TextboxHelper.ClearTextButton="True"
+                 controls:TextBoxHelper.Watermark="Search..." controls:TextBoxHelper.ClearTextButton="True"
                  Grid.Column="1" />
 
         <controls:MetroAnimatedSingleRowTabControl Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="1"
