@@ -25,7 +25,7 @@
                                                     ValidatesOnDataErrors=True,
                                                     UpdateSourceTrigger=PropertyChanged,
                                                     NotifyOnValidationError=True}"
-                     controls:TextBoxHelper.Watermark="Name" />
+                     controls:TextBoxHelper.Watermark="Name" controls:TextBoxHelper.UseFloatingWatermark="True" />
 
             <Grid Grid.Row="1" HorizontalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
@@ -38,6 +38,7 @@
                 
                 <TextBox VerticalAlignment="Center" HorizontalAlignment="Stretch"
                          controls:TextBoxHelper.Watermark="Path to the game root directory" Grid.Column="1"
+                         controls:TextBoxHelper.UseFloatingWatermark="True"
                          Text="{Binding SelectedPath, Mode=TwoWay,
                                                     ValidatesOnDataErrors=True,
                                                     UpdateSourceTrigger=PropertyChanged,

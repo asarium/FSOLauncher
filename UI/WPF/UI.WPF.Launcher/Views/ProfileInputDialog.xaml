@@ -25,7 +25,7 @@
                                                     ValidatesOnDataErrors=True,
                                                     UpdateSourceTrigger=PropertyChanged,
                                                     NotifyOnValidationError=True}"
-                     controls:TextBoxHelper.Watermark="Name" />
+                     controls:TextBoxHelper.Watermark="Name" controls:TextBoxHelper.UseFloatingWatermark="True" />
 
             <Grid Grid.Row="1" HorizontalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
