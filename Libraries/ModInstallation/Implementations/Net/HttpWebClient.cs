@@ -31,7 +31,7 @@ namespace ModInstallation.Implementations.Net
             {
                 if (response.StatusCode < HttpStatusCode.OK || response.StatusCode >= HttpStatusCode.MultipleChoices)
                 {
-                    throw new HttpException((int) response.StatusCode, "Request failed!");
+                    throw new HttpException((int) response.StatusCode, response.StatusDescription);
                 }
 
                 var total = response.ContentLength;
