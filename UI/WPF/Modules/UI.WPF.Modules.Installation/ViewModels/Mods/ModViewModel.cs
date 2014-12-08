@@ -15,8 +15,6 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
     {
         private bool _hasDescription;
 
-        private double _installationProgress;
-
         private IModification _mod;
 
         private bool _modSelected;

@@ -174,7 +174,7 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
                             SubProgress = 1.0
                         });
                     }
-                    catch (InvalidOperationException e)
+                    catch (InvalidOperationException)
                     {
                         installationFailure = true;
                     }
