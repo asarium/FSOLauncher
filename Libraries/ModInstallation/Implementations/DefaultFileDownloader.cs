@@ -56,7 +56,7 @@ namespace ModInstallation.Implementations
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
 
-                long[] lastReport = {0L};
+                long[] lastReport = {-1L};
                 await _webclient.DownloadAsync(uri,
                     outputFilePath,
                     progress =>
@@ -71,10 +71,18 @@ namespace ModInstallation.Implementations
 
                         stopwatch.Restart();
 
-                        progressReporter.Report(DefaultDownloadProgress.Downloading(uri,
-                            progress.Current,
-                            progress.Total,
-                            (progress.Current - lastReport[0]) / elapsed));
+                        if (lastReport[0] < 0)
+                        {
+                            // First report
+                            progressReporter.Report(DefaultDownloadProgress.Downloading(uri, progress.Current, progress.Total, 0.0));
+                        }
+                        else
+                        {
+                            progressReporter.Report(DefaultDownloadProgress.Downloading(uri,
+                                progress.Current,
+                                progress.Total,
+                                (progress.Current - lastReport[0]) / elapsed));
+                        }
 
                         lastReport[0] = progress.Current;
                     },
