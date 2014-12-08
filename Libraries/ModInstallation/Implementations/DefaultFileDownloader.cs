@@ -203,6 +203,10 @@ namespace ModInstallation.Implementations
                         // Rethrow this exception
                         throw;
                     }
+                    catch (OperationCanceledException)
+                    {
+                        throw;
+                    }
                     catch (Exception e)
                     {
                         // Ignore exception, probably a timeout...
