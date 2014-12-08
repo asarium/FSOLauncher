@@ -9,12 +9,13 @@ using System.Threading.Tasks;
 using FSOManagement.Annotations;
 using ModInstallation.Implementations.DataClasses;
 using ModInstallation.Interfaces.Mods;
+using Splat;
 
 #endregion
 
 namespace ModInstallation.Implementations.Mods
 {
-    public class PostInstallActions : IPostInstallActions
+    public class PostInstallActions : IPostInstallActions, IEnableLogger
     {
         private readonly IEnumerable<ActionData> _actionData;
 
@@ -35,11 +36,18 @@ namespace ModInstallation.Implementations.Mods
 
         #endregion
 
-        private static void ApplyFileOperations([NotNull] IEnumerable<string> files, [NotNull] Action<string> op)
+        private void ApplyFileOperations([NotNull] IEnumerable<string> files, [NotNull] Action<string> op)
         {
             foreach (var file in files)
             {
-                op(file);
+                try
+                {
+                    op(file);
+                }
+                catch (Exception e)
+                {
+                    this.Log().WarnException("Error while executing post installation actions!", e);
+                }
             }
         }
 
@@ -82,13 +90,19 @@ namespace ModInstallation.Implementations.Mods
                         ApplyFileOperations(paths,
                             path =>
                             {
+                                var destFileName = _fileSystem.Path.Combine(destPath, _fileSystem.Path.GetFileName(path));
                                 if (_fileSystem.Directory.Exists(path))
                                 {
-                                    _fileSystem.Directory.Move(path, _fileSystem.Path.Combine(destPath, _fileSystem.Path.GetFileName(path)));
+                                    _fileSystem.Directory.Move(path, destFileName);
                                 }
                                 else
                                 {
-                                    _fileSystem.File.Move(path, _fileSystem.Path.Combine(destPath, _fileSystem.Path.GetFileName(path)));
+                                    if (_fileSystem.File.Exists(destFileName))
+                                    {
+                                        _fileSystem.File.Delete(destFileName);
+                                    }
+
+                                    _fileSystem.File.Move(path, destFileName);
                                 }
                             });
                         break;
@@ -96,13 +110,14 @@ namespace ModInstallation.Implementations.Mods
                         ApplyFileOperations(paths,
                             path =>
                             {
+                                var destFileName = _fileSystem.Path.Combine(destPath, _fileSystem.Path.GetFileName(path));
                                 if (_fileSystem.Directory.Exists(path))
                                 {
-                                    DirectoryCopy(path, _fileSystem.Path.Combine(destPath, _fileSystem.Path.GetFileName(path)), true);
+                                    DirectoryCopy(path, destFileName, true);
                                 }
                                 else
                                 {
-                                    _fileSystem.File.Copy(path, _fileSystem.Path.Combine(destPath, _fileSystem.Path.GetFileName(path)), true);
+                                    _fileSystem.File.Copy(path, destFileName, true);
                                 }
                             });
                         break;
