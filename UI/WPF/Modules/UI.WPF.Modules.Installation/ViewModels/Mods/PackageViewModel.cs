@@ -21,8 +21,6 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
 {
     public class PackageViewModel : ReactiveObjectBase
     {
-        private readonly InstallationTabViewModel _installationTabViewModel;
-
         private bool _installing;
 
         private bool _isChangeable;
@@ -34,6 +32,8 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
         private bool _progressIdeterminate;
 
         private bool _selected;
+
+        private readonly InstallationTabViewModel _installationTabViewModel;
 
         public PackageViewModel([NotNull] IPackage package, [NotNull] InstallationTabViewModel installationTabViewModel)
         {
@@ -150,23 +150,63 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
             });
 
             Installing = true;
+            var running = true;
             try
             {
-                await installer.InstallPackageAsync(Package, reporter, TokenSource.Token);
-
-                await _installationTabViewModel.LocalModManager.AddPackageAsync(Package);
-
-                OperationMessage = null;
-            }
-            catch (OperationCanceledException)
-            {
-                // Report that this operation is finished
-                ((IProgress<IInstallationProgress>)reporter).Report(new DefaultInstallationProgress
+                while (running)
                 {
-                    Message = "Canceled",
-                    OverallProgress = 1.0,
-                    SubProgress = 1.0
-                });
+                    var installationFailure = false;
+                    try
+                    {
+                        await installer.InstallPackageAsync(Package, reporter, TokenSource.Token);
+
+                        await _installationTabViewModel.LocalModManager.AddPackageAsync(Package);
+
+                        OperationMessage = null;
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        // Report that this operation is finished
+                        ((IProgress<IInstallationProgress>) reporter).Report(new DefaultInstallationProgress
+                        {
+                            Message = "Canceled",
+                            OverallProgress = 1.0,
+                            SubProgress = 1.0
+                        });
+                    }
+                    catch (InvalidOperationException e)
+                    {
+                        installationFailure = true;
+                    }
+
+                    if (installationFailure)
+                    {
+                        var result =
+                            await
+                                UserError.Throw(new UserError("Installation of package failed!",
+                                    string.Format(
+                                        "The installation of the package {0} in the modification {1} failed.\n" + "Check your internet connection.",
+                                        Package.Name,
+                                        Package.ContainingModification.Title),
+                                    new[]
+                                    {
+                                        new RecoveryCommand("Retry", _ => RecoveryOptionResult.RetryOperation),
+                                        new RecoveryCommand("Cancel", _ => RecoveryOptionResult.CancelOperation)
+                                        {
+                                            IsDefault = true,
+                                            IsCancel = true
+                                        }
+                                    }));
+
+                        switch (result)
+                        {
+                            case RecoveryOptionResult.RetryOperation:
+                                continue;
+                        }
+                    }
+
+                    running = false;
+                }
             }
             finally
             {
