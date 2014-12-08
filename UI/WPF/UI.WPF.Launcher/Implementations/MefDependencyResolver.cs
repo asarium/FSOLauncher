@@ -44,9 +44,6 @@ namespace UI.WPF.Launcher.Implementations
 
         public object GetService(Type serviceType, string contract = null)
         {
-            if (serviceType == typeof(IBindingTypeConverter))
-                Debugger.Break();
-
             var service = _previousResolver.GetService(serviceType, contract);
 
             if (service != null)
