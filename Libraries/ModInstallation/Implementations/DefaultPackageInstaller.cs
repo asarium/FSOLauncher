@@ -112,19 +112,6 @@ namespace ModInstallation.Implementations
                     this.Log().WarnException("IO-Exception while moving downloaded file!", e);
                 }
             }
-
-            // Now execute the post-install actions
-            if (package.ContainingModification.PostInstallActions != null)
-            {
-                // TODO: Add better progress reporting here
-                delegatingProgress.Report(new DefaultInstallationProgress
-                {
-                    Message = "Executing post-install steps...",
-                    OverallProgress = 1.0,
-                    SubProgress = -1.0
-                });
-                await package.ContainingModification.PostInstallActions.ExecuteActionsAsync(installationDirectory);
-            }
         }
 
         [NotNull]
@@ -184,6 +171,9 @@ namespace ModInstallation.Implementations
                 OverallProgress = 1.0,
                 SubProgress = -1.0f
             });
+
+            // Now execute the post-install actions
+            await package.ContainingModification.PostInstallActions.ExecuteActionsAsync(GetInstallationDirectory(package));
         }
 
         #endregion
