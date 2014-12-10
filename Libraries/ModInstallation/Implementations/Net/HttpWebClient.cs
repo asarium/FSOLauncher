@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using ModInstallation.Exceptions;
 using ModInstallation.Interfaces.Net;
 
 #endregion
@@ -26,42 +27,52 @@ namespace ModInstallation.Implementations.Net
             request.Method = "GET";
             // Use a dummy User-Agent
             request.UserAgent = "Mozilla/5.0 (X11; Linux x86_64; rv:34.0) Gecko/20100101 Firefox/28.0";
-
-            using (var response = (HttpWebResponse) await request.GetResponseAsync())
+            try
             {
-                if (response.StatusCode < HttpStatusCode.OK || response.StatusCode >= HttpStatusCode.MultipleChoices)
+                using (var response = (HttpWebResponse) await request.GetResponseAsync())
                 {
-                    throw new HttpException((int) response.StatusCode, response.StatusDescription);
-                }
-
-                var total = response.ContentLength;
-                var buffer = new byte[BufferSize];
-                using (var responseStream = response.GetResponseStream())
-                {
-                    if (responseStream == null)
+                    if (response.StatusCode < HttpStatusCode.OK || response.StatusCode >= HttpStatusCode.MultipleChoices)
                     {
-                        throw new HttpException("No response Stream available");
+                        throw new HttpException((int) response.StatusCode, response.StatusDescription);
                     }
 
-                    using (var fileStream = OpenFileStream(destination))
+                    var total = response.ContentLength;
+                    var buffer = new byte[BufferSize];
+                    using (var responseStream = response.GetResponseStream())
                     {
-                        var current = 0L;
-                        int read;
-                        while ((read = await responseStream.ReadAsync(buffer, 0, buffer.Length, token)) != 0)
+                        if (responseStream == null)
                         {
-                            current += read;
-                            token.ThrowIfCancellationRequested();
+                            throw new HttpException("No response Stream available");
+                        }
 
-                            await fileStream.WriteAsync(buffer, 0, read, token);
-
-                            downloadReporter(new DownloadProgress
+                        using (var fileStream = OpenFileStream(destination))
+                        {
+                            var current = 0L;
+                            int read;
+                            while ((read = await responseStream.ReadAsync(buffer, 0, buffer.Length, token)) != 0)
                             {
-                                Current = current,
-                                Total = total
-                            });
+                                current += read;
+                                token.ThrowIfCancellationRequested();
+
+                                await fileStream.WriteAsync(buffer, 0, read, token);
+
+                                downloadReporter(new DownloadProgress
+                                {
+                                    Current = current,
+                                    Total = total
+                                });
+                            }
                         }
                     }
                 }
+            }
+            catch (IOException e)
+            {
+                throw new DownloadException("Exception while downloading!", e);
+            }
+            catch (WebException e)
+            {
+                throw new DownloadException("Web-Exception while downloading", e);
             }
         }
 
