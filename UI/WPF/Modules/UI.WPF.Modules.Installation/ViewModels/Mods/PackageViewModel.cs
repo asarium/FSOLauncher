@@ -149,69 +149,28 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
                 progressReporter(p.OverallProgress);
             });
 
-            Installing = true;
-            var running = true;
-            try
-            {
-                while (running)
+                try
                 {
-                    var installationFailure = false;
-                    try
-                    {
-                        await installer.InstallPackageAsync(Package, reporter, TokenSource.Token);
+                    await installer.InstallPackageAsync(Package, reporter, TokenSource.Token);
 
-                        await _installationTabViewModel.LocalModManager.AddPackageAsync(Package);
+                    await _installationTabViewModel.LocalModManager.AddPackageAsync(Package);
 
-                        OperationMessage = null;
-                    }
-                    catch (OperationCanceledException)
-                    {
-                        // Report that this operation is finished
-                        ((IProgress<IInstallationProgress>) reporter).Report(new DefaultInstallationProgress
-                        {
-                            Message = "Canceled",
-                            OverallProgress = 1.0,
-                            SubProgress = 1.0
-                        });
-                    }
-                    catch (InvalidOperationException)
-                    {
-                        installationFailure = true;
-                    }
-
-                    if (installationFailure)
-                    {
-                        var result =
-                            await
-                                UserError.Throw(new UserError("Installation of package failed!",
-                                    string.Format(
-                                        "The installation of the package {0} in the modification {1} failed.\n" + "Check your internet connection.",
-                                        Package.Name,
-                                        Package.ContainingModification.Title),
-                                    new[]
-                                    {
-                                        new RecoveryCommand("Retry", _ => RecoveryOptionResult.RetryOperation),
-                                        new RecoveryCommand("Cancel", _ => RecoveryOptionResult.CancelOperation)
-                                        {
-                                            IsDefault = true,
-                                            IsCancel = true
-                                        }
-                                    }));
-
-                        switch (result)
-                        {
-                            case RecoveryOptionResult.RetryOperation:
-                                continue;
-                        }
-                    }
-
-                    running = false;
+                    OperationMessage = null;
                 }
-            }
-            finally
-            {
-                Installing = false;
-            }
+                catch (OperationCanceledException)
+                {
+                    // Report that this operation is finished
+                    ((IProgress<IInstallationProgress>) reporter).Report(new DefaultInstallationProgress
+                    {
+                        Message = "Canceled",
+                        OverallProgress = 1.0,
+                        SubProgress = 1.0
+                    });
+                }
+                catch (InvalidOperationException)
+                {
+                    
+                }
         }
 
         [NotNull]
@@ -281,7 +240,7 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
         }
 
         [NotNull]
-        private List<IModification> GetModList()
+        private IEnumerable<IModification> GetModList()
         {
             var modManager = _installationTabViewModel.RemoteModManager;
 
