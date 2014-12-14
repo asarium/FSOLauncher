@@ -7,16 +7,19 @@
              xmlns:installation1="clr-namespace:UI.WPF.Modules.Installation.Views.Installation"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance installation:InstallationItem}" d:DesignHeight="300" d:DesignWidth="300">
-    <ContentControl Content="{Binding}">
-        <ContentControl.Resources>
-            <ResourceDictionary>
-                <DataTemplate DataType="{x:Type installation:InstallationItemParent}">
-                    <installation1:InstallationItemParentView />
-                </DataTemplate>
-                <DataTemplate DataType="{x:Type installation:InstallationItem}">
-                    <installation1:BaseInstallationItemView />
-                </DataTemplate>
-            </ResourceDictionary>
-        </ContentControl.Resources>
-    </ContentControl>
+    <DockPanel>
+		<Rectangle Fill="{DynamicResource AccentColorBrush}" Width="4" Margin="0,1,3,1" RadiusX="2" RadiusY="2"/>
+		<ContentControl Content="{Binding}">
+			<ContentControl.Resources>
+				<ResourceDictionary>
+					<DataTemplate DataType="{x:Type installation:InstallationItemParent}">
+						<installation1:InstallationItemParentView />
+					</DataTemplate>
+					<DataTemplate DataType="{x:Type installation:InstallationItem}">
+						<installation1:BaseInstallationItemView />
+					</DataTemplate>
+				</ResourceDictionary>
+			</ContentControl.Resources>
+		</ContentControl>
+	</DockPanel>
 </UserControl>
