@@ -18,8 +18,8 @@ namespace UI.WPF.Modules.Installation.ViewModels.Installation
             Title = title;
             Children = children.ToList();
 
-            Children.Select(x => x.ProgressObservable).Zip().Select(list => list.Average()).BindTo(this, x => x.Progress);
-            Children.Select(x => x.IndeterminateObservable).Zip().Select(list => list.All(b => b)).BindTo(this, x => x.Indeterminate);
+            Children.Select(x => x.ProgressObservable).CombineLatest().Select(list => list.Average()).BindTo(this, x => x.Progress);
+            Children.Select(x => x.IndeterminateObservable).CombineLatest().Select(list => list.All(b => b)).BindTo(this, x => x.Indeterminate);
 
             OperationMessage = null;
             CancellationTokenSource = new CancellationTokenSource();
