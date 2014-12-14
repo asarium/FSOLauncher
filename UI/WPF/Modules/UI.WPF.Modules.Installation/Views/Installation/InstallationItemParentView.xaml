@@ -10,7 +10,7 @@
     <StackPanel Orientation="Vertical">
         <installation1:BaseInstallationItemView />
 
-        <Border Margin="30,0,0,0" Padding="5,5,0,5">
+        <Border Margin="20,0,0,0" Padding="5,5,0,5">
             <ItemsControl ItemsSource="{Binding Children}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="installation:InstallationItem">
