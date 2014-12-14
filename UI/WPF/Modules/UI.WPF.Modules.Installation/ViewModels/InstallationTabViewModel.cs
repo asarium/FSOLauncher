@@ -15,6 +15,7 @@ using ModInstallation.Interfaces;
 using ReactiveUI;
 using UI.WPF.Launcher.Common.Interfaces;
 using UI.WPF.Launcher.Common.Services;
+using UI.WPF.Modules.Installation.ViewModels.Installation;
 using UI.WPF.Modules.Installation.ViewModels.Mods;
 
 #endregion
@@ -26,15 +27,17 @@ namespace UI.WPF.Modules.Installation.ViewModels
     {
         private bool _hasManagerStatusMessage;
 
+        private InstallationFlyoutViewModel _installationFlyout;
+
         private bool _installationInProgress;
 
         private double _installationProgress;
 
+        private bool _interactionEnabled;
+
         private string _managerStatusMessage;
 
         private IReadOnlyReactiveList<ModViewModel> _modificationViewModels;
-
-        private bool _interactionEnabled;
 
         [ImportingConstructor]
         public InstallationTabViewModel([NotNull] IRepositoryFactory repositoryFactory,
@@ -182,12 +185,18 @@ namespace UI.WPF.Modules.Installation.ViewModels
         [NotNull]
         public IObservable<bool> InteractionEnabledObservable { get; private set; }
 
-        [NotNull,Import]
+        [NotNull, Import]
         private ITaskbarController TaskbarController { get; set; }
 
         [NotNull]
         private async Task InstallMods()
         {
+            if (_installationFlyout == null)
+            {
+                _installationFlyout = new InstallationFlyoutViewModel();
+                IoC.Get<IFlyoutManager>().AddFlyout(_installationFlyout);
+            }
+
             if (ProfileManager.CurrentProfile == null)
             {
                 return;
@@ -202,20 +211,19 @@ namespace UI.WPF.Modules.Installation.ViewModels
             TaskbarController.ProgressbarVisible = true;
             TaskbarController.ProgressvarValue = 0.0;
 
-            var progressDict = new Dictionary<PackageViewModel, double>();
             try
             {
-                var packageViewModels = ModificationViewModels.SelectMany(mod => mod.Packages).Where(pack => pack.Selected);
+                _installationFlyout.InstallationItems = GetInstallationItems();
+                _installationFlyout.IsOpen = true;
 
-                var installTasks = packageViewModels.Select(packageViewModel => packageViewModel.Install(PackageInstaller,
-                    progress =>
-                    {
-                        progressDict[packageViewModel] = progress;
-                        InstallationProgress = progressDict.Aggregate(0.0, (sum, pair) => sum + pair.Value) / progressDict.Count;
-                        TaskbarController.ProgressvarValue = InstallationProgress;
-                    }));
-
-                await Task.WhenAll(installTasks);
+                using (_installationFlyout.ItemParent.WhenAnyValue(x => x.Progress).Subscribe(p =>
+                {
+                    TaskbarController.ProgressvarValue = p;
+                    InstallationProgress = p;
+                }))
+                {
+                    await _installationFlyout.ItemParent.Install();
+                }
             }
             finally
             {
@@ -223,6 +231,21 @@ namespace UI.WPF.Modules.Installation.ViewModels
                 TaskbarController.ProgressbarVisible = false;
                 TaskbarController.ProgressvarValue = 0.0;
             }
+        }
+
+        private IEnumerable<InstallationItem> GetInstallationItems()
+        {
+            return ModificationViewModels.Where(modvm => modvm.Packages.Any(x => x.Selected)).Select(GetModInstallationItem);
+        }
+
+        private InstallationItem GetModInstallationItem(ModViewModel modvm)
+        {
+            return new InstallationItemParent(modvm.Mod.Title, modvm.Packages.Where(x => x.Selected).Select(GetPackageInstallationItem));
+        }
+
+        private InstallationItem GetPackageInstallationItem(PackageViewModel packvm)
+        {
+            return new PackageInstallationItem(packvm.Package, PackageInstaller, LocalModManager);
         }
 
         [NotNull]

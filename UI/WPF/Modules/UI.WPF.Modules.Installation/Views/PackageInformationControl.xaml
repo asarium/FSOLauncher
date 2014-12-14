@@ -2,14 +2,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mods="clr-namespace:UI.WPF.Modules.Installation.ViewModels.Mods"
-             xmlns:Custom="http://metro.mahapps.com/winfx/xaml/controls"
              x:Class="UI.WPF.Modules.Installation.Views.PackageInformationControl" mc:Ignorable="d"
              d:DataContext="{d:DesignData /SampleData/PackageInstallation.xaml}" d:DesignHeight="300"
              d:DesignWidth="300">
-    <UserControl.Resources>
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-    </UserControl.Resources>
     <Grid ToolTip="{Binding OperationMessage}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
@@ -24,33 +19,8 @@
         <CheckBox VerticalAlignment="Center" Margin="2,5" HorizontalAlignment="Left"
                   IsChecked="{Binding Selected, Mode=TwoWay}" VerticalContentAlignment="Center" Grid.RowSpan="1"
                   IsEnabled="{Binding IsChangeable}" />
-        <Grid Grid.Row="0" Grid.Column="1" Margin="0,0,0,2" ToolTip="{Binding OperationMessage}">
-        	<Grid.ColumnDefinitions>
-        		<ColumnDefinition Width="Auto" />
-        		<ColumnDefinition Width="*" />
-        	</Grid.ColumnDefinitions>
-        	<TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding Package.Name}" VerticalAlignment="Center" />
 
-        	<TextBlock HorizontalAlignment="Right" Grid.Column="1" Text="{Binding OperationMessage}"
-			Visibility="{Binding Installing, Converter={StaticResource BooleanToVisibilityConverter}}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
-        </Grid>
-
-        <Custom:MetroProgressBar VerticalAlignment="Center" BorderThickness="0,1" Height="Auto" Grid.Row="1"
-                                 Minimum="0.0" Maximum="1.0" Value="{Binding OperationProgress}" Grid.Column="0"
-                                 Visibility="{Binding Installing, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                 ToolTip="{Binding OperationMessage}" IsIndeterminate="{Binding ProgressIdeterminate}" Grid.ColumnSpan="3" Margin="2,1,2,0" />
-
-        <Button HorizontalAlignment="Center" Margin="3" Grid.Row="0" Grid.Column="2"
-                Command="{Binding CancelCommand}" ToolTip="Cancel installation" VerticalAlignment="Center" Width="30"
-                Style="{DynamicResource MetroCircleButtonStyle}" Height="30"
-                Visibility="{Binding Installing, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <Rectangle
-                Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"
-                HorizontalAlignment="Left" Height="15" Width="15">
-                <Rectangle.OpacityMask>
-                    <VisualBrush Stretch="Fill" Visual="{DynamicResource appbar_cancel}" />
-                </Rectangle.OpacityMask>
-            </Rectangle>
-        </Button>
+        <TextBlock Grid.Row="0" Grid.Column="1" Margin="0,0,0,2" HorizontalAlignment="Left" TextWrapping="Wrap"
+                   Text="{Binding Package.Name}" VerticalAlignment="Center" />
     </Grid>
 </UserControl>

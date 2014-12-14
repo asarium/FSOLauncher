@@ -94,6 +94,7 @@
     <Compile Include="ContractNames.cs" />
     <Compile Include="Interfaces\IDialogControl.cs" />
     <Compile Include="Interfaces\IExecutableLauncher.cs" />
+    <Compile Include="Interfaces\IFlyout.cs" />
     <Compile Include="Interfaces\ILauncherTab.cs" />
     <Compile Include="Interfaces\ILauncherViewModel.cs" />
     <Compile Include="Interfaces\IModRepositoryViewModel.cs" />
@@ -101,6 +102,7 @@
     <Compile Include="Interfaces\ISettings.cs" />
     <Compile Include="Interfaces\IShellViewModel.cs" />
     <Compile Include="Interfaces\IWindowCommand.cs" />
+    <Compile Include="Services\IFlyoutManager.cs" />
     <Compile Include="Services\ITaskbarController.cs" />
     <Compile Include="Services\IUpdateService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

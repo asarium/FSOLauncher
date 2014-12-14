@@ -91,10 +91,26 @@
     <Compile Include="InstallationModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\InstallationTabViewModel.cs" />
+    <Compile Include="ViewModels\Installation\InstallationFlyoutViewModel.cs" />
+    <Compile Include="ViewModels\Installation\InstallationItem.cs" />
+    <Compile Include="ViewModels\Installation\InstallationItemParent.cs" />
+    <Compile Include="ViewModels\Installation\PackageInstallationItem.cs" />
     <Compile Include="ViewModels\Mods\ModViewModel.cs" />
     <Compile Include="ViewModels\Mods\PackageViewModel.cs" />
     <Compile Include="Views\InstallationTabView.xaml.cs">
       <DependentUpon>InstallationTabView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Installation\BaseInstallationItemView.xaml.cs">
+      <DependentUpon>BaseInstallationItemView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Installation\InstallationFlyoutView.xaml.cs">
+      <DependentUpon>InstallationFlyoutView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Installation\InstallationItemControl.xaml.cs">
+      <DependentUpon>InstallationItemControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Installation\InstallationItemParentView.xaml.cs">
+      <DependentUpon>InstallationItemParentView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ModInformationControl.xaml.cs">
       <DependentUpon>ModInformationControl.xaml</DependentUpon>
@@ -139,6 +155,22 @@
       <ContainsDesignTimeResources>true</ContainsDesignTimeResources>
     </Page>
     <Page Include="Views\InstallationTabView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Installation\BaseInstallationItemView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Installation\InstallationFlyoutView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Installation\InstallationItemControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Installation\InstallationItemParentView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

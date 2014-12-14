@@ -1,8 +1,3 @@
 ﻿<Mods:PackageViewModel xmlns:Mods="clr-namespace:UI.WPF.Modules.Installation.ViewModels.Mods"
-                       xmlns:Threading="clr-namespace:System.Threading;assembly=mscorlib" Installing="True"
-                       OperationMessage="Cras duis nam sed dis class aliquam curae" OperationProgress="0.3"
                        Selected="False">
-    <Mods:PackageViewModel.TokenSource>
-        <Threading:CancellationTokenSource />
-    </Mods:PackageViewModel.TokenSource>
 </Mods:PackageViewModel>

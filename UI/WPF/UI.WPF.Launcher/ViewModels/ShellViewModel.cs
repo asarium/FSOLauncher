@@ -25,26 +25,26 @@ using ViewLocator = Caliburn.Micro.ViewLocator;
 
 namespace UI.WPF.Launcher.ViewModels
 {
-    [Export(typeof(IShellViewModel))]
+    [Export(typeof(IShellViewModel)), Export(typeof(IFlyoutManager))]
     public class ShellViewModel : Conductor<ILauncherTab>.Collection.OneActive, IShellViewModel, IHandle<InstanceLaunchedMessage>,
-        IHandle<MainWindowOpenedMessage>
+        IHandle<MainWindowOpenedMessage>, IFlyoutManager
     {
         private bool _hasTotalConversions;
 
-        private ICommand _launchGameCommand;
-
         private ILauncherViewModel _launcherViewModel;
 
-        private string _title = "FSO Launcher";
+        private ICommand _launchGameCommand;
 
         private bool _overlayVisible;
+
+        private string _title = "FSO Launcher";
 
         [ImportingConstructor]
         public ShellViewModel(IEventAggregator eventAggregator, ISettings settings, IInteractionService interactionService)
         {
-            AddGameRootCommand = ReactiveCommand.CreateAsyncTask(async _ => await AddGameRoot());
+            AddGameRootCommand = ReactiveCommand.CreateAsyncTask(_ => AddGameRoot());
 
-            AddProfileCommand = ReactiveCommand.CreateAsyncTask(async _ => await AddProfile());
+            AddProfileCommand = ReactiveCommand.CreateAsyncTask(_ => AddProfile());
 
             settings.WhenAnyValue(x => x.SelectedProfile).Subscribe(profile =>
             {
@@ -64,6 +64,7 @@ namespace UI.WPF.Launcher.ViewModels
             eventAggregator.Subscribe(this);
 
             RightCommands = new BindableCollection<UIElement>();
+            WindowFlyouts = new BindableCollection<IFlyout>();
         }
 
         public ICommand AddProfileCommand { get; set; }
@@ -128,6 +129,8 @@ namespace UI.WPF.Launcher.ViewModels
 
         public IObservableCollection<UIElement> RightCommands { get; private set; }
 
+        public IObservableCollection<IFlyout> WindowFlyouts { get; private set; }
+
         public bool HasTotalConversions
         {
             get { return _hasTotalConversions; }
@@ -144,19 +147,17 @@ namespace UI.WPF.Launcher.ViewModels
 
         public ISettings Settings { get; private set; }
 
-        public bool OverlayVisible
+        #region Implementation of IFlyoutManager
+
+        public void AddFlyout(IFlyout flyout)
         {
-            get { return _overlayVisible; }
-            set
+            if (!WindowFlyouts.Contains(flyout))
             {
-                if (value.Equals(_overlayVisible))
-                {
-                    return;
-                }
-                _overlayVisible = value;
-                NotifyOfPropertyChange();
+                WindowFlyouts.Add(flyout);
             }
         }
+
+        #endregion
 
         #region IHandle<InstanceLaunchedMessage> Members
 
@@ -181,38 +182,19 @@ namespace UI.WPF.Launcher.ViewModels
 
         #endregion
 
-        #region IShellViewModel Members
-
-        public string Title
+        public bool OverlayVisible
         {
-            get { return _title; }
+            get { return _overlayVisible; }
             set
             {
-                if (value == _title)
+                if (value.Equals(_overlayVisible))
                 {
                     return;
                 }
-                _title = value;
+                _overlayVisible = value;
                 NotifyOfPropertyChange();
             }
         }
-
-        [Import]
-        public ILauncherViewModel LauncherViewModel
-        {
-            get { return _launcherViewModel; }
-            private set
-            {
-                _launcherViewModel = value;
-
-                var tcs = LauncherViewModel.TotalConversions;
-
-                tcs.CountChanged.Select(val => val > 0).BindTo(this, x => x.HasTotalConversions);
-                HasTotalConversions = tcs.Count > 0;
-            }
-        }
-
-        #endregion
 
         public async void LoadSettingsAsync()
         {
@@ -310,5 +292,38 @@ namespace UI.WPF.Launcher.ViewModels
                 LauncherViewModel.ProfileManager.CurrentProfile.SelectedTotalConversion = tc;
             }
         }
+
+        #region IShellViewModel Members
+
+        public string Title
+        {
+            get { return _title; }
+            set
+            {
+                if (value == _title)
+                {
+                    return;
+                }
+                _title = value;
+                NotifyOfPropertyChange();
+            }
+        }
+
+        [Import]
+        public ILauncherViewModel LauncherViewModel
+        {
+            get { return _launcherViewModel; }
+            private set
+            {
+                _launcherViewModel = value;
+
+                var tcs = LauncherViewModel.TotalConversions;
+
+                tcs.CountChanged.Select(val => val > 0).BindTo(this, x => x.HasTotalConversions);
+                HasTotalConversions = tcs.Count > 0;
+            }
+        }
+
+        #endregion
     }
 }
