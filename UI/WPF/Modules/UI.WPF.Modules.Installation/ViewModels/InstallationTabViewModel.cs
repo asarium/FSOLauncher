@@ -58,7 +58,10 @@ namespace UI.WPF.Modules.Installation.ViewModels
 
             PackageInstaller = packageInstaller;
 
-            InstallModsCommand = ReactiveCommand.CreateAsyncTask(_ => InstallMods());
+            var installModsCommand = ReactiveCommand.Create();
+            installModsCommand.Subscribe(_ => InstallMods());
+
+            InstallModsCommand = installModsCommand;
 
             this.WhenAny(x => x.ManagerStatusMessage, val => !string.IsNullOrEmpty(val.Value)).BindTo(this, x => x.HasManagerStatusMessage);
 
@@ -195,6 +198,17 @@ namespace UI.WPF.Modules.Installation.ViewModels
             {
                 _installationFlyout = new InstallationFlyoutViewModel();
                 IoC.Get<IFlyoutManager>().AddFlyout(_installationFlyout);
+            }
+
+            if (InstallationInProgress)
+            {
+                // Show the flyout here
+                if (_installationFlyout != null)
+                {
+                    _installationFlyout.IsOpen = true;
+                }
+
+                return;
             }
 
             if (ProfileManager.CurrentProfile == null)
