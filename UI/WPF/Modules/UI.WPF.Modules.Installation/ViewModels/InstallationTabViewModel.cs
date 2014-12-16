@@ -191,8 +191,7 @@ namespace UI.WPF.Modules.Installation.ViewModels
         [NotNull, Import]
         private ITaskbarController TaskbarController { get; set; }
 
-        [NotNull]
-        private async Task InstallMods()
+        private async void InstallMods()
         {
             if (_installationFlyout == null)
             {
