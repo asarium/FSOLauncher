@@ -20,7 +20,7 @@
                 <StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <CheckBox Margin="2,2,0,2" IsChecked="{Binding ModSelected, Mode=TwoWay}"
-                                  VerticalAlignment="Center" HorizontalAlignment="Center"
+                                  VerticalAlignment="Center" HorizontalAlignment="Center" IsThreeState="True"
                                   IsEnabled="{Binding InstallationTabViewModel.InteractionEnabled}" />
 
                         <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding Mod.Title}"

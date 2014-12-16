@@ -2,6 +2,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reactive.Linq;
 using FSOManagement.Annotations;
 using ModInstallation.Interfaces.Mods;
 using ReactiveUI;
@@ -17,7 +19,7 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
 
         private IModification _mod;
 
-        private bool _modSelected;
+        private bool? _modSelected;
 
         private IEnumerable<PackageViewModel> _packages;
 
@@ -27,12 +29,18 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
             _mod = mod;
 
             Packages = mod.Packages.CreateDerivedCollection(p => new PackageViewModel(p, installationTabViewModel));
+            Packages.Select(x => x.IsSelectedObservable).CombineLatest().Select(IsSelectedTransform).BindTo(this, x =>x.ModSelected);
 
             mod.WhenAny(x => x.Description, val => !string.IsNullOrEmpty(val.Value)).BindTo(this, x => x.HasDescription);
 
             this.WhenAnyValue(x => x.ModSelected).Subscribe(selected =>
             {
-                if (!selected)
+                if (selected == null)
+                {
+                    return;
+                }
+
+                if (!selected.Value)
                 {
                     foreach (var packageViewModel in Packages)
                     {
@@ -50,10 +58,9 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
             });
         }
 
-        [NotNull]
         public InstallationTabViewModel InstallationTabViewModel { get; private set; }
 
-        public bool ModSelected
+        public bool? ModSelected
         {
             get { return _modSelected; }
             set { RaiseAndSetIfPropertyChanged(ref _modSelected, value); }
@@ -77,6 +84,21 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
         {
             get { return _packages; }
             private set { RaiseAndSetIfPropertyChanged(ref _packages, value); }
+        }
+
+        private static bool? IsSelectedTransform(IList<bool> arg)
+        {
+            if (arg.All(b => b))
+            {
+                return true;
+            }
+
+            if (!arg.Any(b => b))
+            {
+                return false;
+            }
+
+            return null;
         }
     }
 }
