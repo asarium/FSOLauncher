@@ -5,6 +5,7 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using FSOManagement.Annotations;
 using ReactiveUI;
 using UI.WPF.Launcher.Common.Classes;
 
@@ -48,6 +49,7 @@ namespace UI.WPF.Modules.Installation.ViewModels.Installation
 
         public ICommand CancelCommand { get; private set; }
 
+        [CanBeNull]
         public CancellationTokenSource CancellationTokenSource { get; protected set; }
 
         public IObservable<InstallationResult> ResultObservable { get; private set; }

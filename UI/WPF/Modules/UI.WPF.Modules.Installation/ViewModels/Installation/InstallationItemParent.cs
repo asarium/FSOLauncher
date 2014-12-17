@@ -23,15 +23,6 @@ namespace UI.WPF.Modules.Installation.ViewModels.Installation
             Children.Select(x => x.ResultObservable).CombineLatest().Select(ResultSelector).BindTo(this, x => x.Result);
 
             OperationMessage = null;
-            CancellationTokenSource = new CancellationTokenSource();
-            CancellationTokenSource.Token.Register(() =>
-            {
-                foreach (var installationItem in Children.Where(installationItem => !installationItem.CancellationTokenSource.IsCancellationRequested)
-                    )
-                {
-                    installationItem.CancellationTokenSource.Cancel();
-                }
-            });
         }
 
         public IEnumerable<InstallationItem> Children { get; private set; }
@@ -58,9 +49,23 @@ namespace UI.WPF.Modules.Installation.ViewModels.Installation
 
         #region Overrides of InstallationItem
 
-        public override Task Install()
+        public override async Task Install()
         {
-            return Task.WhenAll(Children.Select(x => x.Install()));
+            using (CancellationTokenSource = new CancellationTokenSource())
+            {
+                CancellationTokenSource.Token.Register(() =>
+                {
+                    foreach (var installationItem in Children)
+                    {
+                        if (installationItem.CancellationTokenSource != null && !installationItem.CancellationTokenSource.IsCancellationRequested)
+                        {
+                            installationItem.CancellationTokenSource.Cancel();
+                        }
+                    }
+                });
+
+                await Task.WhenAll(Children.Select(x => x.Install()));
+            }
         }
 
         #endregion
