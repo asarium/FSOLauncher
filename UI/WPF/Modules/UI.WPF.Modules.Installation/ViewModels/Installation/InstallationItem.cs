@@ -22,12 +22,15 @@ namespace UI.WPF.Modules.Installation.ViewModels.Installation
 
         private double _progress;
 
+        private InstallationResult _result;
+
         private string _title;
 
         protected InstallationItem()
         {
             ProgressObservable = this.WhenAnyValue(x => x.Progress);
             IndeterminateObservable = this.WhenAnyValue(x => x.Indeterminate);
+            ResultObservable = this.WhenAnyValue(x => x.Result);
 
             ProgressObservable.Select(p => p < 0.999).BindTo(this, x => x.InstallationInProgress);
 
@@ -35,7 +38,9 @@ namespace UI.WPF.Modules.Installation.ViewModels.Installation
             cancelCommand.Subscribe(_ =>
             {
                 if (CancellationTokenSource != null)
+                {
                     CancellationTokenSource.Cancel();
+                }
             });
 
             CancelCommand = cancelCommand;
@@ -45,7 +50,13 @@ namespace UI.WPF.Modules.Installation.ViewModels.Installation
 
         public CancellationTokenSource CancellationTokenSource { get; protected set; }
 
-        public abstract Task Install();
+        public IObservable<InstallationResult> ResultObservable { get; private set; }
+
+        public InstallationResult Result
+        {
+            get { return _result; }
+            protected set { RaiseAndSetIfPropertyChanged(ref _result, value); }
+        }
 
         public bool InstallationInProgress
         {
@@ -80,5 +91,7 @@ namespace UI.WPF.Modules.Installation.ViewModels.Installation
         }
 
         public IObservable<bool> IndeterminateObservable { get; private set; }
+
+        public abstract Task Install();
     }
 }

@@ -7,6 +7,7 @@ using FSOManagement.Annotations;
 using ModInstallation.Implementations;
 using ModInstallation.Interfaces;
 using ModInstallation.Interfaces.Mods;
+using Splat;
 
 #endregion
 
@@ -48,6 +49,8 @@ namespace UI.WPF.Modules.Installation.ViewModels.Installation
         {
             using (CancellationTokenSource = new CancellationTokenSource())
             {
+                Result = InstallationResult.Pending;
+
                 var reporter = new Progress<IInstallationProgress>(ProgressHandler);
 
                 try
@@ -57,12 +60,16 @@ namespace UI.WPF.Modules.Installation.ViewModels.Installation
                     await _modManager.AddPackageAsync(_package);
 
                     OperationMessage = null;
+                    Result = InstallationResult.Successful;
                 }
                 catch (OperationCanceledException)
                 {
+                    Result = InstallationResult.Canceled;
                 }
-                catch (InvalidOperationException)
+                catch (Exception e)
                 {
+                    this.Log().WarnException("Installation failed!", e);
+                    Result = InstallationResult.Failed;
                 }
 
                 if (CancellationTokenSource.IsCancellationRequested)

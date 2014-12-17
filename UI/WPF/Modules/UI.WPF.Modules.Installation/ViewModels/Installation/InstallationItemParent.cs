@@ -20,6 +20,7 @@ namespace UI.WPF.Modules.Installation.ViewModels.Installation
 
             Children.Select(x => x.ProgressObservable).CombineLatest().Select(list => list.Average()).BindTo(this, x => x.Progress);
             Children.Select(x => x.IndeterminateObservable).CombineLatest().Select(list => list.All(b => b)).BindTo(this, x => x.Indeterminate);
+            Children.Select(x => x.ResultObservable).CombineLatest().Select(ResultSelector).BindTo(this, x => x.Result);
 
             OperationMessage = null;
             CancellationTokenSource = new CancellationTokenSource();
@@ -34,6 +35,26 @@ namespace UI.WPF.Modules.Installation.ViewModels.Installation
         }
 
         public IEnumerable<InstallationItem> Children { get; private set; }
+
+        private static InstallationResult ResultSelector(IList<InstallationResult> children)
+        {
+            if (children.Any(x => x == InstallationResult.Failed))
+            {
+                return InstallationResult.Failed;
+            }
+
+            if (children.All(x => x == InstallationResult.Successful))
+            {
+                return InstallationResult.Successful;
+            }
+
+            if (children.Any(x => x == InstallationResult.Canceled))
+            {
+                return InstallationResult.Canceled;
+            }
+
+            return InstallationResult.Pending;
+        }
 
         #region Overrides of InstallationItem
 

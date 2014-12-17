@@ -94,6 +94,7 @@
     <Compile Include="ViewModels\Installation\InstallationFlyoutViewModel.cs" />
     <Compile Include="ViewModels\Installation\InstallationItem.cs" />
     <Compile Include="ViewModels\Installation\InstallationItemParent.cs" />
+    <Compile Include="ViewModels\Installation\InstallationResult.cs" />
     <Compile Include="ViewModels\Installation\PackageInstallationItem.cs" />
     <Compile Include="ViewModels\Mods\ModViewModel.cs" />
     <Compile Include="ViewModels\Mods\PackageViewModel.cs" />
