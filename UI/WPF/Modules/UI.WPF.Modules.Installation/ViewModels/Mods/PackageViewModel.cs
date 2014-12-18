@@ -21,7 +21,6 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
 {
     public class PackageViewModel : ReactiveObjectBase
     {
-
         private bool _isChangeable;
 
         private bool _selected;
@@ -33,7 +32,7 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
             _installationTabViewModel = installationTabViewModel;
             Package = package;
 
-            IsSelectedObservable = this.WhenAnyValue(x => x.Selected);
+            IsSelectedObservable = this.WhenAnyValue(x => x.Selected).Select(b => new SelectedChangedData(this, b));
 
             SelectDependenciesCommand = ReactiveCommand.CreateAsyncTask(_ => HandleSelectedChanged());
 
@@ -47,7 +46,7 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
         private ReactiveCommand<Unit> SelectDependenciesCommand { get; set; }
 
         [NotNull]
-        public IObservable<bool> IsSelectedObservable { get; private set; }
+        public IObservable<SelectedChangedData> IsSelectedObservable { get; private set; }
         
         [NotNull]
         public IPackage Package { get; private set; }

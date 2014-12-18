@@ -29,7 +29,7 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
             _mod = mod;
 
             Packages = mod.Packages.CreateDerivedCollection(p => new PackageViewModel(p, installationTabViewModel));
-            Packages.Select(x => x.IsSelectedObservable).CombineLatest().Select(IsSelectedTransform).BindTo(this, x =>x.ModSelected);
+            Packages.Select(x => x.IsSelectedObservable).CombineLatest().Select(IsSelectedTransform).BindTo(this, x => x.ModSelected);
 
             mod.WhenAny(x => x.Description, val => !string.IsNullOrEmpty(val.Value)).BindTo(this, x => x.HasDescription);
 
@@ -51,8 +51,10 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
                 {
                     foreach (var packageViewModel in Packages)
                     {
-                        packageViewModel.Selected = packageViewModel.Package.Status == PackageStatus.Required ||
-                                                    packageViewModel.Package.Status == PackageStatus.Recommended;
+                        if (packageViewModel.Package.Status == PackageStatus.Required || packageViewModel.Package.Status == PackageStatus.Recommended)
+                        {
+                            packageViewModel.Selected = true;
+                        }
                     }
                 }
             });
@@ -86,14 +88,14 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
             private set { RaiseAndSetIfPropertyChanged(ref _packages, value); }
         }
 
-        private static bool? IsSelectedTransform(IList<bool> arg)
+        private static bool? IsSelectedTransform(IList<SelectedChangedData> arg)
         {
-            if (arg.All(b => b))
+            if (arg.All(d => d.Selected || d.ViewModel.Package.Status == PackageStatus.Optional))
             {
                 return true;
             }
 
-            if (!arg.Any(b => b))
+            if (!arg.Any(d => d.Selected))
             {
                 return false;
             }
