@@ -1,5 +1,6 @@
 ﻿#region Usings
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
@@ -57,9 +58,18 @@ namespace UI.WPF.Modules.Installation.ViewModels.Installation
                 {
                     foreach (var installationItem in Children)
                     {
-                        if (installationItem.CancellationTokenSource != null && !installationItem.CancellationTokenSource.IsCancellationRequested)
+                        if (installationItem.CancellationTokenSource == null || installationItem.CancellationTokenSource.IsCancellationRequested)
+                        {
+                            continue;
+                        }
+
+                        try
                         {
                             installationItem.CancellationTokenSource.Cancel();
+                        }
+                        catch (ObjectDisposedException)
+                        {
+                            // I can't think of a better way to do this, sorry...
                         }
                     }
                 });
