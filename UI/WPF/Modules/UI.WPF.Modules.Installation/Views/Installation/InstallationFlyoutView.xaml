@@ -4,12 +4,27 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:installation="clr-namespace:UI.WPF.Modules.Installation.ViewModels.Installation"
-             xmlns:installation1="clr-namespace:UI.WPF.Modules.Installation.Views.Installation"
-             mc:Ignorable="d" d:DesignHeight="300" d:DesignWidth="300"
+             xmlns:installation1="clr-namespace:UI.WPF.Modules.Installation.Views.Installation" mc:Ignorable="d"
+             d:DesignHeight="300" d:DesignWidth="300"
              d:DataContext="{d:DesignInstance installation:InstallationFlyoutViewModel}"
              Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Window}, Path=ActualWidth}">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <Style x:Key="DescriptionHeaderStyle" TargetType="Label">
+                <Setter Property="FontSize" Value="22" />
+                <Setter Property="HorizontalAlignment" Value="Center" />
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
     <Grid Margin="5">
-        <ItemsControl ItemsSource="{Binding ItemParent.Children}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Label Content="Installations" Grid.Row="0" Style="{StaticResource DescriptionHeaderStyle}" Margin="5" />
+
+        <ItemsControl Grid.Row="1" ItemsSource="{Binding ItemParent.Children}" Margin="2">
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="installation:InstallationItem">
                     <Grid>
@@ -25,13 +40,12 @@
             <ItemsControl.Template>
                 <ControlTemplate>
                     <Border BorderThickness="{TemplateBinding Border.BorderThickness}"
-                                    Padding="{TemplateBinding Control.Padding}"
-                                    BorderBrush="{TemplateBinding Border.BorderBrush}"
-                                    Background="{TemplateBinding Panel.Background}" SnapsToDevicePixels="True">
+                            Padding="{TemplateBinding Control.Padding}"
+                            BorderBrush="{TemplateBinding Border.BorderBrush}"
+                            Background="{TemplateBinding Panel.Background}" SnapsToDevicePixels="True">
                         <ScrollViewer Padding="{TemplateBinding Control.Padding}" Focusable="False"
-                                              VerticalScrollBarVisibility="Auto">
-                            <ItemsPresenter
-                                        SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
+                                      VerticalScrollBarVisibility="Auto">
+                            <ItemsPresenter SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
                         </ScrollViewer>
                     </Border>
                 </ControlTemplate>
