@@ -13,18 +13,19 @@ using ModInstallation.Interfaces;
 using ModInstallation.Interfaces.Mods;
 using ModInstallation.Util;
 using Newtonsoft.Json;
+using Splat;
 
 #endregion
 
 namespace ModInstallation.Implementations
 {
-    public abstract class AbstractJsonRepository : PropertyChangeBase, IModRepository
+    public abstract class AbstractJsonRepository : PropertyChangeBase, IModRepository, IEnableLogger
     {
+        private List<IModification> _modifications;
+
         private readonly Uri _initialLocation;
 
         private readonly JsonSerializer _jsonSerializer;
-
-        private List<IModification> _modifications;
 
         protected AbstractJsonRepository([NotNull] string name)
         {
@@ -64,7 +65,16 @@ namespace ModInstallation.Implementations
                 }
 
                 // This may take a while so do this in the background
-                var repoData = await Task.Run(() => _jsonSerializer.Deserialize<Repository>(new JsonTextReader(new StringReader(jsonContent))), token);
+                Repository repoData;
+                try
+                {
+                    repoData = await Task.Run(() => _jsonSerializer.Deserialize<Repository>(new JsonTextReader(new StringReader(jsonContent))), token);
+                }
+                catch (JsonException e)
+                {
+                    this.Log().WarnException("JSON Exception!", e);
+                    continue;
+                }
 
                 if (repoData.mods != null)
                 {
@@ -76,7 +86,10 @@ namespace ModInstallation.Implementations
                     continue;
                 }
 
-                foreach (var uri in repoData.includes.Where(uri => Uri.IsWellFormedUriString(uri, UriKind.Absolute)).Select(uri => new Uri(uri)))
+                foreach (
+                    var uri in
+                        repoData.includes.Where(uri => Uri.IsWellFormedUriString(uri, UriKind.RelativeOrAbsolute))
+                            .Select(uri => new Uri(location, uri)))
                 {
                     locationQueue.Enqueue(uri);
                 }
