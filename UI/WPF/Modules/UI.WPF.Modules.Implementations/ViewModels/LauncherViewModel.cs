@@ -49,7 +49,7 @@ namespace UI.WPF.Modules.Implementations.ViewModels
                         _repositories.Add(new ModRepositoryViewModel
                         {
                             Name = "Default",
-                            Repository = factory.ConstructRepository("http://nebula.tproxy.de/__all.json")
+                            Repository = factory.ConstructRepository("https://fsnebula.org/repo/test.json")
                         });
                     }
                     else
