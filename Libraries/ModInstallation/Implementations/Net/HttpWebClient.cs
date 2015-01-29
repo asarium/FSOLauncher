@@ -36,7 +36,7 @@ namespace ModInstallation.Implementations.Net
             // If the certificate is a valid, signed certificate, return true.
             if (sslPolicyErrors == SslPolicyErrors.None)
             {
-                return false;
+                return true;
             }
 
             // If there are errors in the certificate chain, look at each error to determine the cause.
