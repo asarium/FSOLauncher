@@ -12,6 +12,7 @@ using ModInstallation.Annotations;
 using ModInstallation.Implementations;
 using ModInstallation.Interfaces;
 using ModInstallation.Interfaces.Mods;
+using ModInstallation.Util;
 using ReactiveUI;
 using UI.WPF.Launcher.Common.Classes;
 
@@ -40,6 +41,8 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
 
             installationTabViewModel.InteractionEnabledObservable.Select(b => b && package.Status != PackageStatus.Required)
                 .BindTo(this, x => x.IsChangeable);
+
+            Selected = installationTabViewModel.LocalModManager.IsPackageInstalled(package);
         }
 
         [NotNull]

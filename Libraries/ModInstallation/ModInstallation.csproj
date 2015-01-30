@@ -160,6 +160,7 @@
     <Compile Include="Util\IModDependencyExtensions.cs" />
     <Compile Include="Util\IModificationExtensions.cs" />
     <Compile Include="Util\IVersionConstraintExtensions.cs" />
+    <Compile Include="Util\LocalModManagerExtensions.cs" />
     <Compile Include="Util\PackageExtensions.cs" />
     <Compile Include="Util\PropertyChangeBase.cs" />
   </ItemGroup>
