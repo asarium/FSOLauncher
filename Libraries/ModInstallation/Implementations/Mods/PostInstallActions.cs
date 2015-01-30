@@ -178,7 +178,17 @@ namespace ModInstallation.Implementations.Mods
 
             foreach (var path in actionData.paths.Select(CorrectPath))
             {
-                var entries = _fileSystem.Directory.GetDirectories(installFolder, path, SearchOption.TopDirectoryOnly);
+                string[] entries;
+                try
+                {
+                    entries = _fileSystem.Directory.GetDirectories(installFolder, path, SearchOption.TopDirectoryOnly);
+                }
+                catch (DirectoryNotFoundException e)
+                {
+                    // This path does not exist
+                    continue;
+                }
+
                 foreach (var entry in entries)
                 {
                     yield return entry;
