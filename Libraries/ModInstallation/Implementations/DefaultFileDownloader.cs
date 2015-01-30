@@ -22,8 +22,6 @@ namespace ModInstallation.Implementations
     [Export(typeof(IFileDownloader))]
     public class DefaultFileDownloader : IFileDownloader, IEnableLogger
     {
-        private const long BufferSize = 64L * 1024L;
-
         private const int DefaultMaxConcurrentDownloads = 1;
 
         private SemaphoreSlim _downloadSemaphore;
@@ -153,12 +151,12 @@ namespace ModInstallation.Implementations
         {
             progressReporter.Report(DefaultDownloadProgress.Waiting());
 
-            await DownloadSemaphore.WaitAsync(cancellationToken);
-
-            cancellationToken.ThrowIfCancellationRequested();
+            await DownloadSemaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
 
             try
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 if (!Directory.Exists(DownloadDirectory))
                 {
                     Directory.CreateDirectory(DownloadDirectory);
