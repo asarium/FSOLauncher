@@ -14,6 +14,8 @@ namespace UI.WPF.Modules.Installation.ViewModels.Installation
 {
     public class InstallationItemParent : InstallationItem
     {
+        private bool _hasChildren;
+
         public InstallationItemParent(string title, IEnumerable<InstallationItem> children)
         {
             Title = title;
@@ -23,10 +25,18 @@ namespace UI.WPF.Modules.Installation.ViewModels.Installation
             Children.Select(x => x.IndeterminateObservable).CombineLatest().Select(list => list.All(b => b)).BindTo(this, x => x.Indeterminate);
             Children.Select(x => x.ResultObservable).CombineLatest().Select(ResultSelector).BindTo(this, x => x.Result);
 
+            HasChildren = Children.Count > 0;
+
             OperationMessage = null;
         }
 
-        public IEnumerable<InstallationItem> Children { get; private set; }
+        public IList<InstallationItem> Children { get; private set; }
+
+        public bool HasChildren
+        {
+            get { return _hasChildren; }
+            private set { RaiseAndSetIfPropertyChanged(ref _hasChildren, value); }
+        }
 
         private static InstallationResult ResultSelector(IList<InstallationResult> children)
         {
