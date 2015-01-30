@@ -12,6 +12,7 @@ using System.Windows.Input;
 using Caliburn.Micro;
 using ModInstallation.Annotations;
 using ModInstallation.Interfaces;
+using ModInstallation.Util;
 using ReactiveUI;
 using Splat;
 using UI.WPF.Launcher.Common.Interfaces;
@@ -209,6 +210,20 @@ namespace UI.WPF.Modules.Installation.ViewModels
         [NotNull, Import]
         private ITaskbarController TaskbarController { get; set; }
 
+        public bool ShowInstallationView
+        {
+            get { return _showInstallationView; }
+            private set
+            {
+                if (value.Equals(_showInstallationView))
+                {
+                    return;
+                }
+                _showInstallationView = value;
+                NotifyOfPropertyChange();
+            }
+        }
+
         private async void InstallMods()
         {
             if (InstallationFlyout == null)
@@ -254,22 +269,9 @@ namespace UI.WPF.Modules.Installation.ViewModels
             finally
             {
                 ShowInstallationView = true;
+                InstallationInProgress = false;
                 TaskbarController.ProgressbarVisible = false;
                 TaskbarController.ProgressvarValue = 0.0;
-            }
-        }
-
-        public bool ShowInstallationView
-        {
-            get { return _showInstallationView; }
-            private set
-            {
-                if (value.Equals(_showInstallationView))
-                {
-                    return;
-                }
-                _showInstallationView = value;
-                NotifyOfPropertyChange();
             }
         }
 
@@ -278,14 +280,21 @@ namespace UI.WPF.Modules.Installation.ViewModels
             return Enumerable.Empty<InstallationItem>();
         }
 
+        private bool PackageSelector(PackageViewModel model)
+        {
+            return model.Selected && !LocalModManager.IsPackageInstalled(model.Package);
+        }
+
         private IEnumerable<InstallationItem> GetInstallationItems()
         {
-            return ModificationViewModels.Where(modvm => modvm.Packages.Any(x => x.Selected)).Select(GetModInstallationItem);
+            return
+                ModificationViewModels.Where(modvm => modvm.Packages.Any(PackageSelector))
+                    .Select(GetModInstallationItem);
         }
 
         private InstallationItem GetModInstallationItem(ModViewModel modvm)
         {
-            return new InstallationItemParent(modvm.Mod.Title, modvm.Packages.Where(x => x.Selected).Select(GetPackageInstallationItem));
+            return new InstallationItemParent(modvm.Mod.Title, modvm.Packages.Where(PackageSelector).Select(GetPackageInstallationItem));
         }
 
         private InstallationItem GetPackageInstallationItem(PackageViewModel packvm)
