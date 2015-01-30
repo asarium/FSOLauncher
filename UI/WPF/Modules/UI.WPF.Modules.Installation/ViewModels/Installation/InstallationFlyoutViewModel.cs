@@ -1,61 +1,50 @@
 ﻿#region Usings
 
+using System;
 using System.Collections.Generic;
-using MahApps.Metro.Controls;
+using System.Windows.Input;
+using ReactiveUI.Legacy;
 using UI.WPF.Launcher.Common.Classes;
-using UI.WPF.Launcher.Common.Interfaces;
 
 #endregion
 
 namespace UI.WPF.Modules.Installation.ViewModels.Installation
 {
-    public class InstallationFlyoutViewModel : ReactiveObjectBase, IFlyout
+    public class InstallationFlyoutViewModel : ReactiveObjectBase
     {
-        private object _header;
+        private InstallationItemParent _installationParent;
 
-        private bool _isOpen;
+        private InstallationItemParent _uninstallationParent;
 
-        private InstallationItemParent _itemParent;
+        public ICommand CloseCommand { get; private set; }
 
-        private Position _position;
-
-        public InstallationFlyoutViewModel()
+        public InstallationFlyoutViewModel(Action closeAction)
         {
-            Header = "Package installation";
-            Position = Position.Right;
+            var cmd = new ReactiveCommand();
+            cmd.Subscribe(_ => closeAction());
+            CloseCommand = cmd;
         }
 
-        public InstallationItemParent ItemParent
+        public InstallationItemParent InstallationParent
         {
-            get { return _itemParent; }
-            private set { RaiseAndSetIfPropertyChanged(ref _itemParent, value); }
+            get { return _installationParent; }
+            private set { RaiseAndSetIfPropertyChanged(ref _installationParent, value); }
+        }
+
+        public InstallationItemParent UninstallationParent
+        {
+            get { return _uninstallationParent; }
+            private set { RaiseAndSetIfPropertyChanged(ref _uninstallationParent, value); }
         }
 
         public IEnumerable<InstallationItem> InstallationItems
         {
-            set { ItemParent = new InstallationItemParent(null, value); }
+            set { InstallationParent = new InstallationItemParent(null, value); }
         }
 
-        #region Implementation of IFlyout
-
-        public bool IsOpen
+        public IEnumerable<InstallationItem> UninstallationItems
         {
-            get { return _isOpen; }
-            set { RaiseAndSetIfPropertyChanged(ref _isOpen, value); }
+            set { UninstallationParent = new InstallationItemParent(null, value); }
         }
-
-        public object Header
-        {
-            get { return _header; }
-            private set { RaiseAndSetIfPropertyChanged(ref _header, value); }
-        }
-
-        public Position Position
-        {
-            get { return _position; }
-            private set { RaiseAndSetIfPropertyChanged(ref _position, value); }
-        }
-
-        #endregion
     }
 }

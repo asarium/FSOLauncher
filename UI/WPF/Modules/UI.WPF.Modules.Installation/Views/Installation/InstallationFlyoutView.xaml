@@ -17,39 +17,118 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid Margin="5">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Button Command="{Binding CloseCommand, Mode=OneWay}" DockPanel.Dock="Left" Canvas.ZIndex="5"
+                Style="{DynamicResource MetroCircleButtonStyle}" Height="40" Width="40" FontFamily="Segoe UI Symbol"
+                FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" Background="{DynamicResource WhiteBrush}">
+            <Rectangle Width="20" Height="15" Fill="{DynamicResource BlackBrush}">
+                <Rectangle.OpacityMask>
+                    <VisualBrush Stretch="Fill">
+                        <VisualBrush.Visual>
+                            <Canvas Width="48" Height="48" Clip="F1 M 0,0L 48,0L 48,48L 0,48L 0,0"
+                                    UseLayoutRounding="False">
+                                <Path Width="25" Height="18" Canvas.Left="12" Canvas.Top="15" Stretch="Fill"
+                                      Fill="{DynamicResource BlackBrush}"
+                                      Data="F1 M 12,22L 12,26L 28.25,26L 21,33L 27.5,33L 37,24L 27.5,15L 21,15L 28.25,22L 12,22 Z " />
+                            </Canvas>
+                        </VisualBrush.Visual>
+                    </VisualBrush>
+                </Rectangle.OpacityMask>
+                <Rectangle.LayoutTransform>
+                    <ScaleTransform ScaleX="-1" />
+                </Rectangle.LayoutTransform>
+            </Rectangle>
+        </Button>
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Hidden">
+            <DockPanel>
+                <StackPanel Orientation="Vertical" DockPanel.Dock="Top">
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility" Value="Visible" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding InstallationParent.HasChildren}" Value="False">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+                    <Label Content="Mod installations" Style="{StaticResource DescriptionHeaderStyle}" Margin="5" />
 
-        <Label Content="Installations" Grid.Row="0" Style="{StaticResource DescriptionHeaderStyle}" Margin="5" />
+                    <ItemsControl ItemsSource="{Binding InstallationParent.Children}" Margin="2">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="installation:InstallationItem">
+                                <Grid>
+                                    <installation1:InstallationItemControl />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <VirtualizingStackPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.Template>
+                            <ControlTemplate>
+                                <Border BorderThickness="{TemplateBinding Border.BorderThickness}"
+                                        Padding="{TemplateBinding Control.Padding}"
+                                        BorderBrush="{TemplateBinding Border.BorderBrush}"
+                                        Background="{TemplateBinding Panel.Background}" SnapsToDevicePixels="True">
+                                    <ScrollViewer Padding="{TemplateBinding Control.Padding}" Focusable="False"
+                                                  VerticalScrollBarVisibility="Auto">
+                                        <ItemsPresenter
+                                            SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
+                                    </ScrollViewer>
+                                </Border>
+                            </ControlTemplate>
+                        </ItemsControl.Template>
+                    </ItemsControl>
+                </StackPanel>
 
-        <ItemsControl Grid.Row="1" ItemsSource="{Binding ItemParent.Children}" Margin="2">
-            <ItemsControl.ItemTemplate>
-                <DataTemplate DataType="installation:InstallationItem">
-                    <Grid>
-                        <installation1:InstallationItemControl />
-                    </Grid>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <VirtualizingStackPanel />
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.Template>
-                <ControlTemplate>
-                    <Border BorderThickness="{TemplateBinding Border.BorderThickness}"
-                            Padding="{TemplateBinding Control.Padding}"
-                            BorderBrush="{TemplateBinding Border.BorderBrush}"
-                            Background="{TemplateBinding Panel.Background}" SnapsToDevicePixels="True">
-                        <ScrollViewer Padding="{TemplateBinding Control.Padding}" Focusable="False"
-                                      VerticalScrollBarVisibility="Auto">
-                            <ItemsPresenter SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
-                        </ScrollViewer>
-                    </Border>
-                </ControlTemplate>
-            </ItemsControl.Template>
-        </ItemsControl>
+                <StackPanel Orientation="Vertical" DockPanel.Dock="Bottom">
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility" Value="Visible" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding UninstallationParent.HasChildren}" Value="False">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+                    <Label Content="Mod uninstallations" Style="{StaticResource DescriptionHeaderStyle}" Margin="5" />
+
+                    <ItemsControl ItemsSource="{Binding UninstallationParent.Children}" Margin="2">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="installation:InstallationItem">
+                                <Grid>
+                                    <installation1:InstallationItemControl />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <VirtualizingStackPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.Template>
+                            <ControlTemplate>
+                                <Border BorderThickness="{TemplateBinding Border.BorderThickness}"
+                                        Padding="{TemplateBinding Control.Padding}"
+                                        BorderBrush="{TemplateBinding Border.BorderBrush}"
+                                        Background="{TemplateBinding Panel.Background}" SnapsToDevicePixels="True">
+                                    <ScrollViewer Padding="{TemplateBinding Control.Padding}" Focusable="False"
+                                                  VerticalScrollBarVisibility="Auto">
+                                        <ItemsPresenter
+                                            SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
+                                    </ScrollViewer>
+                                </Border>
+                            </ControlTemplate>
+                        </ItemsControl.Template>
+                    </ItemsControl>
+                </StackPanel>
+            </DockPanel>
+        </ScrollViewer>
     </Grid>
 </UserControl>

@@ -13,17 +13,19 @@ using Caliburn.Micro;
 using ModInstallation.Annotations;
 using ModInstallation.Interfaces;
 using ReactiveUI;
+using Splat;
 using UI.WPF.Launcher.Common.Interfaces;
 using UI.WPF.Launcher.Common.Services;
 using UI.WPF.Modules.Installation.ViewModels.Installation;
 using UI.WPF.Modules.Installation.ViewModels.Mods;
+using IDependencyResolver = ModInstallation.Interfaces.IDependencyResolver;
 
 #endregion
 
 namespace UI.WPF.Modules.Installation.ViewModels
 {
     [Export(typeof(ILauncherTab)), ExportMetadata("Priority", 3)]
-    public sealed class InstallationTabViewModel : Screen, ILauncherTab
+    public sealed class InstallationTabViewModel : Screen, ILauncherTab, IEnableLogger
     {
         private bool _hasManagerStatusMessage;
 
@@ -38,6 +40,8 @@ namespace UI.WPF.Modules.Installation.ViewModels
         private string _managerStatusMessage;
 
         private IReadOnlyReactiveList<ModViewModel> _modificationViewModels;
+
+        private bool _showInstallationView;
 
         [ImportingConstructor]
         public InstallationTabViewModel([NotNull] IRepositoryFactory repositoryFactory,
@@ -76,6 +80,20 @@ namespace UI.WPF.Modules.Installation.ViewModels
             UpdateModsCommand = ReactiveCommand.CreateAsyncTask(_ => UpdateMods());
 
             InstallationInProgress = false;
+        }
+
+        public InstallationFlyoutViewModel InstallationFlyout
+        {
+            get { return _installationFlyout; }
+            private set
+            {
+                if (Equals(value, _installationFlyout))
+                {
+                    return;
+                }
+                _installationFlyout = value;
+                NotifyOfPropertyChange();
+            }
         }
 
         [NotNull]
@@ -193,20 +211,14 @@ namespace UI.WPF.Modules.Installation.ViewModels
 
         private async void InstallMods()
         {
-            if (_installationFlyout == null)
+            if (InstallationFlyout == null)
             {
-                _installationFlyout = new InstallationFlyoutViewModel();
-                IoC.Get<IFlyoutManager>().AddFlyout(_installationFlyout);
+                InstallationFlyout = new InstallationFlyoutViewModel(() => ShowInstallationView = false);
             }
 
             if (InstallationInProgress)
             {
-                // Show the flyout here
-                if (_installationFlyout != null)
-                {
-                    _installationFlyout.IsOpen = true;
-                }
-
+                ShowInstallationView = true;
                 return;
             }
 
@@ -226,24 +238,44 @@ namespace UI.WPF.Modules.Installation.ViewModels
 
             try
             {
-                _installationFlyout.InstallationItems = GetInstallationItems();
-                _installationFlyout.IsOpen = true;
+                InstallationFlyout.InstallationItems = GetInstallationItems();
+                InstallationFlyout.UninstallationItems = GetUninstallationItems();
+                ShowInstallationView = true;
 
-                using (_installationFlyout.ItemParent.WhenAnyValue(x => x.Progress).Subscribe(p =>
+                using (InstallationFlyout.InstallationParent.WhenAnyValue(x => x.Progress).Subscribe(p =>
                 {
                     TaskbarController.ProgressvarValue = p;
                     InstallationProgress = p;
                 }))
                 {
-                    await _installationFlyout.ItemParent.Install();
+                    await InstallationFlyout.InstallationParent.Install();
                 }
             }
             finally
             {
-                InstallationInProgress = false;
+                ShowInstallationView = true;
                 TaskbarController.ProgressbarVisible = false;
                 TaskbarController.ProgressvarValue = 0.0;
             }
+        }
+
+        public bool ShowInstallationView
+        {
+            get { return _showInstallationView; }
+            private set
+            {
+                if (value.Equals(_showInstallationView))
+                {
+                    return;
+                }
+                _showInstallationView = value;
+                NotifyOfPropertyChange();
+            }
+        }
+
+        private IEnumerable<InstallationItem> GetUninstallationItems()
+        {
+            return Enumerable.Empty<InstallationItem>();
         }
 
         private IEnumerable<InstallationItem> GetInstallationItems()
@@ -264,11 +296,15 @@ namespace UI.WPF.Modules.Installation.ViewModels
         [NotNull]
         private async Task UpdateMods()
         {
+            ManagerStatusMessage = "Parsing local mod information...";
+            await LocalModManager.ParseLocalModDataAsync();
+
             await RemoteModManager.RetrieveInformationAsync(new Progress<string>(msg => ManagerStatusMessage = msg), CancellationToken.None);
 
             if (RemoteModManager.Modifications != null)
             {
                 ModificationViewModels = RemoteModManager.Modifications.CreateDerivedCollection(mod => new ModViewModel(mod, this));
+                var a = ModificationViewModels.SelectMany(x => x.Packages).Select(x => x.IsSelectedObservable).Merge();
             }
             else
             {
