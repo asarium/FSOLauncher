@@ -81,6 +81,7 @@ namespace UI.WPF.Modules.Installation.ViewModels
             UpdateModsCommand = ReactiveCommand.CreateAsyncTask(_ => UpdateMods());
 
             InstallationInProgress = false;
+            InstallationFlyout = new InstallationFlyoutViewModel(() => ShowInstallationView = false);
         }
 
         public InstallationFlyoutViewModel InstallationFlyout
@@ -226,11 +227,6 @@ namespace UI.WPF.Modules.Installation.ViewModels
 
         private async void InstallMods()
         {
-            if (InstallationFlyout == null)
-            {
-                InstallationFlyout = new InstallationFlyoutViewModel(() => ShowInstallationView = false);
-            }
-
             if (InstallationInProgress)
             {
                 ShowInstallationView = true;
