@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Input;
-using ReactiveUI.Legacy;
+using ReactiveUI;
 using UI.WPF.Launcher.Common.Classes;
 
 #endregion
@@ -20,7 +20,7 @@ namespace UI.WPF.Modules.Installation.ViewModels.Installation
 
         public InstallationViewModel(Action closeAction)
         {
-            var cmd = new ReactiveCommand();
+            var cmd = ReactiveCommand.Create();
             cmd.Subscribe(_ => closeAction());
             CloseCommand = cmd;
         }
