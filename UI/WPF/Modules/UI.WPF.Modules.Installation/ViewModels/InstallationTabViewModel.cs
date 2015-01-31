@@ -30,7 +30,7 @@ namespace UI.WPF.Modules.Installation.ViewModels
     {
         private bool _hasManagerStatusMessage;
 
-        private InstallationFlyoutViewModel _installationFlyout;
+        private InstallationViewModel _installationViewModel;
 
         private bool _installationInProgress;
 
@@ -81,19 +81,19 @@ namespace UI.WPF.Modules.Installation.ViewModels
             UpdateModsCommand = ReactiveCommand.CreateAsyncTask(_ => UpdateMods());
 
             InstallationInProgress = false;
-            InstallationFlyout = new InstallationFlyoutViewModel(() => ShowInstallationView = false);
+            InstallationViewModel = new InstallationViewModel(() => ShowInstallationView = false);
         }
 
-        public InstallationFlyoutViewModel InstallationFlyout
+        public InstallationViewModel InstallationViewModel
         {
-            get { return _installationFlyout; }
+            get { return _installationViewModel; }
             private set
             {
-                if (Equals(value, _installationFlyout))
+                if (Equals(value, _installationViewModel))
                 {
                     return;
                 }
-                _installationFlyout = value;
+                _installationViewModel = value;
                 NotifyOfPropertyChange();
             }
         }
@@ -249,17 +249,17 @@ namespace UI.WPF.Modules.Installation.ViewModels
 
             try
             {
-                InstallationFlyout.InstallationItems = GetInstallationItems();
-                InstallationFlyout.UninstallationItems = GetUninstallationItems();
+                InstallationViewModel.InstallationItems = GetInstallationItems();
+                InstallationViewModel.UninstallationItems = GetUninstallationItems();
                 ShowInstallationView = true;
 
-                using (InstallationFlyout.InstallationParent.WhenAnyValue(x => x.Progress).Subscribe(p =>
+                using (InstallationViewModel.InstallationParent.WhenAnyValue(x => x.Progress).Subscribe(p =>
                 {
                     TaskbarController.ProgressvarValue = p;
                     InstallationProgress = p;
                 }))
                 {
-                    await InstallationFlyout.InstallationParent.Install();
+                    await InstallationViewModel.InstallationParent.Install();
                 }
             }
             finally

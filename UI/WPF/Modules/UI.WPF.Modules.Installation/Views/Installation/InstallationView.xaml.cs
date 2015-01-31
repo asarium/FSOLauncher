@@ -7,11 +7,11 @@ using System.Windows.Controls;
 namespace UI.WPF.Modules.Installation.Views.Installation
 {
     /// <summary>
-    ///     Interaction logic for InstallationFlyoutView.xaml
+    ///     Interaction logic for InstallationView.xaml
     /// </summary>
-    public partial class InstallationFlyoutView : UserControl
+    public partial class InstallationView : UserControl
     {
-        public InstallationFlyoutView()
+        public InstallationView()
         {
             InitializeComponent();
         }

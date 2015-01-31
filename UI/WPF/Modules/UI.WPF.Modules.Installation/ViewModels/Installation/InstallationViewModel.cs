@@ -10,7 +10,7 @@ using UI.WPF.Launcher.Common.Classes;
 
 namespace UI.WPF.Modules.Installation.ViewModels.Installation
 {
-    public class InstallationFlyoutViewModel : ReactiveObjectBase
+    public class InstallationViewModel : ReactiveObjectBase
     {
         private InstallationItemParent _installationParent;
 
@@ -18,7 +18,7 @@ namespace UI.WPF.Modules.Installation.ViewModels.Installation
 
         public ICommand CloseCommand { get; private set; }
 
-        public InstallationFlyoutViewModel(Action closeAction)
+        public InstallationViewModel(Action closeAction)
         {
             var cmd = new ReactiveCommand();
             cmd.Subscribe(_ => closeAction());

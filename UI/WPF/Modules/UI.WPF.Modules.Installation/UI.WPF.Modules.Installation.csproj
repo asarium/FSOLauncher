@@ -92,7 +92,7 @@
     <Compile Include="ModSelectCheckBox.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\InstallationTabViewModel.cs" />
-    <Compile Include="ViewModels\Installation\InstallationFlyoutViewModel.cs" />
+    <Compile Include="ViewModels\Installation\InstallationViewModel.cs" />
     <Compile Include="ViewModels\Installation\InstallationItem.cs" />
     <Compile Include="ViewModels\Installation\InstallationItemParent.cs" />
     <Compile Include="ViewModels\Installation\InstallationResult.cs" />
@@ -106,8 +106,8 @@
     <Compile Include="Views\Installation\BaseInstallationItemView.xaml.cs">
       <DependentUpon>BaseInstallationItemView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Installation\InstallationFlyoutView.xaml.cs">
-      <DependentUpon>InstallationFlyoutView.xaml</DependentUpon>
+    <Compile Include="Views\Installation\InstallationView.xaml.cs">
+      <DependentUpon>InstallationView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Installation\InstallationItemControl.xaml.cs">
       <DependentUpon>InstallationItemControl.xaml</DependentUpon>
@@ -165,7 +165,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Installation\InstallationFlyoutView.xaml">
+    <Page Include="Views\Installation\InstallationView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

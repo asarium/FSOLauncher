@@ -13,7 +13,7 @@
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
 
-        <installation:InstallationFlyoutView x:Key="InstallationView" DataContext="{Binding InstallationFlyout}" />
+        <installation:InstallationView x:Key="InstallationView" DataContext="{Binding InstallationViewModel}" />
 
         <Grid x:Key="PackageList">
             <Grid ZIndex="1">
