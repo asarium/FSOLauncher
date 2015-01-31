@@ -83,6 +83,10 @@ namespace ModInstallation.Implementations.Mods
                     return FeatureType.SSE2;
                 case ValueTypes.AVX:
                     return FeatureType.AVX;
+                case ValueTypes.X86_32:
+                    return FeatureType.X86_32;
+                case ValueTypes.X86_64:
+                    return FeatureType.X86_64;
                 default:
                     throw new ArgumentOutOfRangeException("value");
             }

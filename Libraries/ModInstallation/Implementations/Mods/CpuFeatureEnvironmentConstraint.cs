@@ -1,7 +1,11 @@
-﻿using System;
+﻿#region Usings
+
+using System;
 using ModInstallation.Implementations.DataClasses;
 using ModInstallation.Interfaces.Mods;
 using SDLGlue;
+
+#endregion
 
 namespace ModInstallation.Implementations.Mods
 {
@@ -13,6 +17,8 @@ namespace ModInstallation.Implementations.Mods
         {
             _featureType = featureType;
         }
+
+        #region IEnvironmentConstraint Members
 
         public bool EnvironmentSatisfied()
         {
@@ -26,9 +32,15 @@ namespace ModInstallation.Implementations.Mods
                     return SDLCpuFeatures.HasSSE2;
                 case FeatureType.AVX:
                     return SDLCpuFeatures.HasAVX;
+                case FeatureType.X86_32:
+                    return !Environment.Is64BitOperatingSystem;
+                case FeatureType.X86_64:
+                    return Environment.Is64BitOperatingSystem;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
         }
+
+        #endregion
     }
 }

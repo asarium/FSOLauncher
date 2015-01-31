@@ -24,6 +24,10 @@
 
         AVX,
 
+        X86_32,
+
+        X86_64,
+
         Windows,
 
         Linux,
@@ -39,7 +43,11 @@
 
         SSE2,
 
-        AVX
+        AVX,
+
+        X86_32,
+
+        X86_64
     }
 
     public enum OsType
