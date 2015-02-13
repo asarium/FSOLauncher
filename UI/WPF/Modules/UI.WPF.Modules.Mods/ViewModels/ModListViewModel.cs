@@ -17,9 +17,13 @@ namespace UI.WPF.Modules.Mods.ViewModels
 {
     public class ModListViewModel : ReactiveObjectBase
     {
+        private const int ManyModsThreashold = 15;
+
         private readonly IReadOnlyReactiveList<ModViewModel> _filteredViewModels;
 
         private string _displayString;
+
+        private bool _hasManyMods;
 
         public ModListViewModel([NotNull] IReactiveCollection<ILocalModification> mods, [NotNull] IObservable<string> filterObservable)
         {
@@ -30,6 +34,8 @@ namespace UI.WPF.Modules.Mods.ViewModels
             _filteredViewModels = viewModels.CreateDerivedCollection(model => model, model => model.Visible, null, filterObservable);
 
             HasModsObservable = _filteredViewModels.CountChanged.Select(c => c > 0);
+            _filteredViewModels.CountChanged.Select(c => c > ManyModsThreashold).BindTo(this, x => x.HasManyMods);
+            HasManyMods = _filteredViewModels.Count > ManyModsThreashold;
 
             // When this changes we might need to update our display string
             HasModsObservable.Subscribe(_ => DisplayString = mods.Any() ? GetDisplayString(mods.First()) : "");
@@ -37,6 +43,12 @@ namespace UI.WPF.Modules.Mods.ViewModels
 
         [NotNull]
         public IObservable<bool> HasModsObservable { get; private set; }
+
+        public bool HasManyMods
+        {
+            get { return _hasManyMods; }
+            private set { RaiseAndSetIfPropertyChanged(ref _hasManyMods, value); }
+        }
 
         [NotNull]
         public string DisplayString

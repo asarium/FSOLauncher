@@ -4,8 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewModels="clr-namespace:UI.WPF.Modules.Mods.ViewModels"
-             xmlns:views="clr-namespace:UI.WPF.Modules.Mods.Views"
-             mc:Ignorable="d"
+             xmlns:views="clr-namespace:UI.WPF.Modules.Mods.Views" mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModels:ModListViewModel}" d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -21,10 +20,9 @@
             </DataTemplate>
         </ResourceDictionary>
     </UserControl.Resources>
-    
-    <ItemsControl ItemsSource="{Binding ModViewModels}" VirtualizingPanel.IsVirtualizing="True"
-                  ScrollViewer.CanContentScroll="True">
 
+    <!-- CanContentScroll control the virtualization, if we don't have too many mods we can disable that -->
+    <ItemsControl ItemsSource="{Binding ModViewModels}" ScrollViewer.CanContentScroll="{Binding HasManyMods}">
         <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
                 <VirtualizingStackPanel />
