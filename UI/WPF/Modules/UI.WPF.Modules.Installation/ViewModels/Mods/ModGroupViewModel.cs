@@ -36,12 +36,9 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
                 .Select(x => new ModViewModel(_group.Versions[x], installationTabViewModel))
                 .BindTo(this, x => x.CurrentMod);
 
-            // When the current mod changes, use the old value from the group to initialize the selection status
-            this.WhenAnyValue(x => x.CurrentMod).Where(x => x != null).Subscribe(newMod => newMod.ModSelected = IsSelected);
-
             // When selected changes, propagate to the mod view model
-            this.WhenAnyValue(x => x.IsSelected).BindTo(this, x => x.CurrentMod.ModSelected);
             this.WhenAnyValue(x => x.CurrentMod.ModSelected).BindTo(this, x => x.IsSelected);
+            this.WhenAnyValue(x => x.IsSelected).BindTo(this, x => x.CurrentMod.ModSelected);
 
             SelectedVersion = _group.Versions.Keys.Max();
 
