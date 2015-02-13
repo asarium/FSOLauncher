@@ -6,7 +6,7 @@
              xmlns:mods="clr-namespace:UI.WPF.Modules.Installation.ViewModels.Mods"
              xmlns:views="clr-namespace:UI.WPF.Modules.Installation.Views"
              xmlns:installation="clr-namespace:UI.WPF.Modules.Installation" mc:Ignorable="d"
-             d:DataContext="{d:DesignInstance mods:ModViewModel}" d:DesignHeight="300" d:DesignWidth="300">
+             d:DataContext="{d:DesignInstance mods:ModGroupViewModel}" d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </UserControl.Resources>
@@ -18,57 +18,81 @@
         </Grid.RowDefinitions>
         <Expander Grid.Row="2" IsExpanded="False" Margin="2,2,2,0" MaxHeight="300">
             <Expander.Header>
-                <StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <installation:ModSelectCheckBox Margin="2,2,0,2" IsChecked="{Binding ModSelected, Mode=TwoWay}"
-                                                        VerticalAlignment="Center" HorizontalAlignment="Center"
-                                                        IsThreeState="True"
-                                                        IsEnabled="{Binding InstallationTabViewModel.InteractionEnabled}">
-                            <installation:ModSelectCheckBox.Style>
-                                <Style TargetType="installation:ModSelectCheckBox"
-                                       BasedOn="{StaticResource {x:Type CheckBox}}" />
-                            </installation:ModSelectCheckBox.Style>
-                        </installation:ModSelectCheckBox>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
 
-                        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding Mod.Title}"
-                                   VerticalAlignment="Center" Margin="2,2,2,2" FontWeight="Bold" FontSize="14.667" />
-                    </StackPanel>
+                    <installation:ModSelectCheckBox Margin="2,2,0,2" IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                                    VerticalAlignment="Center" HorizontalAlignment="Center"
+                                                    IsThreeState="True" Grid.Column="0"
+                                                    IsEnabled="{Binding InstallationTabViewModel.InteractionEnabled}">
+                        <installation:ModSelectCheckBox.Style>
+                            <Style TargetType="installation:ModSelectCheckBox"
+                                   BasedOn="{StaticResource {x:Type CheckBox}}" />
+                        </installation:ModSelectCheckBox.Style>
+                    </installation:ModSelectCheckBox>
 
-                    <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding Mod.Description}"
-                               VerticalAlignment="Top" Margin="5,5,0,0"
-                               Visibility="{Binding HasDescription, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                </StackPanel>
+                    <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding CurrentMod.Mod.Title}"
+                               Grid.Column="1" VerticalAlignment="Center" Margin="2,2,2,2" FontWeight="Bold"
+                               FontSize="14.667" />
+
+                    <ComboBox HorizontalAlignment="Right" Margin="2" ItemsSource="{Binding Versions}" Width="110"
+                              SelectedValue="{Binding SelectedVersion, Mode=TwoWay}" Grid.Column="2">
+                        <ComboBox.Style>
+                            <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
+                                <Setter Property="Visibility" Value="Visible" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HasMultipleVersions}" Value="False">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ComboBox.Style>
+                    </ComboBox>
+                </Grid>
             </Expander.Header>
-            <Grid>
-                <ItemsControl ItemsSource="{Binding Packages}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate DataType="mods:PackageViewModel">
-                            <Grid>
-                                <views:PackageInformationControl />
-                            </Grid>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <VirtualizingStackPanel />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.Template>
-                        <ControlTemplate>
-                            <Border BorderThickness="{TemplateBinding Border.BorderThickness}"
-                                    Padding="{TemplateBinding Control.Padding}"
-                                    BorderBrush="{TemplateBinding Border.BorderBrush}"
-                                    Background="{TemplateBinding Panel.Background}" SnapsToDevicePixels="True">
-                                <ScrollViewer Padding="{TemplateBinding Control.Padding}" Focusable="False"
-                                              VerticalScrollBarVisibility="Auto">
+            <ScrollViewer Focusable="False" VerticalScrollBarVisibility="Auto">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap"
+                               Text="{Binding CurrentMod.Mod.Description}" VerticalAlignment="Top" Margin="5,5,0,0"
+                               Grid.Row="0"
+                               Visibility="{Binding CurrentMod.HasDescription, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                    <ItemsControl ItemsSource="{Binding CurrentMod.Packages}" Grid.Row="1">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="mods:PackageViewModel">
+                                <Grid>
+                                    <views:PackageInformationControl />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <VirtualizingStackPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.Template>
+                            <ControlTemplate>
+                                <Border BorderThickness="{TemplateBinding Border.BorderThickness}"
+                                        Padding="{TemplateBinding Control.Padding}"
+                                        BorderBrush="{TemplateBinding Border.BorderBrush}"
+                                        Background="{TemplateBinding Panel.Background}" SnapsToDevicePixels="True">
                                     <ItemsPresenter
                                         SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
-                                </ScrollViewer>
-                            </Border>
-                        </ControlTemplate>
-                    </ItemsControl.Template>
-                </ItemsControl>
-            </Grid>
+                                </Border>
+                            </ControlTemplate>
+                        </ItemsControl.Template>
+                    </ItemsControl>
+                </Grid>
+            </ScrollViewer>
         </Expander>
     </Grid>
 </UserControl>

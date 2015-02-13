@@ -26,12 +26,12 @@ namespace ModInstallation.Tests.Implementations
 
             await modManager.RetrieveInformationAsync(new Progress<string>(), CancellationToken.None);
 
-            Assert.IsNotNull(modManager.Modifications);
+            Assert.IsNotNull(modManager.ModificationGroups);
 
-            CollectionAssert.IsNotEmpty(modManager.Modifications);
-            Assert.AreEqual(1, modManager.Modifications.Count());
+            CollectionAssert.IsNotEmpty(modManager.ModificationGroups);
+            Assert.AreEqual(1, modManager.ModificationGroups.Count());
 
-            Assert.AreEqual("mediavps", modManager.Modifications.First().Id);
+            Assert.AreEqual("mediavps", modManager.ModificationGroups.First().Id);
         }
     }
 }

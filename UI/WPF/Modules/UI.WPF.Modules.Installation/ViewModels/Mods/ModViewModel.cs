@@ -25,7 +25,6 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
 
         public ModViewModel([NotNull] IModification mod, [NotNull] InstallationTabViewModel installationTabViewModel)
         {
-            InstallationTabViewModel = installationTabViewModel;
             _mod = mod;
 
             Packages = mod.Packages.CreateDerivedCollection(p => new PackageViewModel(p, installationTabViewModel));
@@ -59,8 +58,6 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
                 }
             });
         }
-
-        public InstallationTabViewModel InstallationTabViewModel { get; private set; }
 
         public bool? ModSelected
         {

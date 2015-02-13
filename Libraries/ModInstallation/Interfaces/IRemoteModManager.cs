@@ -15,7 +15,7 @@ namespace ModInstallation.Interfaces
     public interface IRemoteModManager : INotifyPropertyChanged
     {
         [CanBeNull]
-        IEnumerable<IModification> Modifications { get; }
+        IEnumerable<IModGroup> ModificationGroups { get; }
 
         [NotNull]
         IEnumerable<IModRepository> Repositories { get; set; }

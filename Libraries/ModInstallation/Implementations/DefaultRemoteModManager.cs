@@ -6,6 +6,7 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using ModInstallation.Implementations.Mods;
 using ModInstallation.Interfaces;
 using ModInstallation.Interfaces.Mods;
 using ModInstallation.Util;
@@ -17,7 +18,7 @@ namespace ModInstallation.Implementations
     [Export(typeof(IRemoteModManager))]
     public class DefaultRemoteModManager : PropertyChangeBase, IRemoteModManager
     {
-        private IEnumerable<IModification> _modifications;
+        private IEnumerable<IModGroup> _modificationGroups;
 
         public DefaultRemoteModManager()
         {
@@ -26,16 +27,16 @@ namespace ModInstallation.Implementations
 
         #region IRemoteModManager Members
 
-        public IEnumerable<IModification> Modifications
+        public IEnumerable<IModGroup> ModificationGroups
         {
-            get { return _modifications; }
+            get { return _modificationGroups; }
             private set
             {
-                if (Equals(value, _modifications))
+                if (Equals(value, _modificationGroups))
                 {
                     return;
                 }
-                _modifications = value;
+                _modificationGroups = value;
                 OnPropertyChanged();
             }
         }
@@ -53,9 +54,11 @@ namespace ModInstallation.Implementations
                 await modRepository.RetrieveRepositoryInformationAsync(progressReporter, token);
             }
 
-            Modifications =
+            ModificationGroups =
                 Repositories.Where(modRepository => modRepository.Modifications != null)
                     .SelectMany(modRepository => modRepository.Modifications)
+                    .GroupBy(x => x.Id)
+                    .Select(g => new DefaultModGroup(g))
                     .ToList();
         }
 

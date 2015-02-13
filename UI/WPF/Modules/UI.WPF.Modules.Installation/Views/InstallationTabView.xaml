@@ -7,7 +7,9 @@
              xmlns:views="clr-namespace:UI.WPF.Modules.Installation.Views"
              xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:mods1="clr-namespace:UI.WPF.Modules.Installation.ViewModels.Mods"
-             xmlns:installation="clr-namespace:UI.WPF.Modules.Installation.Views.Installation" mc:Ignorable="d"
+             xmlns:installation="clr-namespace:UI.WPF.Modules.Installation.Views.Installation"
+             xmlns:operations="clr-namespace:UI.WPF.Modules.Installation.Views.Operations"
+             mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModels:InstallationTabViewModel}" d:DesignHeight="300"
              d:DesignWidth="300">
     <UserControl.Resources>
@@ -15,15 +17,17 @@
 
         <installation:InstallationView x:Key="InstallationView" DataContext="{Binding InstallationViewModel}" />
 
+        <operations:OperationsOverviewView x:Key="OverviewView" DataContext="{Binding OperationOverviewViewModel}" />
+
         <Grid x:Key="PackageList">
             <Grid ZIndex="1">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <ItemsControl ItemsSource="{Binding ModificationViewModels}">
+                <ItemsControl ItemsSource="{Binding ModGroupViewModels}">
                     <ItemsControl.ItemTemplate>
-                        <DataTemplate DataType="mods1:ModViewModel">
+                        <DataTemplate DataType="mods1:ModGroupViewModel">
                             <Grid>
                                 <views:ModInformationControl />
                             </Grid>
@@ -119,15 +123,22 @@
         </Grid>
     </UserControl.Resources>
 
-    <controls:TransitioningContentControl Transition="LeftReplace">
+    <controls:TransitioningContentControl>
         <controls:TransitioningContentControl.Style>
             <Style TargetType="controls:TransitioningContentControl">
+                <Setter Property="Transition" Value="Normal" />
                 <Style.Triggers>
-                    <DataTrigger Binding="{Binding ShowInstallationView}" Value="True">
-                        <Setter Property="Content" Value="{StaticResource InstallationView}" />
-                    </DataTrigger>
-                    <DataTrigger Binding="{Binding ShowInstallationView}" Value="False">
+                    <DataTrigger Binding="{Binding State}" Value="PackagesOverview">
+                        <Setter Property="Transition" Value="Right" />
                         <Setter Property="Content" Value="{StaticResource PackageList}" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding State}" Value="OperationsPreview">
+                        <Setter Property="Transition" Value="Left" />
+                        <Setter Property="Content" Value="{StaticResource OverviewView}" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding State}" Value="OperationsProgress">
+                        <Setter Property="Transition" Value="Left" />
+                        <Setter Property="Content" Value="{StaticResource InstallationView}" />
                     </DataTrigger>
                 </Style.Triggers>
             </Style>

@@ -47,10 +47,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\reactiveui-core.6.2.1.1\lib\Net45\ReactiveUI.dll</HintPath>
     </Reference>
-    <Reference Include="Semver, Version=1.1.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\semver.1.1.2\lib\net45\Semver.dll</HintPath>
-    </Reference>
     <Reference Include="SevenZipSharp">
       <HintPath>..\..\packages\SevenZipSharp.0.64\lib\SevenZipSharp.dll</HintPath>
     </Reference>
@@ -133,6 +129,10 @@
     <ProjectReference Include="..\..\Libraries\ModInstallation\ModInstallation.csproj">
       <Project>{6219DDE3-F989-412B-8368-3EEB6B0D0C00}</Project>
       <Name>ModInstallation</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\semver\Semver\Semver.csproj">
+      <Project>{95b2542c-e371-4ab4-9e2d-b2665cbbd629}</Project>
+      <Name>Semver</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

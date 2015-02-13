@@ -138,7 +138,7 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
         {
             var modManager = _installationTabViewModel.RemoteModManager;
 
-            return modManager.Modifications != null ? modManager.Modifications.ToList() : new List<IModification>();
+            return modManager.ModificationGroups != null ? modManager.ModificationGroups.SelectMany(x=> x.Versions.Values).ToList() : new List<IModification>();
         }
     }
 }

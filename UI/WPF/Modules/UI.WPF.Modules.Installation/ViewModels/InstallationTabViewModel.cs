@@ -14,6 +14,7 @@ using ModInstallation.Annotations;
 using ModInstallation.Interfaces;
 using ModInstallation.Util;
 using ReactiveUI;
+using Semver;
 using Splat;
 using UI.WPF.Launcher.Common.Interfaces;
 using UI.WPF.Launcher.Common.Services;
@@ -25,24 +26,44 @@ using IDependencyResolver = ModInstallation.Interfaces.IDependencyResolver;
 
 namespace UI.WPF.Modules.Installation.ViewModels
 {
+    public enum InstallationViewModelState
+    {
+        /// <summary>
+        ///     The initial view shown that shows which packages are available
+        /// </summary>
+        PackagesOverview,
+
+        /// <summary>
+        ///     Shows the operations that will be executed
+        /// </summary>
+        OperationsPreview,
+
+        /// <summary>
+        ///     Shows the actual progress of the individual operations
+        /// </summary>
+        OperationsProgress
+    }
+
     [Export(typeof(ILauncherTab)), ExportMetadata("Priority", 3)]
     public sealed class InstallationTabViewModel : Screen, ILauncherTab, IEnableLogger
     {
         private bool _hasManagerStatusMessage;
 
-        private InstallationViewModel _installationViewModel;
-
         private bool _installationInProgress;
 
         private double _installationProgress;
+
+        private InstallationViewModel _installationViewModel;
 
         private bool _interactionEnabled;
 
         private string _managerStatusMessage;
 
-        private IReadOnlyReactiveList<ModViewModel> _modificationViewModels;
+        private IReadOnlyReactiveList<ModGroupViewModel> _modGroupViewModels;
 
-        private bool _showInstallationView;
+        private OperationOverviewViewModel _operationOverviewViewModel;
+
+        private InstallationViewModelState _state;
 
         [ImportingConstructor]
         public InstallationTabViewModel([NotNull] IRepositoryFactory repositoryFactory,
@@ -81,7 +102,42 @@ namespace UI.WPF.Modules.Installation.ViewModels
             UpdateModsCommand = ReactiveCommand.CreateAsyncTask(_ => UpdateMods());
 
             InstallationInProgress = false;
-            InstallationViewModel = new InstallationViewModel(() => ShowInstallationView = false);
+            InstallationViewModel = new InstallationViewModel(() => State = InstallationViewModelState.PackagesOverview);
+
+            State = InstallationViewModelState.PackagesOverview;
+        }
+
+        public IEnumerable<ModViewModel> ModificationViewModels
+        {
+            get { return ModGroupViewModels.Where(x => x.CurrentMod != null).Select(x => x.CurrentMod); }
+        }
+
+        public OperationOverviewViewModel OperationOverviewViewModel
+        {
+            get { return _operationOverviewViewModel; }
+            set
+            {
+                if (Equals(value, _operationOverviewViewModel))
+                {
+                    return;
+                }
+                _operationOverviewViewModel = value;
+                NotifyOfPropertyChange();
+            }
+        }
+
+        public InstallationViewModelState State
+        {
+            get { return _state; }
+            private set
+            {
+                if (value == _state)
+                {
+                    return;
+                }
+                _state = value;
+                NotifyOfPropertyChange();
+            }
         }
 
         public InstallationViewModel InstallationViewModel
@@ -163,16 +219,16 @@ namespace UI.WPF.Modules.Installation.ViewModels
         public IRemoteModManager RemoteModManager { get; private set; }
 
         [NotNull]
-        public IReadOnlyReactiveList<ModViewModel> ModificationViewModels
+        public IReadOnlyReactiveList<ModGroupViewModel> ModGroupViewModels
         {
-            get { return _modificationViewModels; }
+            get { return _modGroupViewModels; }
             private set
             {
-                if (Equals(value, _modificationViewModels))
+                if (Equals(value, _modGroupViewModels))
                 {
                     return;
                 }
-                _modificationViewModels = value;
+                _modGroupViewModels = value;
                 NotifyOfPropertyChange();
             }
         }
@@ -211,25 +267,11 @@ namespace UI.WPF.Modules.Installation.ViewModels
         [NotNull, Import]
         private ITaskbarController TaskbarController { get; set; }
 
-        public bool ShowInstallationView
-        {
-            get { return _showInstallationView; }
-            private set
-            {
-                if (value.Equals(_showInstallationView))
-                {
-                    return;
-                }
-                _showInstallationView = value;
-                NotifyOfPropertyChange();
-            }
-        }
-
         private async void InstallMods()
         {
             if (InstallationInProgress)
             {
-                ShowInstallationView = true;
+                State = InstallationViewModelState.OperationsProgress;
                 return;
             }
 
@@ -243,15 +285,27 @@ namespace UI.WPF.Modules.Installation.ViewModels
                 return;
             }
 
+            State = InstallationViewModelState.OperationsPreview;
+
+            var installationItems = GetInstallationItems().ToList();
+            var uninstallationItems = GetUninstallationItems().ToList();
+
+            if (!await ShouldContinueInstallation(installationItems, uninstallationItems))
+            {
+                // User cancelled installation
+                State = InstallationViewModelState.PackagesOverview;
+                return;
+            }
+
             InstallationInProgress = true;
             TaskbarController.ProgressbarVisible = true;
             TaskbarController.ProgressvarValue = 0.0;
 
             try
             {
-                InstallationViewModel.InstallationItems = GetInstallationItems();
-                InstallationViewModel.UninstallationItems = GetUninstallationItems();
-                ShowInstallationView = true;
+                InstallationViewModel.InstallationItems = installationItems;
+                InstallationViewModel.UninstallationItems = uninstallationItems;
+                State = InstallationViewModelState.OperationsProgress;
 
                 using (InstallationViewModel.InstallationParent.WhenAnyValue(x => x.Progress).Subscribe(p =>
                 {
@@ -264,11 +318,25 @@ namespace UI.WPF.Modules.Installation.ViewModels
             }
             finally
             {
-                ShowInstallationView = true;
+                State = InstallationViewModelState.PackagesOverview;
                 InstallationInProgress = false;
                 TaskbarController.ProgressbarVisible = false;
                 TaskbarController.ProgressvarValue = 0.0;
             }
+        }
+
+        private Task<bool> ShouldContinueInstallation(IEnumerable<InstallationItem> installationItems,
+            IEnumerable<InstallationItem> uninstallationItems)
+        {
+            var tcs = new TaskCompletionSource<bool>();
+
+            OperationOverviewViewModel = new OperationOverviewViewModel(() => tcs.TrySetResult(false), () => tcs.TrySetResult(true))
+            {
+                InstallationItems = installationItems,
+                UninstallationItems = uninstallationItems
+            };
+
+            return tcs.Task;
         }
 
         private IEnumerable<InstallationItem> GetUninstallationItems()
@@ -283,9 +351,7 @@ namespace UI.WPF.Modules.Installation.ViewModels
 
         private IEnumerable<InstallationItem> GetInstallationItems()
         {
-            return
-                ModificationViewModels.Where(modvm => modvm.Packages.Any(PackageSelector))
-                    .Select(GetModInstallationItem);
+            return ModificationViewModels.Where(modvm => modvm.Packages.Any(PackageSelector)).Select(GetModInstallationItem);
         }
 
         private InstallationItem GetModInstallationItem(ModViewModel modvm)
@@ -306,10 +372,9 @@ namespace UI.WPF.Modules.Installation.ViewModels
 
             await RemoteModManager.RetrieveInformationAsync(new Progress<string>(msg => ManagerStatusMessage = msg), CancellationToken.None);
 
-            if (RemoteModManager.Modifications != null)
+            if (RemoteModManager.ModificationGroups != null)
             {
-                ModificationViewModels = RemoteModManager.Modifications.CreateDerivedCollection(mod => new ModViewModel(mod, this));
-                var a = ModificationViewModels.SelectMany(x => x.Packages).Select(x => x.IsSelectedObservable).Merge();
+                ModGroupViewModels = RemoteModManager.ModificationGroups.CreateDerivedCollection(group => new ModGroupViewModel(group, this));
             }
             else
             {
@@ -344,7 +409,7 @@ namespace UI.WPF.Modules.Installation.ViewModels
         {
             base.OnActivate();
 
-            if (RemoteModManager.Modifications == null)
+            if (RemoteModManager.ModificationGroups == null)
             {
                 UpdateModsCommand.Execute(null);
             }

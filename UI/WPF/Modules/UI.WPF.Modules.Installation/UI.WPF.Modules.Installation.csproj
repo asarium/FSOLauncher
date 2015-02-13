@@ -97,9 +97,11 @@
     <Compile Include="ViewModels\Installation\InstallationItemParent.cs" />
     <Compile Include="ViewModels\Installation\InstallationResult.cs" />
     <Compile Include="ViewModels\Installation\PackageInstallationItem.cs" />
+    <Compile Include="ViewModels\Mods\ModGroupViewModel.cs" />
     <Compile Include="ViewModels\Mods\ModViewModel.cs" />
     <Compile Include="ViewModels\Mods\PackageViewModel.cs" />
     <Compile Include="ViewModels\Mods\SelectedChangedData.cs" />
+    <Compile Include="ViewModels\OperationOverviewViewModel.cs" />
     <Compile Include="Views\InstallationTabView.xaml.cs">
       <DependentUpon>InstallationTabView.xaml</DependentUpon>
     </Compile>
@@ -118,6 +120,9 @@
     <Compile Include="Views\ModInformationControl.xaml.cs">
       <DependentUpon>ModInformationControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Operations\OperationsOverviewView.xaml.cs">
+      <DependentUpon>OperationsOverviewView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\PackageInformationControl.xaml.cs">
       <DependentUpon>PackageInformationControl.xaml</DependentUpon>
     </Compile>
@@ -130,6 +135,10 @@
     <ProjectReference Include="..\..\..\..\Libraries\ModInstallation\ModInstallation.csproj">
       <Project>{6219DDE3-F989-412B-8368-3EEB6B0D0C00}</Project>
       <Name>ModInstallation</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Libraries\semver\Semver\Semver.csproj">
+      <Project>{95b2542c-e371-4ab4-9e2d-b2665cbbd629}</Project>
+      <Name>Semver</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\UI.WPF.Launcher.Common\UI.WPF.Launcher.Common.csproj">
       <Project>{ECBE6F2B-423C-47BC-AA36-26CD3B5E8F81}</Project>
@@ -181,11 +190,16 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Operations\OperationsOverviewView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\PackageInformationControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
