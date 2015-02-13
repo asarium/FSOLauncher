@@ -183,7 +183,7 @@ namespace ModInstallation.Implementations.Mods
                 {
                     entries = _fileSystem.Directory.GetDirectories(installFolder, path, SearchOption.TopDirectoryOnly);
                 }
-                catch (DirectoryNotFoundException e)
+                catch (DirectoryNotFoundException)
                 {
                     // This path does not exist
                     continue;
