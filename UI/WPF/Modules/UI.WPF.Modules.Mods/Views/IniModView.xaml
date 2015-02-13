@@ -52,7 +52,7 @@
                 </Grid>
 
                 <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding InfoText}"
-                           VerticalAlignment="Center" Grid.Column="2" />
+                           VerticalAlignment="Center" Grid.Column="2" TextTrimming="WordEllipsis" Height="150" />
             </Grid>
         </Border>
     </Border>

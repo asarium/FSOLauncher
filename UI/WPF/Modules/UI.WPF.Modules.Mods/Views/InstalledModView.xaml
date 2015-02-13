@@ -42,11 +42,14 @@
 
                     <Button Content="Activate" HorizontalAlignment="Center" VerticalAlignment="Center" Width="75"
                             Grid.Row="1" Margin="0,5" Command="{Binding ActivateCommand}" />
-
                 </Grid>
 
                 <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding ModInstance.Modification.Description}"
-                           VerticalAlignment="Center" Grid.Column="2" />
+                           VerticalAlignment="Center" Grid.Column="2" TextTrimming="WordEllipsis" Height="150">
+                    <TextBlock.ToolTip>
+                        <TextBlock Text="{Binding ModInstance.Modification.Description}" MaxWidth="500" TextWrapping="Wrap" />
+                    </TextBlock.ToolTip>
+                </TextBlock>
             </Grid>
         </Border>
     </Border>
