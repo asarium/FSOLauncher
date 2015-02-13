@@ -1,22 +1,20 @@
-﻿<dialogs:SimpleDialog xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<dialogs:CustomDialog xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                       xmlns:dialogs="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
                       xmlns:views="clr-namespace:UI.WPF.Modules.Mods.Views"
                       xmlns:viewModels="clr-namespace:UI.WPF.Modules.Mods.ViewModels"
-                      xmlns:converters="clr-namespace:UI.WPF.Modules.Mods.Converters"
-                      xmlns:Mods="clr-namespace:UI.WPF.Modules.Mods"
                       x:Class="UI.WPF.Modules.Mods.Views.ModInformationDialog" mc:Ignorable="d" d:DesignHeight="300"
-                      d:DesignWidth="600" d:DataContext="{d:DesignInstance {x:Type viewModels:ModViewModel}}">
-    <dialogs:SimpleDialog.Resources>
+                      d:DesignWidth="600" d:DataContext="{d:DesignInstance {x:Type viewModels:IniModViewModel}}">
+    <dialogs:CustomDialog.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary
                     Source="pack://application:,,,/MahApps.Metro;component/themes/dialogs/basemetrodialog.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
-    </dialogs:SimpleDialog.Resources>
+    </dialogs:CustomDialog.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -36,7 +34,7 @@
                 <TextBlock DataContext="{Binding}" TextWrapping="Wrap" Text="{Binding DisplayName}" FontWeight="Bold"
                            FontSize="15" Margin="0,5,0,10" HorizontalAlignment="Center" VerticalAlignment="Center" />
 
-                <views:ModImageDisplayControl DataContext="{Binding}" ImagePath="{Binding ImagePath}" Margin="10" />
+                <views:ModImageDisplayControl DataContext="{Binding}" ImageSource="{Binding LogoSource}" Margin="10" />
             </StackPanel>
 
             <TextBlock TextWrapping="Wrap" Text="{Binding InfoText}" HorizontalAlignment="Left" Margin="0" Grid.Row="1" />
@@ -70,4 +68,4 @@
                     Command="{Binding AcceptCommand, RelativeSource={RelativeSource AncestorType={x:Type views:ModInformationDialog}, Mode=FindAncestor}}" />
         </StackPanel>
     </Grid>
-</dialogs:SimpleDialog>
+</dialogs:CustomDialog>

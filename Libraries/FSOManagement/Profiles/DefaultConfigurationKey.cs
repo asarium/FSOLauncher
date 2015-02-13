@@ -1,13 +1,14 @@
 ﻿#region Usings
 
 using System;
+using FSOManagement.Annotations;
 
 #endregion
 
 namespace FSOManagement.Profiles
 {
     [Serializable]
-    public class DefaultConfigurationKey : IConfigurationKey, IEquatable<DefaultConfigurationKey>
+    public class DefaultConfigurationKey : IConfigurationKey
     {
         public DefaultConfigurationKey(string name)
         {
@@ -19,8 +20,6 @@ namespace FSOManagement.Profiles
         public string Name { get; private set; }
 
         #endregion
-
-        #region IEquatable<DefaultConfigurationKey> Members
 
         public bool Equals(DefaultConfigurationKey other)
         {
@@ -34,8 +33,6 @@ namespace FSOManagement.Profiles
             }
             return string.Equals(Name, other.Name);
         }
-
-        #endregion
 
         public override bool Equals(object obj)
         {
@@ -56,7 +53,7 @@ namespace FSOManagement.Profiles
 
         public override int GetHashCode()
         {
-            return (Name != null ? Name.GetHashCode() : 0);
+            return Name.GetHashCode();
         }
 
         public static bool operator ==(DefaultConfigurationKey left, DefaultConfigurationKey right)
@@ -71,50 +68,18 @@ namespace FSOManagement.Profiles
     }
 
     [Serializable]
-    public class DefaultConfigurationKey<TValue> : DefaultConfigurationKey, IConfigurationKey<TValue>, IEquatable<DefaultConfigurationKey<TValue>>
+    public class DefaultConfigurationKey<TValue> : DefaultConfigurationKey, IConfigurationKey<TValue>
     {
-        public DefaultConfigurationKey(string name, TValue defaultValue = default(TValue)) : base(name)
+        public DefaultConfigurationKey([NotNull] string name, TValue defaultValue = default(TValue)) : base(name)
         {
             Default = defaultValue;
         }
 
-        public bool Equals(DefaultConfigurationKey<TValue> other)
-        {
-            return other.Name == Name;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj))
-            {
-                return false;
-            }
-            if (ReferenceEquals(this, obj))
-            {
-                return true;
-            }
-            if (obj.GetType() != this.GetType())
-            {
-                return false;
-            }
-            return Equals((DefaultConfigurationKey<TValue>) obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return Name.GetHashCode();
-        }
-
-        public static bool operator ==(DefaultConfigurationKey<TValue> left, DefaultConfigurationKey<TValue> right)
-        {
-            return Equals(left, right);
-        }
-
-        public static bool operator !=(DefaultConfigurationKey<TValue> left, DefaultConfigurationKey<TValue> right)
-        {
-            return !Equals(left, right);
-        }
+        #region IConfigurationKey<TValue> Members
 
         public TValue Default { get; private set; }
+
+
+        #endregion
     }
 }

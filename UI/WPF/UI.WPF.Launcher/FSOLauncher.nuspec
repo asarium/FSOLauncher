@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>FSOLauncher</id>
+        <version>0.2.2</version>
+        <title>FreeSpace Open Launcher</title>
+        <authors>m!m</authors>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>A launcher for FreeSpace Open</description>
+    </metadata>
+    <files>
+        <file src="bin\Release\**\*.dll" target="lib\net45\" />
+        <file src="bin\Release\FSOLauncher.exe" target="lib\net45\FSOLauncher.exe" />
+        <file src="bin\Release\FSOLauncher.exe.config" target="lib\net45\FSOLauncher.exe.config" />
+        <file src="bin\Release\FSOLauncher.exe.manifest" target="lib\net45\FSOLauncher.exe.manifest" />
+    </files>
+</package>

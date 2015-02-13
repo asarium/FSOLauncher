@@ -32,9 +32,6 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Caliburn.Micro">
-      <HintPath>..\..\packages\Caliburn.Micro.Core.2.0.0\lib\net45\Caliburn.Micro.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -51,6 +48,7 @@
     <Compile Include="Native\SDL2.cs" />
     <Compile Include="Native\SDLContants.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SDLCpuFeatures.cs" />
     <Compile Include="SDLDisplayMode.cs" />
     <Compile Include="SDLJoystick.cs" />
     <Compile Include="SDLLibrary.cs" />

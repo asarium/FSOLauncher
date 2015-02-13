@@ -1,0 +1,3 @@
+[submodule "Libraries/semver"]
+	path = Libraries/semver
+	url = https://github.com/asarium/semver.git

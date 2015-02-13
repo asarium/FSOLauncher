@@ -14,26 +14,22 @@
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\</SolutionDir>
-    <ExpressionBlendVersion>12.0.50429.0</ExpressionBlendVersion>
-    <IsWebBootstrapper>true</IsWebBootstrapper>
+    <ExpressionBlendVersion>12.0.50716.0</ExpressionBlendVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <NuGetPackageImportStamp>494094c7</NuGetPackageImportStamp>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
-    <InstallFrom>Web</InstallFrom>
+    <InstallFrom>Disk</InstallFrom>
     <UpdateEnabled>false</UpdateEnabled>
-    <UpdateMode>Background</UpdateMode>
+    <UpdateMode>Foreground</UpdateMode>
     <UpdateInterval>7</UpdateInterval>
     <UpdateIntervalUnits>Days</UpdateIntervalUnits>
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <InstallUrl>http://vpgui.fsmods.net/launcher/</InstallUrl>
-    <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
-    <WebPage>publish.htm</WebPage>
-    <ApplicationRevision>2</ApplicationRevision>
-    <ApplicationVersion>0.2.1.%2a</ApplicationVersion>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
-    <CreateDesktopShortcut>true</CreateDesktopShortcut>
-    <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -59,45 +55,104 @@
     <StartupObject>UI.WPF.Launcher.App</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>CC25D09008CB629C49D81C8030193FDC45CCAC99</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>40546215FE326C18FCFDB458BBCA3DF15C2571C7</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>FSOLauncher_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>FSOLauncher_1_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateManifests>true</GenerateManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <SignManifests>true</SignManifests>
+    <SignManifests>false</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>FSOLauncher_TemporaryKey.pfx</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Akavache">
+      <HintPath>..\..\..\packages\akavache.core.4.0.4\lib\net45\Akavache.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Akavache.Deprecated">
+      <HintPath>..\..\..\packages\akavache.deprecated.4.0.4\lib\Portable-Net45+Win8+WP8+Wpa81\Akavache.Deprecated.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Caliburn.Micro">
-      <HintPath>..\..\..\packages\Caliburn.Micro.Core.2.0.0\lib\net45\Caliburn.Micro.dll</HintPath>
+      <HintPath>..\..\..\packages\Caliburn.Micro.Core.2.0.1\lib\net45\Caliburn.Micro.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Caliburn.Micro.Platform">
-      <HintPath>..\..\..\packages\Caliburn.Micro.2.0.0\lib\net45\Caliburn.Micro.Platform.dll</HintPath>
+      <HintPath>..\..\..\packages\Caliburn.Micro.2.0.1\lib\net45\Caliburn.Micro.Platform.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="MahApps.Metro">
-      <HintPath>..\..\..\packages\MahApps.Metro.0.14.0-ALPHA98\lib\net45\MahApps.Metro.dll</HintPath>
+    <Reference Include="DeltaCompressionDotNet">
+      <HintPath>..\..\..\packages\DeltaCompressionDotNet.1.0.0\lib\net45\DeltaCompressionDotNet.dll</HintPath>
+    </Reference>
+    <Reference Include="DeltaCompressionDotNet.MsDelta">
+      <HintPath>..\..\..\packages\DeltaCompressionDotNet.1.0.0\lib\net45\DeltaCompressionDotNet.MsDelta.dll</HintPath>
+    </Reference>
+    <Reference Include="DeltaCompressionDotNet.PatchApi">
+      <HintPath>..\..\..\packages\DeltaCompressionDotNet.1.0.0\lib\net45\DeltaCompressionDotNet.PatchApi.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\squirrel.windows.0.7.1\lib\Net45\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="MahApps.Metro, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f4fb5a3c4d1e5b4f, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\MahApps.Metro.1.0.0.0\lib\net45\MahApps.Metro.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Expression.Drawing" />
+    <Reference Include="Microsoft.Web.XmlTransform">
+      <HintPath>..\..\..\packages\Microsoft.Web.Xdt.2.1.1\lib\net40\Microsoft.Web.XmlTransform.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil">
+      <HintPath>..\..\..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil.Mdb">
+      <HintPath>..\..\..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.Mdb.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil.Pdb">
+      <HintPath>..\..\..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.Pdb.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Mono.Cecil.Rocks">
+      <HintPath>..\..\..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.Rocks.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\packages\Newtonsoft.Json.6.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NLog">
+      <HintPath>..\..\..\packages\NLog.3.1.0.0\lib\net45\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Core">
+      <HintPath>..\..\..\packages\NuGet.Core.2.8.3\lib\net40-Client\NuGet.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Ookii.Dialogs.Wpf">
       <HintPath>..\..\..\packages\Ookii.Dialogs.1.0\lib\net35\Ookii.Dialogs.Wpf.dll</HintPath>
     </Reference>
-    <Reference Include="ReactiveUI, Version=6.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="ReactiveUI, Version=6.2.1.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\reactiveui-core.6.0.3\lib\Net45\ReactiveUI.dll</HintPath>
+      <HintPath>..\..\..\packages\reactiveui-core.6.2.1.1\lib\Net45\ReactiveUI.dll</HintPath>
+    </Reference>
+    <Reference Include="ReactiveUI.Events, Version=6.2.1.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\reactiveui-events.6.2.1.1\lib\net45\ReactiveUI.Events.dll</HintPath>
+    </Reference>
+    <Reference Include="Splat">
+      <HintPath>..\..\..\packages\Splat.1.5.1\lib\Net45\Splat.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Splat, Version=1.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Squirrel, Version=0.7.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\Splat.1.4.0\lib\Net45\Splat.dll</HintPath>
+      <HintPath>..\..\..\packages\squirrel.windows.0.7.1\lib\Net45\Squirrel.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -124,7 +179,7 @@
     </Reference>
     <Reference Include="System.Runtime.Remoting" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\Caliburn.Micro.2.0.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
+      <HintPath>..\..\..\packages\MahApps.Metro.1.0.0.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -146,15 +201,21 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Compile Include="Converters\ErrorDialogStyleConverter.cs" />
+    <Compile Include="Implementations\MefDependencyResolver.cs" />
     <Compile Include="Implementations\MetroInteractionService.cs" />
+    <Compile Include="Implementations\MetroTaskbarController.cs" />
+    <Compile Include="Implementations\MetroWindowController.cs" />
     <Compile Include="Implementations\MetroWindowManager.cs" />
-    <Compile Include="Implementations\SettingsAdapter.cs" />
+    <Compile Include="Implementations\NLogLogManager.cs" />
     <Compile Include="Properties\Settings.cs" />
     <Compile Include="SingleInstance.cs" />
     <Compile Include="ViewModels\GameRootInputViewModel.cs" />
     <Compile Include="ViewModels\ProfileInputViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
-    <Compile Include="ViewModels\Test.cs" />
+    <Compile Include="Views\ErrorDialog.xaml.cs">
+      <DependentUpon>ErrorDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ProfileInputDialog.xaml.cs">
       <DependentUpon>ProfileInputDialog.xaml</DependentUpon>
     </Compile>
@@ -169,9 +230,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="LauncherBootstrapper.cs" />
-    <Page Include="Resources\Icons.xaml">
-      <Generator>MSBuild:Compile</Generator>
+    <Page Include="Views\ErrorDialog.xaml">
       <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ProfileInputDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -199,10 +260,15 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="FSOLauncher_TemporaryKey.pfx" />
+    <EmbeddedResource Include="NLog.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <None Include="FSOLauncher.nuspec" />
+    <None Include="NLog.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
     <AppDesigner Include="Properties\" />
-    <Resource Include="Resources\Entypo.ttf" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -212,9 +278,29 @@
       <Project>{73342923-20ee-4f2c-b9ab-9a03341f782a}</Project>
       <Name>FSOManagement</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\Launcher.Shared\Launcher.Shared.csproj">
+      <Project>{BF86D333-D55C-4723-9840-E5BA1A46A17E}</Project>
+      <Name>Launcher.Shared</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\ModInstallation.Windows\ModInstallation.Windows.csproj">
+      <Project>{93358CAD-81C8-4B1F-A494-05EA168E3427}</Project>
+      <Name>ModInstallation.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\ModInstallation\ModInstallation.csproj">
+      <Project>{6219dde3-f989-412b-8368-3eeb6b0d0c00}</Project>
+      <Name>ModInstallation</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Libraries\SDLGlue\SDLGlue.csproj">
       <Project>{589ecbc2-cdfb-42aa-a9df-35d804464711}</Project>
       <Name>SDLGlue</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\Utilities\Utilities.csproj">
+      <Project>{8A55D865-DFC1-4CE1-B56F-54D249ABD3F7}</Project>
+      <Name>Utilities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Tests\ModInstallation.Tests\ModInstallation.Tests.csproj">
+      <Project>{2dfa1deb-f4fc-4a4f-8d26-8319a8993bd9}</Project>
+      <Name>ModInstallation.Tests</Name>
     </ProjectReference>
     <ProjectReference Include="..\Modules\UI.WPF.Modules.Advanced\UI.WPF.Modules.Advanced.csproj">
       <Project>{7636EC3E-D47C-435C-AA51-F8981727A82E}</Project>
@@ -228,6 +314,10 @@
       <Project>{53F7EA48-F66A-4E2C-AAFD-8E4764B8DB06}</Project>
       <Name>UI.WPF.Modules.Implementations</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Modules\UI.WPF.Modules.Installation\UI.WPF.Modules.Installation.csproj">
+      <Project>{d0f8ee93-8a70-4f69-9c31-e8b132833aac}</Project>
+      <Name>UI.WPF.Modules.Installation</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Modules\UI.WPF.Modules.Mods\UI.WPF.Modules.Mods.csproj">
       <Project>{638DA46F-90D8-43FD-8090-2AF8598D53DB}</Project>
       <Name>UI.WPF.Modules.Mods</Name>
@@ -240,12 +330,6 @@
       <Project>{ecbe6f2b-423c-47bc-aa36-26cd3b5e8f81}</Project>
       <Name>UI.WPF.Launcher.Common</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\WindowsIcons-license.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Entypo-license.txt" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">
@@ -267,14 +351,17 @@
   <ItemGroup>
     <PublishFile Include="Splat">
       <Visible>False</Visible>
+      <PublishState>Include</PublishState>
+      <IncludeHash>True</IncludeHash>
       <Group>
       </Group>
       <TargetPath>
       </TargetPath>
-      <PublishState>Include</PublishState>
-      <IncludeHash>True</IncludeHash>
       <FileType>Assembly</FileType>
     </PublishFile>
+  </ItemGroup>
+  <ItemGroup>
+    <DesignData Include="SampleData\UserErrorData.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

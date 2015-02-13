@@ -1,7 +1,10 @@
-﻿using System.IO;
+﻿#region Usings
+
 using FSOManagement.Profiles;
 using FSOManagement.Tests.Util;
 using NUnit.Framework;
+
+#endregion
 
 namespace FSOManagement.Tests.Profiles
 {
@@ -9,18 +12,10 @@ namespace FSOManagement.Tests.Profiles
     public class ProfileTests
     {
         [Test]
-        public void TestSerializable()
-        {
-            var profile = new Profile("Test");
-
-            SerializationAssert.IsSerializable(profile);
-        }
-
-        [Test]
         public void TestClone()
         {
             {
-                var profile = new Profile("Test");
+                var profile = new Profile{Name = "Test"};
 
                 var clone = profile.Clone();
 
@@ -30,10 +25,11 @@ namespace FSOManagement.Tests.Profiles
                 Assert.AreNotSame(profile, clone);
             }
             {
-                var profile = new Profile("Test")
+                var profile = new Profile
                 {
                     SelectedAudioDevice = "TestDevice",
-                    SelectedExecutable = new Executable("/fs2_open_3_7_1_20140629_r10856.exe")
+                    SelectedExecutable = new Executable("/fs2_open_3_7_1_20140629_r10856.exe"),
+                     Name = "Test" 
                 };
 
                 var clone = profile.Clone();

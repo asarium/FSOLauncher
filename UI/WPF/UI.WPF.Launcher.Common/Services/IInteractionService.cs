@@ -1,10 +1,10 @@
 ﻿#region Usings
 
 using System.Collections.Generic;
-using System.Security.AccessControl;
 using System.Threading.Tasks;
-using System.Windows.Controls;
+using FSOManagement.Annotations;
 using UI.WPF.Launcher.Common.Interfaces;
+using UI.WPF.Launcher.Common.Services;
 
 #endregion
 
@@ -75,32 +75,62 @@ namespace UI.WPF.Launcher.Common.Services
         public string CancelText { get; set; }
     }
 
-    public interface IInteractionService
+    public interface IProgressController
     {
-        Task ShowMessage(MessageType type, string title, string text);
+        string Title { set; }
 
-        Task<IEnumerable<string>> OpenFileDialog(string title, bool multiple, IEnumerable<IFileFilter> filters = null);
+        string Message { set; }
 
-        Task<string> SaveFileDialog(string title, IEnumerable<IFileFilter> filters = null);
+        double Progress { set; }
 
-        Task<TResult> ShowDialog<TResult>(IDialogControl<TResult> control);
+        bool IsCanceled { get; }
 
-        Task<string> OpenDirectoryDialog(string title, bool multiple = false);
+        bool Cancelable { set; }
 
-        Task<QuestionAnswer> ShowQuestion(MessageType type, QuestionType questionType, string title, string text, QuestionSettings settings = null);
+        bool Indeterminate { set; }
+
+        [NotNull]
+        Task CloseAsync();
+    }
+}
+
+public interface IInteractionService
+{
+    [NotNull]
+    Task ShowMessage(MessageType type, [NotNull] string title, [NotNull] string text);
+
+    [NotNull]
+    Task<IEnumerable<string>> OpenFileDialog([NotNull] string title, bool multiple, [CanBeNull] IEnumerable<IFileFilter> filters = null);
+
+    [NotNull]
+    Task<string> SaveFileDialog([NotNull] string title, [CanBeNull] IEnumerable<IFileFilter> filters = null);
+
+    [NotNull]
+    Task<TResult> ShowDialog<TResult>([NotNull] IDialogControl<TResult> control);
+
+    [NotNull]
+    Task<string> OpenDirectoryDialog([NotNull] string title, bool multiple = false);
+
+    [NotNull]
+    Task<QuestionAnswer> ShowQuestion(MessageType type,
+        QuestionType questionType,
+        [NotNull] string title,
+        [NotNull] string text,
+        [CanBeNull] QuestionSettings settings = null);
+
+    [NotNull]
+    Task<IProgressController> OpenProgressDialogAsync([NotNull] string title, [NotNull] string message);
+}
+
+public static class InteractionServiceExtensions
+{
+    public static Task<IEnumerable<string>> OpenFileDialog(this IInteractionService This, string title, bool multiple, params IFileFilter[] filters)
+    {
+        return This.OpenFileDialog(title, multiple, filters);
     }
 
-    public static class InteractionServiceExtensions
+    public static Task<string> SaveFileDialog(this IInteractionService This, string title, params IFileFilter[] filters)
     {
-        public static Task<IEnumerable<string>> OpenFileDialog(this IInteractionService This, string title, bool multiple,
-            params IFileFilter[] filters)
-        {
-            return This.OpenFileDialog(title, multiple, filters);
-        }
-
-        public static Task<string> SaveFileDialog(this IInteractionService This, string title, params IFileFilter[] filters)
-        {
-            return This.SaveFileDialog(title, filters);
-        }
+        return This.SaveFileDialog(title, filters);
     }
 }

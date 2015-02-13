@@ -1,7 +1,15 @@
-﻿namespace FSOManagement.Profiles
+﻿#region Usings
+
+using System;
+using FSOManagement.Annotations;
+
+#endregion
+
+namespace FSOManagement.Profiles
 {
     public interface IConfigurationKey
     {
+        [NotNull]
         string Name { get; }
     }
 

@@ -1,12 +1,15 @@
-﻿using System;
+﻿#region Usings
+
+using System;
 using System.Linq;
 using FSOManagement.Implementations;
 using NUnit.Framework;
 
+#endregion
+
 namespace FSOManagement.Tests.Implementations
 {
-    [TestFixture]
-    [Platform("Win")]
+    [TestFixture, Platform("Win")]
     public class WindowsSpeechHandlerTests
     {
         [Test]

@@ -4,8 +4,13 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 using Caliburn.Micro;
+using FSOManagement.Annotations;
+using Launcher.Shared.Startup;
 using Microsoft.Shell;
+using Splat;
+using Squirrel;
 using UI.WPF.Launcher.Common.Classes;
+using UI.WPF.Modules.Update.Services;
 
 #endregion
 
@@ -27,7 +32,7 @@ namespace UI.WPF.Launcher
 
         bool ISingleInstanceApp.SignalExternalCommandLineArgs(IList<string> args)
         {
-            IoC.Get<IEventAggregator>().PublishOnUIThreadAsync(new InstanceLaunchedMessage(args));
+            Locator.Current.GetService<IEventAggregator>().PublishOnUIThreadAsync(new InstanceLaunchedMessage(args));
 
             return true;
         }
@@ -35,8 +40,15 @@ namespace UI.WPF.Launcher
         #endregion
 
         [STAThread]
-        public static void Main()
+        public static void Main([NotNull] string[] args)
         {
+            if (!CommandlineHandler.HandleCommandLine(args))
+            {
+                return;
+            }
+
+            SquirrelUpdateService.UpdaterMain();
+
             // This application needs to be single instance as 
             //     1) The SDL DLL can not be used by two instances
             //     2) Later launching a second instance with commandline arguments should change the state of the main application
@@ -44,6 +56,8 @@ namespace UI.WPF.Launcher
             {
                 var application = new App();
                 application.InitializeComponent();
+
+                new LauncherBootstrapper();
                 application.Run();
 
                 // Allow single instance code to perform cleanup operations

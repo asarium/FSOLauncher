@@ -1,0 +1,64 @@
+﻿<dialogs:CustomDialog x:Class="UI.WPF.Launcher.Views.ErrorDialog"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                      xmlns:dialogs="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
+                      xmlns:reactiveUi="clr-namespace:ReactiveUI;assembly=ReactiveUI"
+                      xmlns:converters="clr-namespace:UI.WPF.Launcher.Converters" mc:Ignorable="d" d:DesignHeight="300"
+                      d:DesignWidth="500" d:DataContext="{d:DesignData /SampleData/UserErrorData.xaml}">
+    <dialogs:CustomDialog.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary
+                    Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.Buttons.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/MahApps.Metro;component/themes/dialogs/basemetrodialog.xaml" />
+                <ResourceDictionary>
+                    <Style x:Key="DefaultStyle" BasedOn="{StaticResource SquareButtonStyle}"
+                           TargetType="{x:Type Button}">
+                        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                    </Style>
+
+                    <Style x:Key="IsDefaultStyle" BasedOn="{StaticResource AccentedSquareButtonStyle}"
+                           TargetType="{x:Type Button}">
+                        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                    </Style>
+
+                    <converters:ErrorDialogStyleConverter x:Key="StyleConverter"
+                                                          Default="{StaticResource DefaultStyle}"
+                                                          IsDefault="{StaticResource IsDefaultStyle}" />
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </dialogs:CustomDialog.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding ErrorMessage}"
+                   VerticalAlignment="Center" FontWeight="Bold" FontSize="20" Margin="2" />
+
+        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding ErrorCauseOrResolution}"
+                   VerticalAlignment="Top" Grid.Row="1" Margin="2" FontSize="12" />
+
+        <ItemsControl HorizontalAlignment="Right" Margin="2" VerticalAlignment="Center" Grid.Row="2"
+                      ItemsSource="{Binding RecoveryOptions}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="reactiveUi:IRecoveryCommand">
+                    <Button Height="35" MinWidth="80" Style="{Binding Converter={StaticResource StyleConverter}}"
+                            Content="{Binding CommandName}" Margin="0 0 5 0" Command="{Binding}"
+                            Click="CommandButtonClick" />
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+    </Grid>
+</dialogs:CustomDialog>

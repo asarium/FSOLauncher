@@ -32,28 +32,40 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Akavache">
+      <HintPath>..\..\..\..\packages\akavache.core.4.0.4\lib\net45\Akavache.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Caliburn.Micro">
-      <HintPath>..\..\..\..\packages\Caliburn.Micro.Core.2.0.0\lib\net45\Caliburn.Micro.dll</HintPath>
+      <HintPath>..\..\..\..\packages\Caliburn.Micro.Core.2.0.1\lib\net45\Caliburn.Micro.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Caliburn.Micro.Platform">
-      <HintPath>..\..\..\..\packages\Caliburn.Micro.2.0.0\lib\net45\Caliburn.Micro.Platform.dll</HintPath>
+      <HintPath>..\..\..\..\packages\Caliburn.Micro.2.0.1\lib\net45\Caliburn.Micro.Platform.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="MahApps.Metro">
-      <HintPath>..\..\..\..\packages\MahApps.Metro.0.14.0-ALPHA98\lib\net45\MahApps.Metro.dll</HintPath>
+    <Reference Include="MahApps.Metro, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f4fb5a3c4d1e5b4f, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\packages\MahApps.Metro.1.0.0.0\lib\net45\MahApps.Metro.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\..\packages\Newtonsoft.Json.6.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="ReactiveUI">
-      <HintPath>..\..\..\..\packages\reactiveui-core.6.0.3\lib\Net45\ReactiveUI.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="ReactiveUI, Version=6.2.1.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\packages\reactiveui-core.6.2.1.1\lib\Net45\ReactiveUI.dll</HintPath>
     </Reference>
     <Reference Include="Splat">
-      <HintPath>..\..\..\..\packages\Splat.1.4.0\lib\Net45\Splat.dll</HintPath>
+      <HintPath>..\..\..\..\packages\Splat.1.5.1\lib\Net45\Splat.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Reactive.Core">
       <HintPath>..\..\..\..\packages\Rx-Core.2.2.5\lib\net45\System.Reactive.Core.dll</HintPath>
       <Private>True</Private>
@@ -75,7 +87,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\packages\MahApps.Metro.0.14.0-ALPHA98\lib\net45\System.Windows.Interactivity.dll</HintPath>
+      <HintPath>..\..\..\..\packages\MahApps.Metro.1.0.0.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
     </Reference>
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
@@ -90,18 +102,27 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="BlendHelpers\BlendResourceDictionary.cs" />
-    <Compile Include="Converters\BitmapConverter.cs" />
+    <Compile Include="ViewModels\DownloadedModViewModel.cs" />
+    <Compile Include="ViewModels\InstalledModViewModel.cs" />
+    <Compile Include="ViewModels\ModListViewModel.cs" />
+    <Compile Include="ViewModels\ModViewModel.cs" />
+    <Compile Include="Views\InstalledModView.xaml.cs">
+      <DependentUpon>InstalledModView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ModImageDisplayControl.xaml.cs">
       <DependentUpon>ModImageDisplayControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="ModTabModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ViewModels\ModViewModel.cs" />
+    <Compile Include="ViewModels\IniModViewModel.cs" />
     <Compile Include="Views\ModInformationDialog.xaml.cs">
       <DependentUpon>ModInformationDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ModDisplayControl.xaml.cs">
-      <DependentUpon>ModDisplayControl.xaml</DependentUpon>
+    <Compile Include="Views\IniModView.xaml.cs">
+      <DependentUpon>IniModView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ModListView.xaml.cs">
+      <DependentUpon>ModListView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ModTabView.xaml.cs">
       <DependentUpon>ModTabView.xaml</DependentUpon>
@@ -116,18 +137,23 @@
       <Project>{73342923-20EE-4F2C-B9AB-9A03341F782A}</Project>
       <Name>FSOManagement</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Libraries\ModInstallation\ModInstallation.csproj">
+      <Project>{6219DDE3-F989-412B-8368-3EEB6B0D0C00}</Project>
+      <Name>ModInstallation</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\UI.WPF.Launcher.Common\UI.WPF.Launcher.Common.csproj">
       <Project>{ECBE6F2B-423C-47BC-AA36-26CD3B5E8F81}</Project>
       <Name>UI.WPF.Launcher.Common</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <DesignData Include="SampleData\modview.xaml" />
-  </ItemGroup>
-  <ItemGroup>
     <Page Include="Properties\DesignTimeResources.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\InstalledModView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ModImageDisplayControl.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -137,17 +163,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\ModDisplayControl.xaml">
+    <Page Include="Views\IniModView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\ModListView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ModTabView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="SampleData\bplogo.bmp" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

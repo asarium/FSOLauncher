@@ -1,66 +1,20 @@
 ﻿#region Usings
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 using System.Threading.Tasks;
+using FSOManagement.Annotations;
 
 #endregion
 
 namespace UI.WPF.Launcher.Common.Services
 {
-    public class UpdateVersion
-    {
-        public UpdateVersion(int major, int minor, int revision, int build)
-        {
-            this.Major = major;
-            this.Minor = minor;
-            this.Revision = revision;
-            this.Build = build;
-        }
-
-        public int Major { get; private set; }
-
-        public int Minor { get; private set; }
-
-        public int Revision { get; private set; }
-
-        public int Build { get; private set; }
-
-        public override string ToString()
-        {
-            var builder = new StringBuilder();
-
-            if (Major < 0)
-            {
-                return builder.ToString();
-            }
-            builder.Append(Major);
-
-            if (Minor < 0)
-            {
-                return builder.ToString();
-            }
-            builder.Append('.').Append(Minor);
-
-            if (Revision < 0)
-            {
-                return builder.ToString();
-            }
-            builder.Append('.').Append(Revision);
-
-            if (Build != 0)
-            {
-                builder.Append('.').Append(Build);
-            }
-
-            return builder.ToString();
-        }
-    }
-
     public interface IUpdateStatus
     {
-        UpdateVersion Version { get; }
+        [NotNull]
+        Version Version { get; }
 
         bool UpdateAvailable { get; }
 
@@ -73,24 +27,31 @@ namespace UI.WPF.Launcher.Common.Services
 
         Downloading,
 
-        Installing
+        Installing,
+
+        Finished
     }
 
     public interface IUpdateProgress
     {
-        long TotalBytes { get; }
-
-        long CurrentBytes { get; }
+        double Progress { get; }
 
         UpdateState State { get; }
+
+        [CanBeNull]
+        IDictionary<Version, string> ReleaseNotes { get; }
     }
 
     public interface IUpdateService : INotifyPropertyChanged
     {
         bool IsUpdatePossible { get; }
 
+        bool IsFirstRun { get; }
+
+        [NotNull]
         Task<IUpdateStatus> CheckForUpdateAsync();
 
-        Task DoUpdateAsync(IProgress<IUpdateProgress> progressReporter);
+        [NotNull]
+        Task DoUpdateAsync([NotNull] IProgress<IUpdateProgress> progressReporter);
     }
 }

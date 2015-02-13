@@ -1,24 +1,44 @@
+#region Usings
+
+using System;
+using System.Collections.Generic;
+using FSOManagement.Annotations;
 using UI.WPF.Launcher.Common.Services;
+
+#endregion
 
 namespace UI.WPF.Modules.Update.Services
 {
     internal class UpdateProgress : IUpdateProgress
     {
-        public UpdateProgress(long currentBytes, long totalBytes, UpdateState state)
+        public UpdateProgress(double progress, UpdateState state)
         {
-            CurrentBytes = currentBytes;
-            TotalBytes = totalBytes;
+            Progress = progress;
             State = state;
+        }
+
+        private UpdateProgress()
+        {
         }
 
         #region IUpdateProgress Members
 
-        public long TotalBytes { get; private set; }
-
-        public long CurrentBytes { get; private set; }
+        public double Progress { get; private set; }
 
         public UpdateState State { get; private set; }
 
+        public IDictionary<Version, string> ReleaseNotes { get; private set; }
+
         #endregion
+
+        [NotNull]
+        public static UpdateProgress Finished([NotNull] IDictionary<Version, string> releaseNotes)
+        {
+            return new UpdateProgress
+            {
+                State = UpdateState.Finished,
+                ReleaseNotes = releaseNotes
+            };
+        }
     }
 }

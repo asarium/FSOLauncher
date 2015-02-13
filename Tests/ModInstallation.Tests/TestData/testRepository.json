@@ -1,0 +1,202 @@
+﻿{
+    "mods": [
+        {
+            "id": "mediavps",
+            "title": "MediaVPs",
+            "version": "2.0.1",
+            "description": "MediaVPs modification",
+            "notes": "MOD NOTES :\\nMediaVPs modification\\n\\nBRANCH NOTES :\\n\\n\\nBUILD NOTES :\\n",
+            "folder": ".",
+            "packages": [
+                {
+                    "name": "Root",
+                    "status": "required",
+                    "files": [
+                        {
+                            "filename": "MV_Root.7z",
+                            "is_archive": true,
+                            "dest": ".",
+                            "urls": [
+                                "http://mvp.fsmods.net/2014/MV_Root.7z",
+                                "http://www.lunardigitalproductions.com/downloads/MediaVPs2014/MV_Root.7z"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Music",
+                    "status": "recommended",
+                    "dependencies": [
+                        {
+                            "id": "mediavps",
+                            "version": "2.0.1",
+                            "packages": [
+                                "Root"
+                            ]
+                        }
+                    ],
+                    "files": [
+                        {
+                            "filename": "MV_Music.7z",
+                            "is_archive": true,
+                            "dest": ".",
+                            "urls": [
+                                "http://mvp.fsmods.net/2014/MV_Music.7z",
+                                "http://www.lunardigitalproductions.com/downloads/MediaVPs2014/MV_Music.7z"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Assets",
+                    "status": "recommended",
+                    "dependencies": [
+                        {
+                            "id": "mediavps",
+                            "version": "2.0.1",
+                            "packages": [
+                                "Root"
+                            ]
+                        }
+                    ],
+                    "files": [
+                        {
+                            "filename": "MV_Assets.7z",
+                            "is_archive": true,
+                            "dest": ".",
+                            "urls": [
+                                "http://mvp.fsmods.net/2014/MV_Assets.7z",
+                                "http://www.lunardigitalproductions.com/downloads/MediaVPs2014/MV_Assets.7z"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Effects",
+                    "status": "required",
+                    "dependencies": [
+                        {
+                            "id": "mediavps",
+                            "version": "2.0.1",
+                            "packages": [
+                                "Root"
+                            ]
+                        }
+                    ],
+                    "files": [
+                        {
+                            "filename": "MV_Effects.7z",
+                            "is_archive": true,
+                            "urls": [
+                                "http://mvp.fsmods.net/2014/MV_Effects.7z",
+                                "http://www.lunardigitalproductions.com/downloads/MediaVPs2014/MV_Effects.7z"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Advanced",
+                    "status": "required",
+                    "dependencies": [
+                        {
+                            "id": "mediavps",
+                            "version": "2.0.1",
+                            "packages": [
+                                "Effects",
+                                "Assets"
+                            ]
+                        }
+                    ],
+                    "files": [
+                        {
+                            "filename": "MV_Advanced.7z",
+                            "is_archive": true,
+                            "dest": ".",
+                            "urls": [
+                                "http://mvp.fsmods.net/2014/MV_Advanced.7z",
+                                "http://www.lunardigitalproductions.com/downloads/MediaVPs2014/MV_Advanced.7z"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "AnimatedGlowmaps",
+                    "status": "required",
+                    "dependencies": [
+                        {
+                            "id": "mediavps",
+                            "version": "2.0.1",
+                            "packages": [
+                                "Assets"
+                            ]
+                        }
+                    ],
+                    "files": [
+                        {
+                            "filename": "MV_A-Glows.7z",
+                            "is_archive": true,
+                            "urls": [
+                                "http://mvp.fsmods.net/2014/MV_A-Glows.7z",
+                                "http://www.lunardigitalproductions.com/downloads/MediaVPs2014/MV_A-Glows.7z"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "RadarIcons",
+                    "status": "required",
+                    "dependencies": [
+                        {
+                            "id": "mediavps",
+                            "version": "2.0.1",
+                            "packages": [
+                                "Root"
+                            ]
+                        }
+                    ],
+                    "files": [
+                        {
+                            "filename": "MV_RadarIcons.7z",
+                            "is_archive": true,
+                            "urls": [
+                                "http://mvp.fsmods.net/2014/MV_RadarIcons.7z",
+                                "http://www.lunardigitalproductions.com/downloads/MediaVPs2014/MV_RadarIcons.7z"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "CBAnims",
+                    "status": "required",
+                    "dependencies": [
+                        {
+                            "id": "mediavps",
+                            "version": "2.0.1",
+                            "packages": [
+                                "Root"
+                            ]
+                        }
+                    ],
+                    "files": [
+                        {
+                            "filename": "MV_CB_ANI_1.7z",
+                            "is_archive": true,
+                            "urls": [
+                                "http://mvp.fsmods.net/2014/MV_CB_ANI_1.7z",
+                                "http://www.lunardigitalproductions.com/downloads/MediaVPs2014/MV_CB_ANI_1.7z"
+                            ]
+                        },
+                        {
+                            "filename": "MV_CB_ANI_2.7z",
+                            "is_archive": true,
+                            "urls": [
+                                "http://mvp.fsmods.net/2014/MV_CB_ANI_2.7z",
+                                "http://www.lunardigitalproductions.com/downloads/MediaVPs2014/MV_CB_ANI_2.7z"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -5644,7 +5644,16 @@ namespace SDLGlue
 		/// This function is only available in SDL 2.0.1 and later.
 		/// </remarks>
 		[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-		public static extern int SDL_GetSystemRAM();
+        public static extern int SDL_GetSystemRAM();
+
+        [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool SDL_HasSSE();
+
+        [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool SDL_HasSSE2();
+
+        [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool SDL_HasAVX();
 
 		#endregion
 	}

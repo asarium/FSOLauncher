@@ -12,6 +12,7 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\</SolutionDir>
+    <ExpressionBlendVersion>12.0.51020.0</ExpressionBlendVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,17 +32,26 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Caliburn.Micro">
-      <HintPath>..\..\..\packages\Caliburn.Micro.Core.2.0.0\lib\net45\Caliburn.Micro.dll</HintPath>
+    <Reference Include="Caliburn.Micro, Version=2.0.1.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\Caliburn.Micro.Core.2.0.1\lib\net45\Caliburn.Micro.dll</HintPath>
+    </Reference>
+    <Reference Include="Caliburn.Micro.Platform">
+      <HintPath>..\..\..\packages\Caliburn.Micro.2.0.1\lib\net45\Caliburn.Micro.Platform.dll</HintPath>
+    </Reference>
+    <Reference Include="MahApps.Metro, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f4fb5a3c4d1e5b4f, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\MahApps.Metro.1.0.0.0\lib\net45\MahApps.Metro.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="ReactiveUI, Version=6.0.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\reactiveui-core.6.0.3\lib\Net45\ReactiveUI.dll</HintPath>
+    <Reference Include="ReactiveUI, Version=6.2.1.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\reactiveui-core.6.2.1.1\lib\Net45\ReactiveUI.dll</HintPath>
     </Reference>
-    <Reference Include="Splat">
-      <HintPath>..\..\..\packages\Splat.1.4.0\lib\Net45\Splat.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Splat, Version=1.5.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\Splat.1.5.1\lib\Net45\Splat.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -64,6 +74,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\packages\Rx-XAML.2.2.5\lib\net45\System.Reactive.Windows.Threading.dll</HintPath>
     </Reference>
+    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\MahApps.Metro.1.0.0.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -77,15 +90,20 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Classes\InstanceLaunchedMessage.cs" />
+    <Compile Include="Classes\MainWindowOpenedMessage.cs" />
     <Compile Include="ContractNames.cs" />
     <Compile Include="Interfaces\IDialogControl.cs" />
     <Compile Include="Interfaces\IExecutableLauncher.cs" />
+    <Compile Include="Interfaces\IFlyout.cs" />
     <Compile Include="Interfaces\ILauncherTab.cs" />
     <Compile Include="Interfaces\ILauncherViewModel.cs" />
+    <Compile Include="Interfaces\IModRepositoryViewModel.cs" />
     <Compile Include="Interfaces\IProfileManager.cs" />
     <Compile Include="Interfaces\ISettings.cs" />
     <Compile Include="Interfaces\IShellViewModel.cs" />
     <Compile Include="Interfaces\IWindowCommand.cs" />
+    <Compile Include="Services\IFlyoutManager.cs" />
+    <Compile Include="Services\ITaskbarController.cs" />
     <Compile Include="Services\IUpdateService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\IInteractionService.cs" />
@@ -98,9 +116,32 @@
       <Project>{73342923-20EE-4F2C-B9AB-9A03341F782A}</Project>
       <Name>FSOManagement</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\ModInstallation\ModInstallation.csproj">
+      <Project>{6219DDE3-F989-412B-8368-3EEB6B0D0C00}</Project>
+      <Name>ModInstallation</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Resources\Entypo.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <DesignData Include="Resources\MahAppsResources.xaml">
+      <SubType>Designer</SubType>
+    </DesignData>
+    <Page Include="Properties\DesignTimeResources.xaml" Condition="'$(DesignTime)'=='true' OR ('$(SolutionPath)'!='' AND Exists('$(SolutionPath)') AND '$(BuildingInsideVisualStudio)'!='true' AND '$(BuildingInsideExpressionBlend)'!='true')">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <ContainsDesignTimeResources>true</ContainsDesignTimeResources>
+    </Page>
+    <Page Include="Resources\Icons.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\Entypo-license.txt" />
+    <Content Include="Resources\WindowsIcons-license.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

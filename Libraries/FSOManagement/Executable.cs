@@ -10,7 +10,10 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using FSOManagement.Annotations;
+using FSOManagement.Interfaces;
+using FSOManagement.Profiles.DataClass;
 using FSOManagement.Util;
+using Splat;
 
 #endregion
 
@@ -32,6 +35,8 @@ namespace FSOManagement
 
     public enum ExecutableFeatureSet
     {
+        None,
+
         SSE,
 
         SSE2,
@@ -39,48 +44,32 @@ namespace FSOManagement
         AVX
     }
 
-    [Serializable]
-    public sealed class Executable : IEquatable<Executable>
+    public sealed class Executable : IEquatable<Executable>, IDataModel<ExecutableData>, IEnableLogger
     {
-        private const string GetFlagsArgument = "-get_flags";
+        private const string GetFlagsArgument = "-get_flags -parse_cmdline_only";
 
         private const string FlagsFile = "flags.lch";
 
-        [NonSerialized]
         private List<string> _additionTags = new List<string>();
 
-        [NonSerialized]
+        private ExecutableData _data;
+
         private ExecutableFeatureSet _featureSet;
 
-        private string _fullPath;
-
-        [NonSerialized]
         private int _major;
 
-        [NonSerialized]
         private int _minor;
 
-        [NonSerialized]
-        private ExecutableMode _mode;
-
-        [NonSerialized]
         private int _release;
 
-        [NonSerialized]
         private int _revision;
 
-        [NonSerialized]
         private ExecutableType _type;
 
         [UsedImplicitly]
         public Executable()
         {
-        }
-
-        public Executable(string fullPath)
-        {
-            OnCreated();
-            FullPath = fullPath; // Setting this property will reparse the path
+            SetDefaultData();
         }
 
         public ExecutableType Type
@@ -89,11 +78,7 @@ namespace FSOManagement
             private set { _type = value; }
         }
 
-        public ExecutableMode Mode
-        {
-            get { return _mode; }
-            private set { _mode = value; }
-        }
+        public ExecutableMode Mode { get; private set; }
 
         public ExecutableFeatureSet FeatureSet
         {
@@ -125,20 +110,39 @@ namespace FSOManagement
             private set { _revision = value; }
         }
 
+        [NotNull]
         public string FullPath
         {
-            get { return _fullPath; }
+            get { return _data.Path; }
             set
             {
-                _fullPath = value;
+                _data.Path = value;
                 ReparsePath();
             }
         }
 
+        [NotNull]
         public IEnumerable<string> AdditionalTags
         {
             get { return _additionTags ?? Enumerable.Empty<string>(); }
         }
+
+        #region IDataModel<ExecutableData> Members
+
+        public void InitializeFromData(ExecutableData data)
+        {
+            SetDefaultData();
+            _data = data;
+
+            ReparsePath();
+        }
+
+        public ExecutableData GetData()
+        {
+            return _data;
+        }
+
+        #endregion
 
         #region IEquatable<Executable> Members
 
@@ -152,10 +156,20 @@ namespace FSOManagement
             {
                 return true;
             }
-            return string.Equals(_fullPath, other._fullPath);
+            return string.Equals(_data.Path, other._data.Path);
         }
 
         #endregion
+
+        private void SetDefaultData()
+        {
+            _featureSet = ExecutableFeatureSet.None;
+            _major = -1;
+            _minor = -1;
+            _release = -1;
+            _revision = -1;
+            _type = ExecutableType.FreeSpace;
+        }
 
         [OnDeserialized]
         private void OnDeserialized(StreamingContext context)
@@ -173,10 +187,7 @@ namespace FSOManagement
             FeatureSet = ExecutableFeatureSet.SSE2; // SSE2 is the default
             _additionTags = new List<string>();
 
-            if (FullPath != null)
-            {
-                ReparsePath();
-            }
+            ReparsePath();
         }
 
         public override bool Equals(object obj)
@@ -194,7 +205,8 @@ namespace FSOManagement
 
         public override int GetHashCode()
         {
-            return (_fullPath != null ? _fullPath.GetHashCode() : 0);
+// ReSharper disable once NonReadonlyFieldInGetHashCode
+            return _data.Path.GetHashCode();
         }
 
         public static bool operator ==(Executable left, Executable right)
@@ -224,7 +236,10 @@ namespace FSOManagement
                 stringBuilder.AppendFormat(" r{0}", Revision);
             }
 
-            stringBuilder.AppendFormat(" {0}", Enum.GetName(typeof(ExecutableFeatureSet), FeatureSet));
+            if (FeatureSet != ExecutableFeatureSet.None)
+            {
+                stringBuilder.AppendFormat(" {0}", Enum.GetName(typeof(ExecutableFeatureSet), FeatureSet));
+            }
 
             if (includeDebug && Mode == ExecutableMode.Debug)
             {
@@ -246,23 +261,36 @@ namespace FSOManagement
 
         public async Task<BuildCapabilities> GetBuildCapabilitiesAsync(CancellationToken cancellationToken)
         {
+            var directory = Path.GetDirectoryName(FullPath);
+
+            if (directory == null)
+            {
+                this.Log().Warn("{0} does not have a directory path!", FullPath);
+                return null;
+            }
+
             var process = await Task.Run(() =>
             {
                 var p = new Process
                 {
-                    StartInfo =
-                        new ProcessStartInfo {FileName = FullPath, Arguments = GetFlagsArgument, WorkingDirectory = Path.GetDirectoryName(FullPath)}
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = FullPath,
+                        Arguments = GetFlagsArgument,
+                        WorkingDirectory = directory
+                    }
                 };
                 p.Start();
 
                 return p;
-            }, cancellationToken);
+            },
+                cancellationToken);
 
             await process.WaitForExitAsync(cancellationToken);
 
             Debug.Assert(FullPath != null, "FullPath != null");
 
-            var flagFilePath = Path.Combine(Path.GetDirectoryName(FullPath), FlagsFile);
+            var flagFilePath = Path.Combine(directory, FlagsFile);
 
             if (!File.Exists(flagFilePath))
             {
@@ -294,6 +322,14 @@ namespace FSOManagement
         #region Static functions
 
         private static readonly IEqualityComparer<Executable> GroupingComparerInstance = new GroupingEqualityComparer();
+
+        public Executable(string fullPath)
+        {
+            InitializeFromData(new ExecutableData
+            {
+                Path = fullPath
+            });
+        }
 
         public static IEqualityComparer<Executable> GroupingComparer
         {
@@ -332,7 +368,7 @@ namespace FSOManagement
 
         private void ReparsePath()
         {
-            var fileName = Path.GetFileName(_fullPath);
+            var fileName = Path.GetFileName(_data.Path);
             if (fileName == null)
             {
                 throw new ArgumentException("path argument is not valid!");

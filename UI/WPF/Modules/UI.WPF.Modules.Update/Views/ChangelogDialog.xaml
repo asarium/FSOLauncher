@@ -1,0 +1,47 @@
+﻿<dialogs:BaseMetroDialog x:Class="UI.WPF.Modules.Update.Views.ChangelogDialog"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                      xmlns:dialogs="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
+                      xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+                      xmlns:viewModels="clr-namespace:UI.WPF.Modules.Update.ViewModels"
+                      xmlns:behaviors="clr-namespace:UI.WPF.Modules.Update.Behaviors" mc:Ignorable="d"
+                      d:DesignHeight="450" d:DesignWidth="600"
+                      d:DataContext="{d:DesignData /SampleData/ChangeLogDialogData.xaml}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Update was successfull!"
+                   VerticalAlignment="Top" FontWeight="Bold" Margin="5" FontSize="18.667"
+                   Foreground="{DynamicResource AccentColorBrush}" />
+
+        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Changelog:" VerticalAlignment="Top"
+                   Grid.Row="1" FontWeight="Bold" Margin="2" FontSize="12.5" Foreground="{DynamicResource BlackBrush}" />
+
+        <ScrollViewer Focusable="False" VerticalScrollBarVisibility="Auto" Grid.Row="2" Margin="5"
+                      DataContext="{Binding}" MaxHeight="200">
+            <ItemsControl ItemsSource="{Binding ChangeLogElements}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="viewModels:ChangeLogElement">
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap"
+                                       Text="{Binding Version, StringFormat=Version {0}}" VerticalAlignment="Top"
+                                       FontWeight="Bold" Margin="2" FontSize="11"
+                                       Foreground="{DynamicResource BlackBrush}" />
+                            
+                            <TextBlock Margin="5,0,2,0" behaviors:HtmlTextBoxProperties.HtmlText="{Binding Content}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+        <Button Height="35" MinWidth="80" Style="{DynamicResource AccentedDialogSquareButton}" Grid.Row="3"
+                Margin="3,3,5,3" Content="Close" HorizontalAlignment="Right" VerticalAlignment="Center"
+                Click="CloseButtonClick" />
+    </Grid>
+</dialogs:BaseMetroDialog>

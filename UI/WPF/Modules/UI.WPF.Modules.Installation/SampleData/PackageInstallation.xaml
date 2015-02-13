@@ -1,0 +1,3 @@
+﻿<Mods:PackageViewModel xmlns:Mods="clr-namespace:UI.WPF.Modules.Installation.ViewModels.Mods"
+                       Selected="False">
+</Mods:PackageViewModel>

@@ -33,21 +33,19 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Caliburn.Micro">
-      <HintPath>..\..\packages\Caliburn.Micro.Core.2.0.0\lib\net45\Caliburn.Micro.dll</HintPath>
-    </Reference>
     <Reference Include="INIFileParser">
       <HintPath>..\..\packages\ini-parser.2.1.1\lib\INIFileParser.dll</HintPath>
     </Reference>
-    <Reference Include="ReactiveUI, Version=6.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="ReactiveUI, Version=6.2.1.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\reactiveui-core.6.0.3\lib\Net45\ReactiveUI.dll</HintPath>
+      <HintPath>..\..\packages\reactiveui-core.6.2.1.1\lib\Net45\ReactiveUI.dll</HintPath>
     </Reference>
-    <Reference Include="Splat, Version=1.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Splat, Version=1.5.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Splat.1.4.0\lib\Net45\Splat.dll</HintPath>
+      <HintPath>..\..\packages\Splat.1.5.1\lib\Net45\Splat.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="System.Reactive.Core, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Rx-Core.2.2.5\lib\net45\System.Reactive.Core.dll</HintPath>
@@ -84,44 +82,52 @@
     <Compile Include="FSOUtilities.cs" />
     <Compile Include="Implementations\ClsLookupAccountName.cs" />
     <Compile Include="Implementations\ConfigurationKeyNames.cs" />
-    <Compile Include="Implementations\IniModDependencies.cs" />
-    <Compile Include="Implementations\NoModDependencies.cs" />
+    <Compile Include="Implementations\Mod\IniModDependencies.cs" />
+    <Compile Include="Implementations\Mod\IniModListLoader.cs" />
+    <Compile Include="Implementations\Mod\IniModification.cs" />
+    <Compile Include="Implementations\Mod\ModManager.cs" />
+    <Compile Include="Implementations\Mod\NoModDependencies.cs" />
     <Compile Include="Implementations\RegistryConfigurationProvider.cs" />
     <Compile Include="Implementations\WindowsSpeechHandler.cs" />
     <Compile Include="Interfaces\IConfigurationProvider.cs" />
+    <Compile Include="Interfaces\IDataModel.cs" />
     <Compile Include="Interfaces\IFlagManager.cs" />
     <Compile Include="Interfaces\ILauncherSettings.cs" />
-    <Compile Include="Interfaces\IModActivationManager.cs" />
-    <Compile Include="Interfaces\IModDependencies.cs" />
+    <Compile Include="Interfaces\Mod\ILocalModification.cs" />
+    <Compile Include="Interfaces\Mod\IModActivationManager.cs" />
+    <Compile Include="Interfaces\Mod\IModDependencies.cs" />
     <Compile Include="Interfaces\IProfile.cs" />
     <Compile Include="Interfaces\ISpeechHandler.cs" />
+    <Compile Include="Interfaces\Mod\IModManager.cs" />
     <Compile Include="Interfaces\TextureFiltering.cs" />
-    <Compile Include="Modification.cs" />
-    <Compile Include="ModManager.cs" />
     <Compile Include="OpenAL\AL.cs" />
     <Compile Include="OpenAL\LPUtf8StrMarshaler.cs" />
     <Compile Include="OpenAL\OpenALManager.cs" />
     <Compile Include="Profiles\ConfigurationKey.cs" />
     <Compile Include="Profiles\ConfigurationManager.cs" />
+    <Compile Include="Profiles\DataClass\ExecutableData.cs" />
+    <Compile Include="Profiles\DataClass\ProfileData.cs" />
+    <Compile Include="Profiles\DataClass\TcData.cs" />
     <Compile Include="Profiles\DefaultConfigurationKey.cs" />
     <Compile Include="Profiles\FlagInformation.cs" />
     <Compile Include="Profiles\FlagManager.cs" />
-    <Compile Include="Profiles\Keys\Audio.cs" />
-    <Compile Include="Profiles\Keys\General.cs" />
-    <Compile Include="Profiles\Keys\Speech.cs" />
-    <Compile Include="Profiles\Keys\Video.cs" />
-    <Compile Include="Profiles\ModActivationManager.cs" />
+    <Compile Include="Implementations\Mod\ModActivationManager.cs" />
     <Compile Include="Profiles\Profile.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Speech\SpeechManager.cs" />
     <Compile Include="TotalConversion.cs" />
+    <Compile Include="URLHandler\Implementations\WindowsProtocolInstaller.cs" />
+    <Compile Include="URLHandler\Interfaces\IFsoProtocolHandler.cs" />
+    <Compile Include="URLHandler\Interfaces\IProtocolInstaller.cs" />
+    <Compile Include="URLHandler\ProtocolAction.cs" />
     <Compile Include="Util\ConfigurationProviderExtensions.cs" />
     <Compile Include="Util\DLLLoader\IDynamicLibraryLoader.cs" />
     <Compile Include="Util\DLLLoader\LinuxLoader.cs" />
     <Compile Include="Util\DLLLoader\WindowsLoader.cs" />
     <Compile Include="Util\FlagStructs.cs" />
     <Compile Include="Util\FsoConstants.cs" />
+    <Compile Include="Util\IModManagerExtensions.cs" />
     <Compile Include="Util\IniDataExtensions.cs" />
     <Compile Include="Util\ProcessExtensions.cs" />
     <Compile Include="Util\StreamExtensions.cs" />
@@ -136,7 +142,9 @@
       <Name>SDLGlue</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="URLHandler\Exceptions\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

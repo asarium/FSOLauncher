@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Data;
@@ -12,7 +13,6 @@ using FSOManagement;
 using FSOManagement.Interfaces;
 using ReactiveUI;
 using UI.WPF.Launcher.Common.Interfaces;
-using UI.WPF.Launcher.Common.Services;
 
 #endregion
 
@@ -140,6 +140,11 @@ namespace UI.WPF.Modules.Advanced.ViewModels
 
             return val.Flags.Select(flag =>
             {
+                if (ProfileManager.CurrentProfile == null)
+                {
+                    return null;
+                }
+
                 var viewModel = new FlagViewModel(flag, ProfileManager.CurrentProfile.FlagManager);
                 viewModel.SetEnabled(ProfileManager.CurrentProfile.FlagManager.IsFlagSet(flag.Name));
                 return viewModel;
@@ -161,6 +166,12 @@ namespace UI.WPF.Modules.Advanced.ViewModels
 
         private async Task RegenerateFlagList(CancellationToken token)
         {
+            if (ProfileManager.CurrentProfile == null)
+            {
+                CurrentBuildCaps = null;
+                return;
+            }
+
             if (ProfileManager.CurrentProfile.SelectedExecutable == null)
             {
                 // Clear list
@@ -174,9 +185,23 @@ namespace UI.WPF.Modules.Advanced.ViewModels
 
                 if (CurrentBuildCaps == null)
                 {
-                    await
-                        InteractionService.ShowMessage(MessageType.Error, "FreeSpace error",
-                            "FreeSpace has not generated a flag file required to determine the supported features!");
+                    var userError = new UserError("FreeSpace error",
+                        "FreeSpace has not generated a flag file required to determine the supported features!",
+                        new[]
+                        {
+                            new RecoveryCommand("Retry", _ => RecoveryOptionResult.RetryOperation)
+                            {
+                                IsDefault = true
+                            },
+                            RecoveryCommand.Cancel
+                        });
+
+                    var result = await UserError.Throw(userError);
+
+                    if (result == RecoveryOptionResult.RetryOperation)
+                    {
+                        RegenerateListCommand.Execute(null);
+                    }
                 }
             }
         }
