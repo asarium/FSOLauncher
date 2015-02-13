@@ -163,7 +163,7 @@ namespace ModInstallation.Implementations.Mods
                     var temppath = Path.Combine(destDirName, subdir.Name);
 
                     // Copy the subdirectories.
-                    DirectoryCopy(subdir.FullName, temppath, copySubDirs);
+                    DirectoryCopy(subdir.FullName, temppath, true);
                 }
             }
         }
