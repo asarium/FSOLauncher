@@ -13,114 +13,11 @@
              d:DataContext="{d:DesignInstance viewModels:InstallationTabViewModel}" d:DesignHeight="300"
              d:DesignWidth="300">
     <UserControl.Resources>
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-
         <installation:InstallationView x:Key="InstallationView" DataContext="{Binding InstallationViewModel}" />
 
         <operations:OperationsOverviewView x:Key="OverviewView" DataContext="{Binding OperationOverviewViewModel}" />
 
-        <Grid x:Key="PackageList">
-            <Grid ZIndex="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <ItemsControl ItemsSource="{Binding ModGroupViewModels}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate DataType="mods1:ModGroupViewModel">
-                            <Grid>
-                                <views:ModInformationControl />
-                            </Grid>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <VirtualizingStackPanel />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.Template>
-                        <ControlTemplate>
-                            <Border BorderThickness="{TemplateBinding Border.BorderThickness}"
-                                    Padding="{TemplateBinding Control.Padding}"
-                                    BorderBrush="{TemplateBinding Border.BorderBrush}"
-                                    Background="{TemplateBinding Panel.Background}" SnapsToDevicePixels="True">
-                                <ScrollViewer Padding="{TemplateBinding Control.Padding}" Focusable="False"
-                                              VerticalScrollBarVisibility="Auto">
-                                    <ItemsPresenter
-                                        SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
-                                </ScrollViewer>
-                            </Border>
-                        </ControlTemplate>
-                    </ItemsControl.Template>
-                </ItemsControl>
-                <Grid Margin="0" Grid.Row="1">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <Grid Margin="3" VerticalAlignment="Center"
-                          Visibility="{Binding InstallationInProgress, Converter={StaticResource BooleanToVisibilityConverter}}">
-                        <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-                        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Installation in progress..."
-                                   VerticalAlignment="Top" Margin="2,0,0,2" />
-                        <controls:MetroProgressBar VerticalAlignment="Center" Grid.Row="1" Margin="0,2" Maximum="1"
-                                                   Value="{Binding InstallationProgress}" />
-                    </Grid>
-                    <Button HorizontalAlignment="Right" VerticalAlignment="Top" Command="{Binding InstallModsCommand}"
-                            Margin="3" Grid.Column="1">
-                        <Button.Style>
-                            <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-                                <Setter Property="ToolTip" Value="Start download and installation" />
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding InstallationInProgress}" Value="True">
-                                        <Setter Property="ToolTip" Value="Click for more information" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                        <StackPanel Orientation="Horizontal">
-                            <Rectangle Width="20" Height="20"
-                                       Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}">
-                                <Rectangle.OpacityMask>
-                                    <VisualBrush Stretch="Fill" Visual="{DynamicResource appbar_download}" />
-                                </Rectangle.OpacityMask>
-                            </Rectangle>
-                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,2,2,2"
-                                       FontSize="18" FontWeight="Bold">
-                                <TextBlock.Style>
-                                    <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
-                                        <Setter Property="Text" Value="Install" />
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding InstallationInProgress}" Value="True">
-                                                <Setter Property="Text" Value="Installing..." />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TextBlock.Style>
-                            </TextBlock>
-                        </StackPanel>
-                    </Button>
-                </Grid>
-            </Grid>
-            <Grid ZIndex="2"
-                  Visibility="{Binding HasManagerStatusMessage, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <Rectangle Fill="{DynamicResource WhiteBrush}" Opacity="0.5" />
-                <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-
-                    <controls:ProgressRing Grid.Row="0" IsActive="{Binding HasManagerStatusMessage}" />
-                    <TextBlock Text="{Binding ManagerStatusMessage}" VerticalAlignment="Center"
-                               HorizontalAlignment="Center" Margin="5" Grid.Row="1" FontSize="14.667" FontWeight="Bold"
-                               TextWrapping="Wrap" TextAlignment="Center" />
-                </Grid>
-            </Grid>
-        </Grid>
+        <views:ModListView x:Key="PackageList" />
     </UserControl.Resources>
 
     <controls:TransitioningContentControl>

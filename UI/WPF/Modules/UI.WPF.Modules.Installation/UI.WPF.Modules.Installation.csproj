@@ -120,6 +120,9 @@
     <Compile Include="Views\ModInformationControl.xaml.cs">
       <DependentUpon>ModInformationControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\ModListView.xaml.cs">
+      <DependentUpon>ModListView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Operations\OperationsOverviewView.xaml.cs">
       <DependentUpon>OperationsOverviewView.xaml</DependentUpon>
     </Compile>
@@ -187,6 +190,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ModInformationControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ModListView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
