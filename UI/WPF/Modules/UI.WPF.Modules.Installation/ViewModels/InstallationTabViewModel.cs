@@ -14,7 +14,6 @@ using ModInstallation.Annotations;
 using ModInstallation.Interfaces;
 using ModInstallation.Util;
 using ReactiveUI;
-using Semver;
 using Splat;
 using UI.WPF.Launcher.Common.Interfaces;
 using UI.WPF.Launcher.Common.Services;
@@ -290,7 +289,7 @@ namespace UI.WPF.Modules.Installation.ViewModels
             var installationItems = GetInstallationItems().ToList();
             var uninstallationItems = GetUninstallationItems().ToList();
 
-            if (!await ShouldContinueInstallation(installationItems, uninstallationItems))
+            if (!await ShouldContinueInstallation(installationItems, uninstallationItems).ConfigureAwait(true))
             {
                 // User cancelled installation
                 State = InstallationViewModelState.PackagesOverview;
@@ -313,7 +312,7 @@ namespace UI.WPF.Modules.Installation.ViewModels
                     InstallationProgress = p;
                 }))
                 {
-                    await InstallationViewModel.InstallationParent.Install();
+                    await InstallationViewModel.InstallationParent.Install().ConfigureAwait(false);
                 }
             }
             finally
@@ -368,9 +367,11 @@ namespace UI.WPF.Modules.Installation.ViewModels
         private async Task UpdateMods()
         {
             ManagerStatusMessage = "Parsing local mod information...";
-            await LocalModManager.ParseLocalModDataAsync();
+            await LocalModManager.ParseLocalModDataAsync().ConfigureAwait(false);
 
-            await RemoteModManager.RetrieveInformationAsync(new Progress<string>(msg => ManagerStatusMessage = msg), CancellationToken.None);
+            await
+                RemoteModManager.RetrieveInformationAsync(new Progress<string>(msg => ManagerStatusMessage = msg), CancellationToken.None)
+                    .ConfigureAwait(false);
 
             if (RemoteModManager.ModificationGroups != null)
             {
