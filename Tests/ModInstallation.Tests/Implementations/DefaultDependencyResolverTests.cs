@@ -51,7 +51,7 @@ namespace ModInstallation.Tests.Implementations
             var errorHandler = new ErrorHandler((context, message) =>
             {
                 numCalls++;
-                return false;
+                return true;
             });
 
             var dependPackages = DefaultDependencyResolver.GetPackageDependencies(firstPackage, testData, errorHandler).ToList();
