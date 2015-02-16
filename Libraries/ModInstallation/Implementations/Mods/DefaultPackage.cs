@@ -34,7 +34,7 @@ namespace ModInstallation.Implementations.Mods
 
         [CanBeNull]
         public static DefaultPackage InitializeFromData([NotNull] IModification parent, [NotNull] Package package,
-            [CanBeNull] IErrorHandler errorHandler = null)
+            [CanBeNull] ErrorHandler errorHandler = null)
         {
             var newInstance = new DefaultPackage
             {

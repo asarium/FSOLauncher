@@ -47,11 +47,16 @@ namespace ModInstallation.Tests.Implementations
 
             var firstPackage = testData.First().Packages.First();
 
-            var errorHandlerMock = new Mock<IErrorHandler>();
+            var numCalls = 0;
+            var errorHandler = new ErrorHandler((context, message) =>
+            {
+                numCalls++;
+                return false;
+            });
 
-            var dependPackages = DefaultDependencyResolver.GetPackageDependencies(firstPackage, testData, errorHandlerMock.Object).ToList();
+            var dependPackages = DefaultDependencyResolver.GetPackageDependencies(firstPackage, testData, errorHandler).ToList();
 
-            errorHandlerMock.Verify(x => x.HandleError(It.IsAny<object>(), It.IsAny<string>()), Times.Exactly(2));
+            Assert.AreEqual(2, numCalls);
 
             CollectionAssert.IsEmpty(dependPackages);
         }

@@ -11,7 +11,7 @@ namespace ModInstallation.Util
         [NotNull]
         public static IEnumerable<IPackage> ResolveDependencies([NotNull] this IDependencyResolver This, [NotNull] IModification modification,
             [NotNull] IEnumerable<IModification> allModifications,
-            [CanBeNull] IErrorHandler handler = null)
+            [CanBeNull] ErrorHandler handler = null)
         {
             var dependencies = modification.Packages.Select(p => This.ResolveDependencies(p, allModifications, handler)).ToList();
             if (!dependencies.Any())

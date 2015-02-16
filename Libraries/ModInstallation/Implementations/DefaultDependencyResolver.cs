@@ -101,7 +101,7 @@ namespace ModInstallation.Implementations
     {
         #region IDependencyResolver Members
 
-        public IEnumerable<IPackage> ResolveDependencies(IPackage package, IEnumerable<IModification> allModifications, IErrorHandler handler)
+        public IEnumerable<IPackage> ResolveDependencies(IPackage package, IEnumerable<IModification> allModifications, ErrorHandler handler)
         {
             var modificationList = allModifications as IList<IModification> ?? allModifications.ToList();
 
@@ -142,7 +142,7 @@ namespace ModInstallation.Implementations
 
         [NotNull]
         private static DependencyGraph BuildDependencyGraph([NotNull] IPackage rootPackage, [NotNull] IList<IModification> allModifications,
-            [CanBeNull] IErrorHandler handler)
+            [CanBeNull] ErrorHandler handler)
         {
             var graph = new DependencyGraph();
 
@@ -153,7 +153,7 @@ namespace ModInstallation.Implementations
 
         [NotNull]
         private static DependencyNode AddPackageToGraph([NotNull] DependencyGraph graph, [NotNull] IPackage rootPackage,
-            [NotNull] IList<IModification> allModifications, [CanBeNull] IErrorHandler handler)
+            [NotNull] IList<IModification> allModifications, [CanBeNull] ErrorHandler handler)
         {
             var existingNode = graph.FindNode(rootPackage);
             if (existingNode != null)
@@ -176,7 +176,7 @@ namespace ModInstallation.Implementations
 
         [NotNull]
         public static IEnumerable<IPackage> GetPackageDependencies([NotNull] IPackage package, [NotNull] IList<IModification> allModifications,
-            [CanBeNull] IErrorHandler handler)
+            [CanBeNull] ErrorHandler handler)
         {
             if (package.Dependencies == null)
             {
@@ -197,7 +197,7 @@ namespace ModInstallation.Implementations
                 {
                     if (handler != null)
                     {
-                        handler.HandleError(package, "Failed to satisfy dependency '" + modDependency + "'!");
+                        handler(package, "Failed to satisfy dependency '" + modDependency + "'!");
                     }
 
                     continue;
@@ -235,7 +235,7 @@ namespace ModInstallation.Implementations
                         }
                         else if (handler != null)
                         {
-                            handler.HandleError(package, string.Format("Failed to find package '{0}' in mod '{1}'.", packageName, matchedMod.Id));
+                            handler(package, string.Format("Failed to find package '{0}' in mod '{1}'.", packageName, matchedMod.Id));
                         }
                     }
 

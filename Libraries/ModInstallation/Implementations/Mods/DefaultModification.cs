@@ -35,7 +35,7 @@ namespace ModInstallation.Implementations.Mods
         #endregion
 
         [CanBeNull]
-        public static DefaultModification InitializeFromData([NotNull] Modification mod, [CanBeNull] IErrorHandler errorHandler = null)
+        public static DefaultModification InitializeFromData([NotNull] Modification mod, [CanBeNull] ErrorHandler errorHandler = null)
         {
             var newInstance = new DefaultModification
             {
@@ -67,7 +67,7 @@ namespace ModInstallation.Implementations.Mods
             }
             else if (errorHandler != null)
             {
-                if (!errorHandler.HandleError(newInstance, "Version string is no valid semantic version!"))
+                if (!errorHandler(newInstance, "Version string is no valid semantic version!"))
                 {
                     return null;
                 }
