@@ -138,7 +138,7 @@
     <Compile Include="Interfaces\IRepositoryFactory.cs" />
     <Compile Include="Interfaces\Mods\ConstraintType.cs" />
     <Compile Include="Interfaces\Mods\IEnvironmentConstraint.cs" />
-    <Compile Include="Interfaces\Mods\IErrorHandler.cs" />
+    <Compile Include="Interfaces\Mods\ErrorHandler.cs" />
     <Compile Include="Interfaces\Mods\IFileInformation.cs" />
     <Compile Include="Interfaces\Mods\IFileVerifier.cs" />
     <Compile Include="Interfaces\Mods\IInstalledModification.cs" />
