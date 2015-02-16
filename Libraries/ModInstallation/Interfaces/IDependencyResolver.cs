@@ -11,7 +11,6 @@ namespace ModInstallation.Interfaces
     public interface IDependencyResolver
     {
         [NotNull]
-        IEnumerable<IPackage> ResolveDependencies([NotNull] IPackage package, [NotNull] IEnumerable<IModification> allModifications,
-            [CanBeNull] ErrorHandler handler);
+        IEnumerable<IPackage> ResolveDependencies([NotNull] IPackage package, [NotNull] IEnumerable<IModification> allModifications);
     }
 }

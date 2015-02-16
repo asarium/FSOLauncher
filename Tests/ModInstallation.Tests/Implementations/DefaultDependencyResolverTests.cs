@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ModInstallation.Annotations;
+using ModInstallation.Exceptions;
 using ModInstallation.Implementations;
 using ModInstallation.Implementations.DataClasses;
 using ModInstallation.Implementations.Mods;
@@ -47,18 +48,7 @@ namespace ModInstallation.Tests.Implementations
 
             var firstPackage = testData.First().Packages.First();
 
-            var numCalls = 0;
-            var errorHandler = new ErrorHandler((context, message) =>
-            {
-                numCalls++;
-                return true;
-            });
-
-            var dependPackages = DefaultDependencyResolver.GetPackageDependencies(firstPackage, testData, errorHandler).ToList();
-
-            Assert.AreEqual(2, numCalls);
-
-            CollectionAssert.IsEmpty(dependPackages);
+            Assert.Throws<DependencyException>(() => DefaultDependencyResolver.GetPackageDependencies(firstPackage, testData));
         }
 
         [NotNull, Test]
@@ -71,7 +61,7 @@ namespace ModInstallation.Tests.Implementations
 
             var firstPackage = testData.First().Packages.First();
 
-            var dependPackages = DefaultDependencyResolver.GetPackageDependencies(firstPackage, testData, null).ToList();
+            var dependPackages = DefaultDependencyResolver.GetPackageDependencies(firstPackage, testData).ToList();
 
             CollectionAssert.IsNotEmpty(dependPackages);
             Assert.AreEqual(1, dependPackages.Count());
@@ -86,12 +76,10 @@ namespace ModInstallation.Tests.Implementations
         {
             var packageMock = new Mock<IPackage>();
             packageMock.Setup(x => x.Dependencies).Returns(Enumerable.Empty<IModDependency>());
-            CollectionAssert.IsEmpty(DefaultDependencyResolver.GetPackageDependencies(packageMock.Object, Enumerable.Empty<IModification>().ToList(),
-                null));
+            CollectionAssert.IsEmpty(DefaultDependencyResolver.GetPackageDependencies(packageMock.Object, Enumerable.Empty<IModification>().ToList()));
 
             packageMock.Setup(x => x.Dependencies).Returns((IEnumerable<IModDependency>) null);
-            CollectionAssert.IsEmpty(DefaultDependencyResolver.GetPackageDependencies(packageMock.Object, Enumerable.Empty<IModification>().ToList(),
-                null));
+            CollectionAssert.IsEmpty(DefaultDependencyResolver.GetPackageDependencies(packageMock.Object, Enumerable.Empty<IModification>().ToList()));
         }
 
         [NotNull, Test]
@@ -104,7 +92,7 @@ namespace ModInstallation.Tests.Implementations
 
             var firstPackage = testData.First().Packages.First();
 
-            var dependPackages = DefaultDependencyResolver.GetPackageDependencies(firstPackage, testData, null).ToList();
+            var dependPackages = DefaultDependencyResolver.GetPackageDependencies(firstPackage, testData).ToList();
 
             CollectionAssert.IsNotEmpty(dependPackages);
             Assert.AreEqual(2, dependPackages.Count());
@@ -128,7 +116,7 @@ namespace ModInstallation.Tests.Implementations
 
             var firstPackage = testData.First().Packages.First();
 
-            var dependPackages = DefaultDependencyResolver.GetPackageDependencies(firstPackage, testData, null).ToList();
+            var dependPackages = DefaultDependencyResolver.GetPackageDependencies(firstPackage, testData).ToList();
 
             CollectionAssert.IsNotEmpty(dependPackages);
             Assert.AreEqual(1, dependPackages.Count());
@@ -145,7 +133,7 @@ namespace ModInstallation.Tests.Implementations
             var testPackage = testData.First().Packages.First();
 
             var dependencyResolver = new DefaultDependencyResolver();
-            var result = dependencyResolver.ResolveDependencies(testPackage, testData, null);
+            var result = dependencyResolver.ResolveDependencies(testPackage, testData);
 
             var resultList = result as IList<IPackage> ?? result.ToList();
 
@@ -173,7 +161,7 @@ namespace ModInstallation.Tests.Implementations
             var testPackage = testData.First().Packages.First();
 
             var dependencyResolver = new DefaultDependencyResolver();
-            Assert.Throws<InvalidOperationException>(() => dependencyResolver.ResolveDependencies(testPackage, testData, null));
+            Assert.Throws<InvalidOperationException>(() => dependencyResolver.ResolveDependencies(testPackage, testData));
         }
     }
 }

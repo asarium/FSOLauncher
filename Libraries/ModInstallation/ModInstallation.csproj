@@ -89,6 +89,7 @@
     <Compile Include="..\..\Global\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Exceptions\DependencyException.cs" />
     <Compile Include="Exceptions\DownloadException.cs" />
     <Compile Include="Exceptions\FileVerificationFailedException.cs" />
     <Compile Include="Exceptions\InstallationException.cs" />
