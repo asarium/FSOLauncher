@@ -24,9 +24,9 @@ namespace ModInstallation.Implementations
     {
         private const int DefaultMaxConcurrentDownloads = 1;
 
-        private SemaphoreSlim _downloadSemaphore;
-
         private readonly IWebClient _webclient;
+
+        private SemaphoreSlim _downloadSemaphore;
 
         [ImportingConstructor]
         public DefaultFileDownloader(IWebClient webclient)
@@ -40,6 +40,91 @@ namespace ModInstallation.Implementations
         {
             get { return _downloadSemaphore ?? (_downloadSemaphore = new SemaphoreSlim(MaxConcurrentDownloads)); }
         }
+
+        #region IFileDownloader Members
+
+        public string DownloadDirectory { get; set; }
+
+        public int MaxConcurrentDownloads { get; set; }
+
+        public async Task<FileInfo> DownloadFileAsync(IFileInformation fileInfo,
+            IProgress<IDownloadProgress> progressReporter,
+            CancellationToken cancellationToken)
+        {
+            progressReporter.Report(DefaultDownloadProgress.Waiting());
+
+            await DownloadSemaphore.WaitAsync(cancellationToken).ConfigureAwait(true);
+
+            try
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                if (!Directory.Exists(DownloadDirectory))
+                {
+                    Directory.CreateDirectory(DownloadDirectory);
+                }
+
+                foreach (var uri in fileInfo.DownloadUris)
+                {
+                    progressReporter.Report(DefaultDownloadProgress.Connecting(uri));
+
+                    try
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+
+                        var uri1 = uri;
+                        var outputFilePath =
+                            await Task.Run(() => DownloadFile(progressReporter, cancellationToken, uri1), cancellationToken).ConfigureAwait(false);
+                        if (outputFilePath == null)
+                        {
+                            return null;
+                        }
+
+                        if (fileInfo.FileVerifiers == null)
+                        {
+                            return new FileInfo(outputFilePath);
+                        }
+
+                        try
+                        {
+                            await VerifyDownloadedFile(fileInfo, progressReporter, cancellationToken, outputFilePath).ConfigureAwait(false);
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            if (File.Exists(outputFilePath))
+                            {
+                                File.Delete(outputFilePath);
+                            }
+                            throw;
+                        }
+
+                        return new FileInfo(outputFilePath);
+                    }
+                    catch (FileVerificationFailedException)
+                    {
+                        // Rethrow this exception
+                        throw;
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        throw;
+                    }
+                    catch (Exception e)
+                    {
+                        // Ignore exception, probably a timeout...
+                        this.Log().InfoException("Exception while downloading file", e);
+                    }
+                }
+
+                throw new InvalidOperationException("All file downloads failed!");
+            }
+            finally
+            {
+                DownloadSemaphore.Release();
+            }
+        }
+
+        #endregion
 
         [NotNull]
         private async Task<string> DownloadFile([NotNull] IProgress<IDownloadProgress> progressReporter,
@@ -84,7 +169,7 @@ namespace ModInstallation.Implementations
 
                         lastReport[0] = progress.Current;
                     },
-                    cancellationToken);
+                    cancellationToken).ConfigureAwait(false);
 
                 cancellationToken.ThrowIfCancellationRequested();
 
@@ -138,88 +223,5 @@ namespace ModInstallation.Implementations
         {
             return Path.Combine(DownloadDirectory, filename);
         }
-
-        #region IFileDownloader Members
-
-        public string DownloadDirectory { get; set; }
-
-        public int MaxConcurrentDownloads { get; set; }
-
-        public async Task<FileInfo> DownloadFileAsync(IFileInformation fileInfo,
-            IProgress<IDownloadProgress> progressReporter,
-            CancellationToken cancellationToken)
-        {
-            progressReporter.Report(DefaultDownloadProgress.Waiting());
-
-            await DownloadSemaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
-
-            try
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-
-                if (!Directory.Exists(DownloadDirectory))
-                {
-                    Directory.CreateDirectory(DownloadDirectory);
-                }
-
-                foreach (var uri in fileInfo.DownloadUris)
-                {
-                    progressReporter.Report(DefaultDownloadProgress.Connecting(uri));
-
-                    try
-                    {
-                        cancellationToken.ThrowIfCancellationRequested();
-
-                        var outputFilePath = await DownloadFile(progressReporter, cancellationToken, uri);
-                        if (outputFilePath == null)
-                        {
-                            return null;
-                        }
-
-                        if (fileInfo.FileVerifiers == null)
-                        {
-                            return new FileInfo(outputFilePath);
-                        }
-
-                        try
-                        {
-                            await VerifyDownloadedFile(fileInfo, progressReporter, cancellationToken, outputFilePath);
-                        }
-                        catch (OperationCanceledException)
-                        {
-                            if (File.Exists(outputFilePath))
-                            {
-                                File.Delete(outputFilePath);
-                            }
-                            throw;
-                        }
-
-                        return new FileInfo(outputFilePath);
-                    }
-                    catch (FileVerificationFailedException)
-                    {
-                        // Rethrow this exception
-                        throw;
-                    }
-                    catch (OperationCanceledException)
-                    {
-                        throw;
-                    }
-                    catch (Exception e)
-                    {
-                        // Ignore exception, probably a timeout...
-                        this.Log().InfoException("Exception while downloading file", e);
-                    }
-                }
-
-                throw new InvalidOperationException("All file downloads failed!");
-            }
-            finally
-            {
-                DownloadSemaphore.Release();
-            }
-        }
-
-        #endregion
     }
 }
