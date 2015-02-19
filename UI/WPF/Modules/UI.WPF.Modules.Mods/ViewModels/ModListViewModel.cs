@@ -66,14 +66,16 @@ namespace UI.WPF.Modules.Mods.ViewModels
         [NotNull]
         private static ModViewModel GetViewModel([NotNull] ILocalModification mod, [NotNull] IObservable<string> filterObservable)
         {
-            if (mod is IniModification)
+            var iniMod = mod as IniModification;
+            if (iniMod != null)
             {
-                return new IniModViewModel(filterObservable, mod as IniModification);
+                return new IniModViewModel(filterObservable, iniMod);
             }
 
-            if (mod is InstalledModification)
+            var installedMod = mod as InstalledModification;
+            if (installedMod != null)
             {
-                return new InstalledModViewModel(filterObservable, mod as InstalledModification);
+                return new InstalledModViewModel(filterObservable, installedMod);
             }
 
             throw new ArgumentOutOfRangeException("mod");
