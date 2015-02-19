@@ -81,7 +81,7 @@ namespace ModInstallation.Implementations.Net
             request.UserAgent = "Mozilla/5.0 (X11; Linux x86_64; rv:34.0) Gecko/20100101 Firefox/28.0";
             try
             {
-                using (var response = (HttpWebResponse) await request.GetResponseAsync())
+                using (var response = (HttpWebResponse) await request.GetResponseAsync().ConfigureAwait(false))
                 {
                     if (response.StatusCode < HttpStatusCode.OK || response.StatusCode >= HttpStatusCode.MultipleChoices)
                     {
@@ -101,12 +101,12 @@ namespace ModInstallation.Implementations.Net
                         {
                             var current = 0L;
                             int read;
-                            while ((read = await responseStream.ReadAsync(buffer, 0, buffer.Length, token)) != 0)
+                            while ((read = await responseStream.ReadAsync(buffer, 0, buffer.Length, token).ConfigureAwait(false)) != 0)
                             {
                                 current += read;
                                 token.ThrowIfCancellationRequested();
 
-                                await fileStream.WriteAsync(buffer, 0, read, token);
+                                await fileStream.WriteAsync(buffer, 0, read, token).ConfigureAwait(false);
 
                                 downloadReporter(new DownloadProgress
                                 {
