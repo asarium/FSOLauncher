@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using ModInstallation.Annotations;
 using ModInstallation.Implementations.DataClasses;
@@ -71,6 +72,7 @@ namespace ModInstallation.Implementations
         {
             get { return _wrappedModification.LogoUri; }
         }
+
         public IPostInstallActions PostInstallActions
         {
             get { return _wrappedModification.PostInstallActions; }
@@ -81,14 +83,14 @@ namespace ModInstallation.Implementations
             get { return _installPath; }
         }
 
-        #endregion
-
         #region Implementation of IEquatable<IModification>
 
         public bool Equals(IModification other)
         {
             return _wrappedModification.Equals(other);
         }
+
+        #endregion
 
         #endregion
     }
@@ -124,10 +126,10 @@ namespace ModInstallation.Implementations
                 string content;
                 using (var reader = File.OpenText(packageFile))
                 {
-                    content = await reader.ReadToEndAsync();
+                    content = await reader.ReadToEndAsync().ConfigureAwait(false);
                 }
 
-                modData = await Task.Run(() => JsonConvert.DeserializeObject<Modification>(content));
+                modData = await Task.Run(() => JsonConvert.DeserializeObject<Modification>(content)).ConfigureAwait(false);
 
                 if (modData.packages.Any(p => p.name == package.Name))
                 {
@@ -148,7 +150,7 @@ namespace ModInstallation.Implementations
                 {
                     NullValueHandling = NullValueHandling.Ignore,
                     Formatting = Formatting.Indented
-                }));
+                })).ConfigureAwait(false);
 
             var directoryName = Path.GetDirectoryName(packageFile);
             if (directoryName != null && !Directory.Exists(directoryName))
@@ -160,7 +162,7 @@ namespace ModInstallation.Implementations
             {
                 using (var writer = new StreamWriter(stream))
                 {
-                    await writer.WriteAsync(json);
+                    await writer.WriteAsync(json).ConfigureAwait(false);
                 }
             }
 
@@ -171,12 +173,12 @@ namespace ModInstallation.Implementations
                 return;
             }
 
-            AddModification(newData);
+            await AddModification(newData).ConfigureAwait(false);
         }
 
         public async Task ParseLocalModDataAsync()
         {
-            _modifications.Clear();
+            await Observable.Start(() => _modifications.Clear(), RxApp.MainThreadScheduler);
 
             if (PackageDirectory == null)
             {
@@ -199,33 +201,38 @@ namespace ModInstallation.Implementations
                         continue;
                     }
 
-                    await ProcessModFile(modFile);
+                    await ProcessModFile(modFile).ConfigureAwait(false);
                 }
             }
         }
 
         #endregion
 
-        private void AddModification([NotNull] IModification newData)
+        private async Task AddModification([NotNull] IModification newData)
         {
-            int currentIndex;
-            for (currentIndex = 0; currentIndex < _modifications.Count; ++currentIndex)
+            // Always execute this on the UI thread
+            await Observable.Start(() =>
             {
-                if (_modifications[currentIndex].Id == newData.Id)
+                int currentIndex;
+                for (currentIndex = 0; currentIndex < _modifications.Count; ++currentIndex)
                 {
-                    break;
+                    if (_modifications[currentIndex].Id == newData.Id)
+                    {
+                        break;
+                    }
                 }
-            }
 
-            var installedMod = new InstalledMod(newData, GetInstallationDirectory(newData));
-            if (currentIndex >= 0 && currentIndex < _modifications.Count)
-            {
-                _modifications[currentIndex] = installedMod;
-            }
-            else
-            {
-                _modifications.Add(installedMod);
-            }
+                var installedMod = new InstalledMod(newData, GetInstallationDirectory(newData));
+                if (currentIndex >= 0 && currentIndex < _modifications.Count)
+                {
+                    _modifications[currentIndex] = installedMod;
+                }
+                else
+                {
+                    _modifications.Add(installedMod);
+                }
+            },
+                RxApp.MainThreadScheduler);
         }
 
         [NotNull]
@@ -238,7 +245,7 @@ namespace ModInstallation.Implementations
                 {
                     using (var reader = new StreamReader(stream))
                     {
-                        content = await reader.ReadToEndAsync();
+                        content = await reader.ReadToEndAsync().ConfigureAwait(false);
                     }
                 }
             }
@@ -251,7 +258,7 @@ namespace ModInstallation.Implementations
             Modification mod;
             try
             {
-                mod = await Task.Run(() => JsonConvert.DeserializeObject<Modification>(content));
+                mod = await Task.Run(() => JsonConvert.DeserializeObject<Modification>(content)).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -266,7 +273,7 @@ namespace ModInstallation.Implementations
                 return;
             }
 
-            AddModification(modInstance);
+            await AddModification(modInstance).ConfigureAwait(false);
         }
 
         [NotNull]
