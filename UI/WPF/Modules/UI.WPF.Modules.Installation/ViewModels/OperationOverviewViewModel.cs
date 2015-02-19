@@ -3,8 +3,10 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Input;
+using ModInstallation.Interfaces.Mods;
 using ReactiveUI;
 using UI.WPF.Launcher.Common.Classes;
+using UI.WPF.Modules.Installation.ViewModels.Dependencies;
 using UI.WPF.Modules.Installation.ViewModels.Installation;
 
 #endregion
@@ -17,8 +19,12 @@ namespace UI.WPF.Modules.Installation.ViewModels
 
         private InstallationItemParent _uninstallationParent;
 
-        public OperationOverviewViewModel(Action abortAction, Action continueAction)
+        public DependenciesViewModel Dependencies { get; private set; }
+
+        public OperationOverviewViewModel(IEnumerable<IPackage> deps, Action abortAction, Action continueAction)
         {
+            Dependencies = new DependenciesViewModel(deps);
+
             var cmd = ReactiveCommand.Create();
             cmd.Subscribe(_ => abortAction());
             AbortCommand = cmd;

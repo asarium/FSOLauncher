@@ -7,7 +7,7 @@ using Splat;
 
 namespace ModInstallation.Interfaces.Mods
 {
-    public interface IModification : INotifyPropertyChanged
+    public interface IModification : INotifyPropertyChanged, IEquatable<IModification>
     {
         [NotNull]
         string Title { get; }

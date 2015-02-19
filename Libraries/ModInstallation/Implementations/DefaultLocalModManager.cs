@@ -82,6 +82,15 @@ namespace ModInstallation.Implementations
         }
 
         #endregion
+
+        #region Implementation of IEquatable<IModification>
+
+        public bool Equals(IModification other)
+        {
+            return _wrappedModification.Equals(other);
+        }
+
+        #endregion
     }
 
     [Export(typeof(ILocalModManager))]

@@ -195,7 +195,7 @@ namespace ModInstallation.Implementations
 
                 if (!matchingMods.Any())
                 {
-                    throw new DependencyException("Failed to satisfy dependency '" + modDependency + "'!");
+                    throw new DependencyException("Failed to satisfy dependency '" + modDependency.ModId + "'!");
                 }
 
                 // The mods are order by version which means the first has the highest version available

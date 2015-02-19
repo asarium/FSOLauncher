@@ -11,12 +11,15 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Caliburn.Micro;
 using ModInstallation.Annotations;
+using ModInstallation.Exceptions;
 using ModInstallation.Interfaces;
+using ModInstallation.Interfaces.Mods;
 using ModInstallation.Util;
 using ReactiveUI;
 using Splat;
 using UI.WPF.Launcher.Common.Interfaces;
 using UI.WPF.Launcher.Common.Services;
+using UI.WPF.Modules.Installation.ViewModels.Dependencies;
 using UI.WPF.Modules.Installation.ViewModels.Installation;
 using UI.WPF.Modules.Installation.ViewModels.Mods;
 using IDependencyResolver = ModInstallation.Interfaces.IDependencyResolver;
@@ -43,9 +46,21 @@ namespace UI.WPF.Modules.Installation.ViewModels
         OperationsProgress
     }
 
+    internal class ModDependencyException : DependencyException
+    {
+        public ModDependencyException(IModification mod) : base(mod.Title)
+        {
+            Mod = mod;
+        }
+
+        public IModification Mod { get; private set; }
+    }
+
     [Export(typeof(ILauncherTab)), ExportMetadata("Priority", 3)]
     public sealed class InstallationTabViewModel : Screen, ILauncherTab, IEnableLogger
     {
+        private DependenciesViewModel _dependenciesViewModel;
+
         private bool _hasManagerStatusMessage;
 
         private bool _installationInProgress;
@@ -104,6 +119,20 @@ namespace UI.WPF.Modules.Installation.ViewModels
             InstallationViewModel = new InstallationViewModel(() => State = InstallationViewModelState.PackagesOverview);
 
             State = InstallationViewModelState.PackagesOverview;
+        }
+
+        public DependenciesViewModel DependenciesViewModel
+        {
+            get { return _dependenciesViewModel; }
+            private set
+            {
+                if (Equals(value, _dependenciesViewModel))
+                {
+                    return;
+                }
+                _dependenciesViewModel = value;
+                NotifyOfPropertyChange();
+            }
         }
 
         public IEnumerable<ModViewModel> ModificationViewModels
@@ -266,6 +295,9 @@ namespace UI.WPF.Modules.Installation.ViewModels
         [NotNull, Import]
         private ITaskbarController TaskbarController { get; set; }
 
+        [NotNull, Import]
+        private IInteractionService InteractionService { get; set; }
+
         private async void InstallMods()
         {
             if (InstallationInProgress)
@@ -284,17 +316,19 @@ namespace UI.WPF.Modules.Installation.ViewModels
                 return;
             }
 
-            State = InstallationViewModelState.OperationsPreview;
+            var dependentPackages = await GetPackageDependencies().ConfigureAwait(true);
 
             var installationItems = GetInstallationItems().ToList();
             var uninstallationItems = GetUninstallationItems().ToList();
 
-            if (!await ShouldContinueInstallation(installationItems, uninstallationItems).ConfigureAwait(true))
+            if (!await ShouldContinueInstallation(dependentPackages, installationItems, uninstallationItems).ConfigureAwait(true))
             {
                 // User cancelled installation
                 State = InstallationViewModelState.PackagesOverview;
                 return;
             }
+
+            installationItems = GetDependencyItems(dependentPackages).Concat(installationItems).ToList();
 
             InstallationInProgress = true;
             TaskbarController.ProgressbarVisible = true;
@@ -312,7 +346,7 @@ namespace UI.WPF.Modules.Installation.ViewModels
                     InstallationProgress = p;
                 }))
                 {
-                    await InstallationViewModel.InstallationParent.Install().ConfigureAwait(false);
+                    await InstallationViewModel.InstallationParent.Install().ConfigureAwait(true);
                 }
             }
             finally
@@ -324,12 +358,147 @@ namespace UI.WPF.Modules.Installation.ViewModels
             }
         }
 
-        private Task<bool> ShouldContinueInstallation(IEnumerable<InstallationItem> installationItems,
+        private IEnumerable<InstallationItem> GetDependencyItems(IEnumerable<IPackage> dependencies)
+        {
+            var modGroups = dependencies.GroupBy(x => x.ContainingModification);
+
+            return
+                modGroups.Select(
+                    group =>
+                        new InstallationItemParent(group.Key.Title,
+                            group.Select(x => new PackageInstallationItem(x, PackageInstaller, LocalModManager)).ToList())).ToList();
+        }
+
+        private async Task<IList<IPackage>> GetPackageDependencies()
+        {
+            // This loop will be terminated when a valid result has been found
+            while (true)
+            {
+                ManagerStatusMessage = "Checking installation dependencies...";
+                try
+                {
+                    // Do this in a background thread as it might take some time...
+                    ModDependencyException exception;
+                    try
+                    {
+                        var result = await Task.Run(() => ResolveDependencies().ToList()).ConfigureAwait(false);
+
+                        return result;
+                    }
+                    catch (ModDependencyException e)
+                    {
+                        exception = e;
+                    }
+
+                    var error = new UserError("Dependency not available",
+                        string.Format(
+                            "A dependency for the mod {0} is not available. This might only be a temporary issue.\n" +
+                            "Please contact the mod author if this issue persists.",
+                            exception.Mod.Title),
+                        new[]
+                        {
+                            new RecoveryCommand("Remove mod", _ => RecoveryOptionResult.RetryOperation)
+                            {
+                                IsDefault = true
+                            },
+                            new RecoveryCommand("Cancel", _ => RecoveryOptionResult.CancelOperation),
+                        });
+
+                    var recovery = await UserError.Throw(error);
+
+                    switch (recovery)
+                    {
+                        case RecoveryOptionResult.CancelOperation:
+                            return null;
+                        case RecoveryOptionResult.RetryOperation:
+                            var viewModel = ModGroupViewModels.FirstOrDefault(group => group.Group.Id == exception.Mod.Id);
+
+                            if (viewModel != null)
+                            {
+                                viewModel.IsSelected = false;
+                            }
+                            break;
+                        case RecoveryOptionResult.FailOperation:
+                            throw exception;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                }
+                finally
+                {
+                    ManagerStatusMessage = null;
+                }
+            }
+        }
+
+        private IEnumerable<IPackage> ResolveDependencies()
+        {
+            var result = Enumerable.Empty<IPackage>();
+            var localMods = (LocalModManager.Modifications ?? Enumerable.Empty<IModification>()).ToList();
+
+            var allMods = localMods;
+            if (RemoteModManager.ModificationGroups != null)
+            {
+                allMods = allMods.Concat(RemoteModManager.ModificationGroups.SelectMany(x => x.Versions.Values)).ToList();
+            }
+
+            foreach (var mod in ModificationViewModels)
+            {
+                ManagerStatusMessage = string.Format("Processing dependencies for {0}...", mod.Mod.Title);
+
+                var packages = mod.Packages.Where(x => x.Selected).Select(x => x.Package);
+
+                foreach (var package in packages)
+                {
+                    if (LocalModManager.IsPackageInstalled(package))
+                    {
+                        // Skip already installed packages
+                        continue;
+                    }
+
+                    IEnumerable<IPackage> dependencies = null;
+                    if (localMods.Count > 0)
+                    {
+                        try
+                        {
+                            dependencies = DependencyResolver.ResolveDependencies(package, localMods);
+                        }
+                        catch (DependencyException)
+                        {
+                            // Could not satisfy dependencies with local mods...
+                        }
+                    }
+
+                    if (dependencies == null)
+                    {
+                        try
+                        {
+                            // This might throw if a dependency could not be found, it is handled in the calling function
+                            dependencies = DependencyResolver.ResolveDependencies(package, allMods);
+                        }
+                        catch (DependencyException)
+                        {
+                            throw new ModDependencyException(mod.Mod);
+                        }
+                    }
+
+                    // Only return packages that are not already installed or are already being installed (the current package)
+                    var package1 = package;
+                    result = result.Union(dependencies.Where(p => !LocalModManager.IsPackageInstalled(p) && !ReferenceEquals(package1, p)));
+                }
+            }
+
+            return result;
+        }
+
+        private Task<bool> ShouldContinueInstallation(IEnumerable<IPackage> dependentPackages,
+            IEnumerable<InstallationItem> installationItems,
             IEnumerable<InstallationItem> uninstallationItems)
         {
             var tcs = new TaskCompletionSource<bool>();
 
-            OperationOverviewViewModel = new OperationOverviewViewModel(() => tcs.TrySetResult(false), () => tcs.TrySetResult(true))
+            State = InstallationViewModelState.OperationsPreview;
+            OperationOverviewViewModel = new OperationOverviewViewModel(dependentPackages, () => tcs.TrySetResult(false), () => tcs.TrySetResult(true))
             {
                 InstallationItems = installationItems,
                 UninstallationItems = uninstallationItems
