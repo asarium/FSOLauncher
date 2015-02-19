@@ -45,13 +45,15 @@ namespace UI.WPF.Launcher.Views
 
             var disp = UserError.RegisterHandler(async error =>
             {
-                var dialog = new ErrorDialog(error);
+                // Make sure everything run on the UI thread
+                var dialog = await Dispatcher.InvokeAsync(() => new ErrorDialog(error));
 
-                await this.ShowMetroDialogAsync(dialog);
+                // This feels awful...
+                await await Dispatcher.InvokeAsync(() => this.ShowMetroDialogAsync(dialog));
 
-                await dialog.WaitForCompletionAsync();
+                await await Dispatcher.InvokeAsync(() => dialog.WaitForCompletionAsync());
 
-                await this.HideMetroDialogAsync(dialog);
+                await await Dispatcher.InvokeAsync(() => this.HideMetroDialogAsync(dialog));
 
                 return error.RecoveryOptions.Select(cmd => cmd.RecoveryResult).Where(res => res.HasValue).Select(res => res.Value).FirstOrDefault();
             });

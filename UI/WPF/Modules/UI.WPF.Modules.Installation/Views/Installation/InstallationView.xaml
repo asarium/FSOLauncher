@@ -8,18 +8,7 @@
              d:DesignHeight="300" d:DesignWidth="300"
              d:DataContext="{d:DesignInstance installation:InstallationViewModel}"
              Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Window}, Path=ActualWidth}">
-    <UserControl.Resources>
-        <ResourceDictionary>
-            <Style x:Key="DescriptionHeaderStyle" TargetType="Label">
-                <Setter Property="FontSize" Value="22" />
-                <Setter Property="HorizontalAlignment" Value="Center" />
-            </Style>
-        </ResourceDictionary>
-    </UserControl.Resources>
     <Grid Margin="5">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition />
-        </Grid.ColumnDefinitions>
         <Button Command="{Binding CloseCommand, Mode=OneWay}" DockPanel.Dock="Left" Canvas.ZIndex="5"
                 Style="{DynamicResource MetroCircleButtonStyle}" Height="40" Width="40" FontFamily="Segoe UI Symbol"
                 FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" Background="{DynamicResource WhiteBrush}">
@@ -54,7 +43,7 @@
                             </Style.Triggers>
                         </Style>
                     </StackPanel.Style>
-                    <Label Content="Mod installations" Style="{StaticResource DescriptionHeaderStyle}" Margin="5" />
+                    <Label Content="Mod installations" Style="{DynamicResource DescriptionHeaderStyle}" Margin="5" />
 
                     <ItemsControl ItemsSource="{Binding InstallationParent.Children}" Margin="2">
                         <ItemsControl.ItemTemplate>
@@ -97,7 +86,7 @@
                             </Style.Triggers>
                         </Style>
                     </StackPanel.Style>
-                    <Label Content="Mod uninstallations" Style="{StaticResource DescriptionHeaderStyle}" Margin="5" />
+                    <Label Content="Mod uninstallations" Style="{DynamicResource DescriptionHeaderStyle}" Margin="5" />
 
                     <ItemsControl ItemsSource="{Binding UninstallationParent.Children}" Margin="2">
                         <ItemsControl.ItemTemplate>

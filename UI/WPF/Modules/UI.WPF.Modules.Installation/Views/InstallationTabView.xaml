@@ -9,18 +9,25 @@
              xmlns:mods1="clr-namespace:UI.WPF.Modules.Installation.ViewModels.Mods"
              xmlns:installation="clr-namespace:UI.WPF.Modules.Installation.Views.Installation"
              xmlns:operations="clr-namespace:UI.WPF.Modules.Installation.Views.Operations"
-             mc:Ignorable="d"
+             xmlns:dependencies="clr-namespace:UI.WPF.Modules.Installation.Views.Dependencies" mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModels:InstallationTabViewModel}" d:DesignHeight="300"
              d:DesignWidth="300">
     <UserControl.Resources>
-        <installation:InstallationView x:Key="InstallationView" DataContext="{Binding InstallationViewModel}" />
+        <ResourceDictionary>
+            <installation:InstallationView x:Key="InstallationView"
+                                                   DataContext="{Binding InstallationViewModel}" />
 
-        <operations:OperationsOverviewView x:Key="OverviewView" DataContext="{Binding OperationOverviewViewModel}" />
+            <operations:OperationsOverviewView x:Key="OverviewView"
+                                                       DataContext="{Binding OperationOverviewViewModel}" />
 
-        <views:ModListView x:Key="PackageList" />
+            <views:ModListView x:Key="PackageList" />
+        </ResourceDictionary>
     </UserControl.Resources>
 
     <controls:TransitioningContentControl>
+        <controls:TransitioningContentControl.Resources>
+            <ResourceDictionary Source="../Resources/Shared.xaml" />
+        </controls:TransitioningContentControl.Resources>
         <controls:TransitioningContentControl.Style>
             <Style TargetType="controls:TransitioningContentControl">
                 <Setter Property="Transition" Value="Normal" />

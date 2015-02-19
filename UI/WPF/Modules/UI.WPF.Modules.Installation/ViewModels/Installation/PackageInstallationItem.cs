@@ -55,9 +55,9 @@ namespace UI.WPF.Modules.Installation.ViewModels.Installation
 
                 try
                 {
-                    await Task.Run(() => _packageInstaller.InstallPackageAsync(_package, reporter, CancellationTokenSource.Token));
+                    await _packageInstaller.InstallPackageAsync(_package, reporter, CancellationTokenSource.Token).ConfigureAwait(false);
 
-                    await _modManager.AddPackageAsync(_package);
+                    await _modManager.AddPackageAsync(_package).ConfigureAwait(false);
 
                     OperationMessage = null;
                     Result = InstallationResult.Successful;

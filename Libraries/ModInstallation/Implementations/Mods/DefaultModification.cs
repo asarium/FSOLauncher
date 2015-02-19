@@ -35,7 +35,7 @@ namespace ModInstallation.Implementations.Mods
         #endregion
 
         [CanBeNull]
-        public static DefaultModification InitializeFromData([NotNull] Modification mod, [CanBeNull] IErrorHandler errorHandler = null)
+        public static DefaultModification InitializeFromData([NotNull] Modification mod, [CanBeNull] ErrorHandler errorHandler = null)
         {
             var newInstance = new DefaultModification
             {
@@ -67,7 +67,7 @@ namespace ModInstallation.Implementations.Mods
             }
             else if (errorHandler != null)
             {
-                if (!errorHandler.HandleError(newInstance, "Version string is no valid semantic version!"))
+                if (!errorHandler(newInstance, "Version string is no valid semantic version!"))
                 {
                     return null;
                 }
@@ -79,5 +79,44 @@ namespace ModInstallation.Implementations.Mods
 
             return newInstance;
         }
+
+        #region Equality members
+
+        public bool Equals(IModification other)
+        {
+            if (ReferenceEquals(other, null))
+            {
+                return false;
+            }
+
+            return string.Equals(Id, other.Id) && Equals(Version, other.Version);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+            if (obj.GetType() != this.GetType())
+            {
+                return false;
+            }
+            return Equals((DefaultModification) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (Id.GetHashCode() * 397) ^ Version.GetHashCode();
+            }
+        }
+
+        #endregion
     }
 }

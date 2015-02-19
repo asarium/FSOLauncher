@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using ModInstallation.Annotations;
+using ModInstallation.Exceptions;
 using ModInstallation.Interfaces;
 using ModInstallation.Interfaces.Mods;
 using ModInstallation.Util;
@@ -101,12 +102,12 @@ namespace ModInstallation.Implementations
     {
         #region IDependencyResolver Members
 
-        public IEnumerable<IPackage> ResolveDependencies(IPackage package, IEnumerable<IModification> allModifications, IErrorHandler handler)
+        public IEnumerable<IPackage> ResolveDependencies(IPackage package, IEnumerable<IModification> allModifications)
         {
             var modificationList = allModifications as IList<IModification> ?? allModifications.ToList();
 
             // This implements a variation of Kahns topological sorting algorithm
-            var graph = BuildDependencyGraph(package, modificationList, handler);
+            var graph = BuildDependencyGraph(package, modificationList);
 
             var result = new List<IPackage>();
 
@@ -141,19 +142,19 @@ namespace ModInstallation.Implementations
         #endregion
 
         [NotNull]
-        private static DependencyGraph BuildDependencyGraph([NotNull] IPackage rootPackage, [NotNull] IList<IModification> allModifications,
-            [CanBeNull] IErrorHandler handler)
+        private static DependencyGraph BuildDependencyGraph([NotNull] IPackage rootPackage, [NotNull] IList<IModification> allModifications)
         {
             var graph = new DependencyGraph();
 
-            AddPackageToGraph(graph, rootPackage, allModifications, handler);
+            AddPackageToGraph(graph, rootPackage, allModifications);
 
             return graph;
         }
 
         [NotNull]
-        private static DependencyNode AddPackageToGraph([NotNull] DependencyGraph graph, [NotNull] IPackage rootPackage,
-            [NotNull] IList<IModification> allModifications, [CanBeNull] IErrorHandler handler)
+        private static DependencyNode AddPackageToGraph([NotNull] DependencyGraph graph,
+            [NotNull] IPackage rootPackage,
+            [NotNull] IList<IModification> allModifications)
         {
             var existingNode = graph.FindNode(rootPackage);
             if (existingNode != null)
@@ -164,9 +165,9 @@ namespace ModInstallation.Implementations
             var rootNode = new DependencyNode(rootPackage);
             graph.Nodes.Add(rootNode);
 
-            var packages = GetPackageDependencies(rootPackage, allModifications, handler);
+            var packages = GetPackageDependencies(rootPackage, allModifications);
 
-            foreach (var dependencyNode in packages.Select(package => AddPackageToGraph(graph, package, allModifications, handler)))
+            foreach (var dependencyNode in packages.Select(package => AddPackageToGraph(graph, package, allModifications)))
             {
                 rootNode.Dependencies.Add(dependencyNode);
             }
@@ -175,8 +176,7 @@ namespace ModInstallation.Implementations
         }
 
         [NotNull]
-        public static IEnumerable<IPackage> GetPackageDependencies([NotNull] IPackage package, [NotNull] IList<IModification> allModifications,
-            [CanBeNull] IErrorHandler handler)
+        public static IEnumerable<IPackage> GetPackageDependencies([NotNull] IPackage package, [NotNull] IList<IModification> allModifications)
         {
             if (package.Dependencies == null)
             {
@@ -195,12 +195,7 @@ namespace ModInstallation.Implementations
 
                 if (!matchingMods.Any())
                 {
-                    if (handler != null)
-                    {
-                        handler.HandleError(package, "Failed to satisfy dependency '" + modDependency + "'!");
-                    }
-
-                    continue;
+                    throw new DependencyException("Failed to satisfy dependency '" + modDependency.ModId + "'!");
                 }
 
                 // The mods are order by version which means the first has the highest version available
@@ -233,9 +228,9 @@ namespace ModInstallation.Implementations
                         {
                             list.Add(p);
                         }
-                        else if (handler != null)
+                        else
                         {
-                            handler.HandleError(package, string.Format("Failed to find package '{0}' in mod '{1}'.", packageName, matchedMod.Id));
+                            throw new DependencyException(string.Format("Failed to find package '{0}' in mod '{1}'.", packageName, matchedMod.Id));
                         }
                     }
 

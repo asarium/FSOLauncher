@@ -10,10 +10,9 @@ namespace ModInstallation.Util
     {
         [NotNull]
         public static IEnumerable<IPackage> ResolveDependencies([NotNull] this IDependencyResolver This, [NotNull] IModification modification,
-            [NotNull] IEnumerable<IModification> allModifications,
-            [CanBeNull] IErrorHandler handler = null)
+            [NotNull] IEnumerable<IModification> allModifications)
         {
-            var dependencies = modification.Packages.Select(p => This.ResolveDependencies(p, allModifications, handler)).ToList();
+            var dependencies = modification.Packages.Select(p => This.ResolveDependencies(p, allModifications)).ToList();
             if (!dependencies.Any())
             {
                 return Enumerable.Empty<IPackage>();

@@ -26,13 +26,13 @@ namespace ModInstallation.Implementations.Mods
         #endregion
 
         [CanBeNull]
-        public static DefaultFileInformation InitializeFromData([NotNull] FileInformation fileInfo, [CanBeNull] IErrorHandler errorHandler = null)
+        public static DefaultFileInformation InitializeFromData([NotNull] FileInformation fileInfo, [CanBeNull] ErrorHandler errorHandler = null)
         {
             if (fileInfo.urls == null)
             {
                 if (errorHandler != null)
                 {
-                    errorHandler.HandleError(fileInfo, "URL element must be present!");
+                    errorHandler(fileInfo, "URL element must be present!");
                 }
 
                 return null;
@@ -57,7 +57,7 @@ namespace ModInstallation.Implementations.Mods
                 {
                     if (errorHandler != null)
                     {
-                        errorHandler.HandleError(newInstance, string.Format("URL '{0}' is invalid!", url));
+                        errorHandler(newInstance, string.Format("URL '{0}' is invalid!", url));
                     }
                 }
                 else

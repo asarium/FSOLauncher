@@ -91,6 +91,9 @@
     <Compile Include="InstallationModule.cs" />
     <Compile Include="ModSelectCheckBox.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModels\Dependencies\DependenciesViewModel.cs" />
+    <Compile Include="ViewModels\Dependencies\DependencyModViewModel.cs" />
+    <Compile Include="ViewModels\Dependencies\DependencyPackageViewModel.cs" />
     <Compile Include="ViewModels\InstallationTabViewModel.cs" />
     <Compile Include="ViewModels\Installation\InstallationViewModel.cs" />
     <Compile Include="ViewModels\Installation\InstallationItem.cs" />
@@ -102,6 +105,9 @@
     <Compile Include="ViewModels\Mods\PackageViewModel.cs" />
     <Compile Include="ViewModels\Mods\SelectedChangedData.cs" />
     <Compile Include="ViewModels\OperationOverviewViewModel.cs" />
+    <Compile Include="Views\Dependencies\DependenciesView.xaml.cs">
+      <DependentUpon>DependenciesView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\InstallationTabView.xaml.cs">
       <DependentUpon>InstallationTabView.xaml</DependentUpon>
     </Compile>
@@ -168,6 +174,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
       <ContainsDesignTimeResources>true</ContainsDesignTimeResources>
+    </Page>
+    <Page Include="Resources\Shared.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Dependencies\DependenciesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\InstallationTabView.xaml">
       <SubType>Designer</SubType>
