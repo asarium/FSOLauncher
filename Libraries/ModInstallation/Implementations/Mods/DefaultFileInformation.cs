@@ -21,6 +21,14 @@ namespace ModInstallation.Implementations.Mods
 
         public string Destination { get; private set; }
 
+        public long Filesize { get; private set; }
+
+        public IDictionary<string, IEnumerable<IFileVerifier>> ContentVerifiers
+        {
+            get;
+            private set;
+        }
+
         public IEnumerable<Uri> DownloadUris { get; private set; }
 
         #endregion
@@ -41,7 +49,8 @@ namespace ModInstallation.Implementations.Mods
             var newInstance = new DefaultFileInformation
             {
                 Destination = fileInfo.dest,
-                FileName = fileInfo.filename
+                FileName = fileInfo.filename,
+                Filesize = fileInfo.filesize
             };
 
             if (!string.IsNullOrEmpty(fileInfo.md5sum))

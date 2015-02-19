@@ -21,6 +21,11 @@ namespace ModInstallation.Implementations.DataClasses
         [CanBeNull]
         public string dest { get; set; }
 
+        public long filesize { get; set; }
+
+        [CanBeNull]
+        public IDictionary<string, string> contents { get; set; }
+
         [NotNull]
         public IEnumerable<string> urls { get; set; }
     }

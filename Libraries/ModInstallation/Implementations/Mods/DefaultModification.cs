@@ -24,6 +24,10 @@ namespace ModInstallation.Implementations.Mods
 
         public string Id { get; private set; }
 
+        public string Commandline { get; private set; }
+
+        public string FolderName { get; private set; }
+
         public IEnumerable<IPackage> Packages { get; private set; }
 
         public string Description { get; private set; }
@@ -41,7 +45,9 @@ namespace ModInstallation.Implementations.Mods
             {
                 Id = mod.id,
                 Title = mod.title,
-                Description = mod.description
+                Description = mod.description,
+                Commandline = mod.cmdline,
+                FolderName = mod.folder
             };
 
             if (mod.actions != null)
