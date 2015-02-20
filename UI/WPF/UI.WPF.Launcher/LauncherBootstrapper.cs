@@ -7,6 +7,8 @@ using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics;
 using System.IO.Abstractions;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Threading;
@@ -158,6 +160,20 @@ namespace UI.WPF.Launcher
 
         protected override void OnStartup(object sender, StartupEventArgs e)
         {
+            RxApp.DefaultExceptionHandler = Observer.Create<Exception>(ex =>
+            {
+                if (Debugger.IsAttached)
+                {
+                    Debugger.Break();
+                }
+
+                RxApp.MainThreadScheduler.Schedule(() =>
+                {
+                    // Just rethrow the exception in the UI thread so our exception handler can handle it
+                    throw ex;
+                });
+            });
+
             InitializeLogging();
 
             this.Log().Info("Starting application");
