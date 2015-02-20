@@ -56,9 +56,9 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
-    <Reference Include="System.IO.Abstractions, Version=2.0.0.103, Culture=neutral, PublicKeyToken=d480b5b72fb413da, processorArchitecture=MSIL">
+    <Reference Include="System.IO.Abstractions, Version=2.0.0.106, Culture=neutral, PublicKeyToken=d480b5b72fb413da, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\System.IO.Abstractions.2.0.0.103\lib\net40\System.IO.Abstractions.dll</HintPath>
+      <HintPath>..\..\packages\System.IO.Abstractions.2.0.0.106\lib\net40\System.IO.Abstractions.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Reactive.Core">
@@ -95,9 +95,11 @@
     <Compile Include="Exceptions\InstallationException.cs" />
     <Compile Include="Implementations\AbstractJsonRepository.cs" />
     <Compile Include="Implementations\DataClasses\ActionData.cs" />
+    <Compile Include="Implementations\Mods\DefaultFileListItem.cs" />
     <Compile Include="Implementations\DataClasses\Dependency.cs" />
     <Compile Include="Implementations\DataClasses\EnvironmentConstraint.cs" />
     <Compile Include="Implementations\DataClasses\FileInformation.cs" />
+    <Compile Include="Implementations\DataClasses\FileListItem.cs" />
     <Compile Include="Implementations\DataClasses\Modification.cs" />
     <Compile Include="Implementations\DataClasses\Package.cs" />
     <Compile Include="Implementations\DataClasses\Repository.cs" />
@@ -141,6 +143,7 @@
     <Compile Include="Interfaces\Mods\IEnvironmentConstraint.cs" />
     <Compile Include="Interfaces\Mods\ErrorHandler.cs" />
     <Compile Include="Interfaces\Mods\IFileInformation.cs" />
+    <Compile Include="Interfaces\Mods\IFileListItem.cs" />
     <Compile Include="Interfaces\Mods\IFileVerifier.cs" />
     <Compile Include="Interfaces\Mods\IInstalledModification.cs" />
     <Compile Include="Interfaces\Mods\IModDependency.cs" />

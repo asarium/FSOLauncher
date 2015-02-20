@@ -18,6 +18,10 @@ namespace ModInstallation.Interfaces.Mods
         [NotNull]
         string Id { get; }
 
+        string Commandline { get; }
+
+        string FolderName { get; }
+
         [NotNull]
         IEnumerable<IPackage> Packages { get; }
 

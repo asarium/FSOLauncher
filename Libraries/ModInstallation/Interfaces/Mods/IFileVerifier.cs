@@ -13,5 +13,8 @@ namespace ModInstallation.Interfaces.Mods
     {
         [NotNull]
         Task<bool> VerifyFilePathAsync([NotNull] string path, CancellationToken token, [CanBeNull] IProgress<double> progress = null);
+
+        [CanBeNull]
+        string StringChecksum { get; }
     }
 }

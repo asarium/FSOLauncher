@@ -37,6 +37,9 @@ namespace ModInstallation.Interfaces.Mods
         IEnumerable<IFileInformation> Files { get; }
 
         [CanBeNull]
+        IEnumerable<IFileListItem> FileList { get; }
+
+        [CanBeNull]
         IEnumerable<IEnvironmentConstraint> EnvironmentConstraints { get; }
     }
 }

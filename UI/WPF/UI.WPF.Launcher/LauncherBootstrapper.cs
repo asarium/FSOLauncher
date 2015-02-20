@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics;
+using System.IO.Abstractions;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
@@ -59,6 +60,7 @@ namespace UI.WPF.Launcher
 
             batch.AddExportedValue<IEventAggregator>(new EventAggregator());
             batch.AddExportedValue<IArchiveExtractor>(new SevenZipArchiveExtractor());
+            batch.AddExportedValue<IFileSystem>(new FileSystem());
             batch.AddExportedValue(_container);
 
             _container.Compose(batch);

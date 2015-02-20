@@ -20,6 +20,11 @@ namespace ModInstallation.Interfaces.Mods
         [CanBeNull]
         string Destination { get; }
 
+        long Filesize { get; }
+
+        [CanBeNull]
+        IDictionary<string, IEnumerable<IFileVerifier>> ContentVerifiers { get; }
+
         [NotNull]
         IEnumerable<Uri> DownloadUris { get; }
     }

@@ -1,7 +1,6 @@
 ﻿#region Usings
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using ModInstallation.Annotations;
 using ModInstallation.Implementations.DataClasses;
@@ -23,7 +22,8 @@ namespace ModInstallation.Util
                 packages = mod.Packages.Select(ToDataClass),
                 title = mod.Title,
                 version = mod.Version.ToString(),
-                logo = mod.LogoUri == null ? null : mod.LogoUri.ToString()
+                logo = mod.LogoUri == null ? null : mod.LogoUri.ToString(),
+                cmdline = mod.Commandline
             };
         }
 
@@ -36,7 +36,20 @@ namespace ModInstallation.Util
                 name = package.Name,
                 notes = package.Notes,
                 status = package.Status,
+                filelist = package.FileList != null ? package.FileList.Select(ToDataClass) : null,
                 files = Enumerable.Empty<FileInformation>()
+            };
+        }
+
+        [NotNull]
+        public static FileListItem ToDataClass([NotNull] this IFileListItem item)
+        {
+            return new FileListItem
+            {
+                archive = item.Archive,
+                filename = item.Filename,
+                md5sum = item.Verifier.StringChecksum,
+                orig_name = item.OriginalName
             };
         }
 
