@@ -113,5 +113,14 @@ namespace ModInstallation.Implementations.Mods
                     throw new ArgumentOutOfRangeException("value");
             }
         }
+
+        #region Implementation of IEquatable<IPackage>
+
+        public bool Equals(IPackage other)
+        {
+            return !ReferenceEquals(other, null) && string.Equals(Name, other.Name);
+        }
+
+        #endregion
     }
 }

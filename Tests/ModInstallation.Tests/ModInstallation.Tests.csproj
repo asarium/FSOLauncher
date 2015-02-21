@@ -117,6 +117,8 @@
     <EmbeddedResource Include="TestData\Dependencies\data5.json" />
     <EmbeddedResource Include="TestData\Dependencies\data6.json" />
     <EmbeddedResource Include="TestData\Test.lzma2.7z" />
+    <EmbeddedResource Include="TestData\ModManager\mod1.json" />
+    <EmbeddedResource Include="TestData\ModManager\mod2.json" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Libraries\ModInstallation\ModInstallation.csproj">
@@ -126,6 +128,10 @@
     <ProjectReference Include="..\..\Libraries\semver\Semver\Semver.csproj">
       <Project>{95b2542c-e371-4ab4-9e2d-b2665cbbd629}</Project>
       <Name>Semver</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\System.IO.Abstractions\System.IO.Abstractions\System.IO.Abstractions.csproj">
+      <Project>{4D398F3A-0784-4401-93CD-46CD2FBD6B92}</Project>
+      <Name>System.IO.Abstractions</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Libraries\System.IO.Abstractions\TestingHelpers\TestingHelpers.csproj">
       <Project>{251BD5E5-8133-47A4-AB19-17CF0F43D6AE}</Project>

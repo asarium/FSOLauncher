@@ -1,5 +1,6 @@
 ﻿#region Usings
 
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using ModInstallation.Annotations;
@@ -17,7 +18,7 @@ namespace ModInstallation.Interfaces.Mods
         Optional
     }
 
-    public interface IPackage : INotifyPropertyChanged
+    public interface IPackage : IEquatable<IPackage>, INotifyPropertyChanged
     {
         [NotNull]
         IModification ContainingModification { get; }

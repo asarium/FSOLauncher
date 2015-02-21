@@ -19,5 +19,7 @@ namespace ModInstallation.Interfaces
 
         [NotNull]
         Task ParseLocalModDataAsync();
+
+        Task RemovePackageAsync(IPackage package);
     }
 }
