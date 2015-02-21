@@ -60,7 +60,7 @@
             <ScrollViewer Grid.Column="0" Grid.ColumnSpan="2" HorizontalScrollBarVisibility="Hidden"
                           VerticalScrollBarVisibility="Auto">
                 <DockPanel>
-                    <Grid DockPanel.Dock="Top" DataContext="{Binding Dependencies}">
+                    <Grid DockPanel.Dock="Bottom" DataContext="{Binding Dependencies}">
                         <Grid.Style>
                             <Style TargetType="Grid">
                                 <Setter Property="Visibility" Value="Visible" />
