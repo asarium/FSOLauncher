@@ -8,6 +8,7 @@ using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using FSOManagement.Util;
 using ModInstallation.Annotations;
@@ -114,6 +115,8 @@ namespace ModInstallation.Implementations
 
         private readonly IFileSystem _fileSystem;
 
+        private readonly SemaphoreSlim _lock = new SemaphoreSlim(1, 1);
+
         private readonly ReactiveList<IInstalledModification> _modifications;
 
         [ImportingConstructor]
@@ -155,36 +158,52 @@ namespace ModInstallation.Implementations
                 modData = GetDataClass(package);
             }
 
-            await UpdateModData(modData, packageFile).ConfigureAwait(false);
+            await _lock.WaitAsync().ConfigureAwait(true);
+            try
+            {
+                await UpdateModData(modData, packageFile).ConfigureAwait(false);
+            }
+            finally
+            {
+                _lock.Release();
+            }
         }
 
         public async Task ParseLocalModDataAsync()
         {
-            await Observable.Start(() => _modifications.Clear(), RxApp.MainThreadScheduler);
-
-            if (PackageDirectory == null)
+            await _lock.WaitAsync().ConfigureAwait(true);
+            try
             {
-                return;
-            }
+                await Observable.Start(() => _modifications.Clear(), RxApp.MainThreadScheduler);
 
-            if (!_fileSystem.Directory.Exists(PackageDirectory))
-            {
-                return;
-            }
-
-            foreach (var modDir in _fileSystem.Directory.EnumerateDirectories(PackageDirectory))
-            {
-                foreach (var versionDir in _fileSystem.Directory.EnumerateDirectories(modDir))
+                if (PackageDirectory == null)
                 {
-                    var modFile = _fileSystem.Path.Combine(versionDir, ModInfoFile);
-
-                    if (!_fileSystem.File.Exists(modFile))
-                    {
-                        continue;
-                    }
-
-                    await ProcessModFile(modFile).ConfigureAwait(false);
+                    return;
                 }
+
+                if (!_fileSystem.Directory.Exists(PackageDirectory))
+                {
+                    return;
+                }
+
+                foreach (var modDir in _fileSystem.Directory.EnumerateDirectories(PackageDirectory))
+                {
+                    foreach (var versionDir in _fileSystem.Directory.EnumerateDirectories(modDir))
+                    {
+                        var modFile = _fileSystem.Path.Combine(versionDir, ModInfoFile);
+
+                        if (!_fileSystem.File.Exists(modFile))
+                        {
+                            continue;
+                        }
+
+                        await ProcessModFile(modFile).ConfigureAwait(false);
+                    }
+                }
+            }
+            finally
+            {
+                _lock.Release();
             }
         }
 
@@ -209,15 +228,23 @@ namespace ModInstallation.Implementations
             // Update the data
             currentData.packages = currentData.packages.Where(p => !string.Equals(p.name, package.Name)).ToList();
 
-            if (!currentData.packages.Any())
+            await _lock.WaitAsync().ConfigureAwait(true);
+            try
             {
-                // If there are no packages left delete the mod file
-                await _fileSystem.File.DeleteAsync(packageFile).ConfigureAwait(false);
-                await RemoveModification(package.ContainingModification).ConfigureAwait(false);
+                if (!currentData.packages.Any())
+                {
+                    // If there are no packages left delete the mod file
+                    await _fileSystem.File.DeleteAsync(packageFile).ConfigureAwait(false);
+                    await RemoveModification(package.ContainingModification).ConfigureAwait(false);
+                }
+                else
+                {
+                    await UpdateModData(currentData, packageFile).ConfigureAwait(false);
+                }
             }
-            else
+            finally
             {
-                await UpdateModData(currentData, packageFile).ConfigureAwait(false);
+                _lock.Release();
             }
         }
 
