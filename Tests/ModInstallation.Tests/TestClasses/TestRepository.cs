@@ -17,9 +17,9 @@ namespace ModInstallation.Tests.TestClasses
         {
         }
 
-        protected override async Task<string> GetRepositoryJsonAsync(Uri location, IProgress<string> reporter, CancellationToken token)
+        protected override Task<string> GetRepositoryJsonAsync(Uri location, IProgress<string> reporter, CancellationToken token)
         {
-            return await TestResourceUtil.GetTestResource("testRepository.json");
+            return Task.FromResult(TestResourceUtil.GetTestResource("testRepository.json"));
         }
     }
 }

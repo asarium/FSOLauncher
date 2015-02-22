@@ -14,7 +14,7 @@ namespace ModInstallation.Tests.TestData
     public static class TestResourceUtil
     {
         [NotNull]
-        public static async Task<string> GetTestResource([NotNull] string name)
+        public static string GetTestResource([NotNull] string name)
         {
             var assembly = Assembly.GetExecutingAssembly();
 
@@ -27,7 +27,7 @@ namespace ModInstallation.Tests.TestData
 
                 using (var reader = new StreamReader(stream))
                 {
-                    return await reader.ReadToEndAsync();
+                    return reader.ReadToEnd();
                 }
             }
         }

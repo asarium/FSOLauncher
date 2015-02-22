@@ -67,6 +67,11 @@ namespace ModInstallation.Implementations.Mods
             return str.ToString().Equals(_md5Value, StringComparison.OrdinalIgnoreCase);
         }
 
+        public string StringChecksum
+        {
+            get { return _md5Value; }
+        }
+
         #endregion
     }
 }

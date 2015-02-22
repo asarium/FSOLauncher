@@ -24,9 +24,9 @@ namespace ModInstallation.Tests.Implementations
     public class DefaultDependencyResolverTests
     {
         [NotNull]
-        private static async Task<IList<IModification>> GenerateTestMods([NotNull] string name)
+        private static IList<IModification> GenerateTestMods([NotNull] string name)
         {
-            var testData = await TestResourceUtil.GetTestResource("Dependencies." + name);
+            var testData = TestResourceUtil.GetTestResource("Dependencies." + name);
 
             var jsonData = JsonConvert.DeserializeObject<Repository>(testData);
 
@@ -38,10 +38,10 @@ namespace ModInstallation.Tests.Implementations
             throw new InvalidOperationException();
         }
 
-        [NotNull, Test]
-        public async Task TestGetPackageDependenciesErrors()
+        [Test]
+        public void TestGetPackageDependenciesErrors()
         {
-            var testData = await GenerateTestMods("data4.json");
+            var testData = GenerateTestMods("data4.json");
 
             CollectionAssert.IsNotEmpty(testData);
             CollectionAssert.IsNotEmpty(testData.First().Packages);
@@ -51,10 +51,10 @@ namespace ModInstallation.Tests.Implementations
             Assert.Throws<DependencyException>(() => DefaultDependencyResolver.GetPackageDependencies(firstPackage, testData));
         }
 
-        [NotNull, Test]
-        public async Task TestGetPackageDependenciesMultipleVersions()
+        [Test]
+        public void TestGetPackageDependenciesMultipleVersions()
         {
-            var testData = await GenerateTestMods("data2.json");
+            var testData = GenerateTestMods("data2.json");
 
             CollectionAssert.IsNotEmpty(testData);
             CollectionAssert.IsNotEmpty(testData.First().Packages);
@@ -83,9 +83,9 @@ namespace ModInstallation.Tests.Implementations
         }
 
         [NotNull, Test]
-        public async Task TestGetPackageDependenciesRequiredPackages()
+        public void TestGetPackageDependenciesRequiredPackages()
         {
-            var testData = await GenerateTestMods("data3.json");
+            var testData = GenerateTestMods("data3.json");
 
             CollectionAssert.IsNotEmpty(testData);
             CollectionAssert.IsNotEmpty(testData.First().Packages);
@@ -107,9 +107,9 @@ namespace ModInstallation.Tests.Implementations
         }
 
         [NotNull, Test]
-        public async Task TestGetPackageDependenciesSingle()
+        public void TestGetPackageDependenciesSingle()
         {
-            var testData = await GenerateTestMods("data1.json");
+            var testData = GenerateTestMods("data1.json");
 
             CollectionAssert.IsNotEmpty(testData);
             CollectionAssert.IsNotEmpty(testData.First().Packages);
@@ -125,10 +125,10 @@ namespace ModInstallation.Tests.Implementations
             Assert.AreEqual("package2", dependency.Name);
         }
 
-        [NotNull, Test]
-        public async Task TestResolveDependencies()
+        [Test]
+        public void TestResolveDependencies()
         {
-            var testData = await GenerateTestMods("data5.json");
+            var testData = GenerateTestMods("data5.json");
 
             var testPackage = testData.First().Packages.First();
 
@@ -154,9 +154,9 @@ namespace ModInstallation.Tests.Implementations
         }
 
         [NotNull, Test]
-        public async Task TestResolveDependenciesCyclic()
+        public void TestResolveDependenciesCyclic()
         {
-            var testData = await GenerateTestMods("data6.json");
+            var testData = GenerateTestMods("data6.json");
 
             var testPackage = testData.First().Packages.First();
 

@@ -1,0 +1,15 @@
+﻿{
+  "description": "Test description",
+  "title": "Test mod 1",
+  "version": "1.0.0",
+  "id": "test1",
+  "packages": [
+    {
+      "notes": "",
+      "name": "Core",
+      "status": "Required",
+      "dependencies": [],
+      "files": []
+    }
+  ]
+}

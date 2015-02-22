@@ -25,6 +25,8 @@ namespace UI.WPF.Modules.Installation.ViewModels.Installation
 
         private InstallationResult _result;
 
+        private string _resultMessage;
+
         private string _title;
 
         protected InstallationItem()
@@ -32,6 +34,9 @@ namespace UI.WPF.Modules.Installation.ViewModels.Installation
             ProgressObservable = this.WhenAnyValue(x => x.Progress);
             IndeterminateObservable = this.WhenAnyValue(x => x.Indeterminate);
             ResultObservable = this.WhenAnyValue(x => x.Result);
+
+            // When the result changes set the message to null, if there is a special message the implementing class will set that
+            ResultObservable.Subscribe(_ => ResultMessage = null);
 
             ProgressObservable.Select(p => p < 0.999).BindTo(this, x => x.InstallationInProgress);
 
@@ -58,6 +63,12 @@ namespace UI.WPF.Modules.Installation.ViewModels.Installation
         {
             get { return _result; }
             protected set { RaiseAndSetIfPropertyChanged(ref _result, value); }
+        }
+
+        public string ResultMessage
+        {
+            get { return _resultMessage; }
+            protected set { RaiseAndSetIfPropertyChanged(ref _resultMessage, value); }
         }
 
         public bool InstallationInProgress

@@ -1,6 +1,4 @@
-﻿#region Usings
-
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
 using FSOManagement.Annotations;
@@ -9,23 +7,24 @@ using ModInstallation.Interfaces;
 using ModInstallation.Interfaces.Mods;
 using Splat;
 
-#endregion
-
 namespace UI.WPF.Modules.Installation.ViewModels.Installation
 {
-    public class PackageInstallationItem : InstallationItem
+    public class PackageUninstallationItem : InstallationItem
     {
-        private readonly ILocalModManager _modManager;
+        #region Overrides of InstallationItem
 
         private readonly IPackage _package;
 
-        private readonly IPackageInstaller _packageInstaller;
+        private readonly IPackageInstaller _installer;
 
-        public PackageInstallationItem(IPackage package, IPackageInstaller packageInstaller, ILocalModManager modManager)
+        private readonly ILocalModManager _localModManager;
+
+        public PackageUninstallationItem(IPackage package, IPackageInstaller installer, ILocalModManager localModManager)
         {
             _package = package;
-            _packageInstaller = packageInstaller;
-            _modManager = modManager;
+            _installer = installer;
+            _localModManager = localModManager;
+
             Title = package.Name;
         }
 
@@ -55,9 +54,9 @@ namespace UI.WPF.Modules.Installation.ViewModels.Installation
 
                 try
                 {
-                    await _packageInstaller.InstallPackageAsync(_package, reporter, CancellationTokenSource.Token).ConfigureAwait(false);
+                    await _localModManager.RemovePackageAsync(_package).ConfigureAwait(false);
 
-                    await _modManager.AddPackageAsync(_package).ConfigureAwait(false);
+                    await _installer.UninstallPackageAsync(_package, true, reporter, CancellationTokenSource.Token).ConfigureAwait(false);
 
                     OperationMessage = null;
                     Result = InstallationResult.Successful;
@@ -68,7 +67,7 @@ namespace UI.WPF.Modules.Installation.ViewModels.Installation
                 }
                 catch (Exception e)
                 {
-                    this.Log().WarnException("Installation failed!", e);
+                    this.Log().WarnException("Uninstallation failed!", e);
                     Result = InstallationResult.Failed;
                     ResultMessage = e.Message;
                 }
@@ -76,7 +75,7 @@ namespace UI.WPF.Modules.Installation.ViewModels.Installation
                 if (CancellationTokenSource.IsCancellationRequested)
                 {
                     // Report that this operation was canceled
-                    ((IProgress<IInstallationProgress>) reporter).Report(new DefaultInstallationProgress
+                    ((IProgress<IInstallationProgress>)reporter).Report(new DefaultInstallationProgress
                     {
                         Message = "Canceled",
                         OverallProgress = 1.0,
@@ -86,7 +85,7 @@ namespace UI.WPF.Modules.Installation.ViewModels.Installation
                 else
                 {
                     // Report that this operation is finished
-                    ((IProgress<IInstallationProgress>) reporter).Report(new DefaultInstallationProgress
+                    ((IProgress<IInstallationProgress>)reporter).Report(new DefaultInstallationProgress
                     {
                         Message = "Finished",
                         OverallProgress = 1.0,
@@ -95,5 +94,7 @@ namespace UI.WPF.Modules.Installation.ViewModels.Installation
                 }
             }
         }
+
+        #endregion
     }
 }

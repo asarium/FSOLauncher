@@ -1,3 +1,6 @@
 [submodule "Libraries/semver"]
 	path = Libraries/semver
 	url = https://github.com/asarium/semver.git
+[submodule "Libraries/System.IO.Abstractions"]
+	path = Libraries/System.IO.Abstractions
+	url = https://github.com/asarium/System.IO.Abstractions.git

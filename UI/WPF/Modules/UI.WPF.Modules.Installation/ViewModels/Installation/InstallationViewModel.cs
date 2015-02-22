@@ -2,6 +2,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reactive.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using ReactiveUI;
 using UI.WPF.Launcher.Common.Classes;
@@ -16,13 +18,18 @@ namespace UI.WPF.Modules.Installation.ViewModels.Installation
 
         private InstallationItemParent _uninstallationParent;
 
-        public ICommand CloseCommand { get; private set; }
+        public ReactiveCommand<object> CloseCommand { get; private set; }
 
         public InstallationViewModel(Action closeAction)
         {
-            var cmd = ReactiveCommand.Create();
-            cmd.Subscribe(_ => closeAction());
-            CloseCommand = cmd;
+            CloseCommand =  ReactiveCommand.Create();
+            CloseCommand.Subscribe(_ => closeAction());
+        }
+
+        public async Task WaitforCloseAsync()
+        {
+            // This will wait for the next "value" of the command
+            await CloseCommand;
         }
 
         public InstallationItemParent InstallationParent

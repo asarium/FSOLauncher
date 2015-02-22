@@ -28,6 +28,8 @@ namespace ModInstallation.Implementations.Mods
 
         public IEnumerable<IFileInformation> Files { get; private set; }
 
+        public IEnumerable<IFileListItem> FileList { get; private set; }
+
         public IEnumerable<IEnvironmentConstraint> EnvironmentConstraints { get; private set; }
 
         #endregion
@@ -52,6 +54,11 @@ namespace ModInstallation.Implementations.Mods
             if (package.environment != null)
             {
                 newInstance.EnvironmentConstraints = package.environment.Select(GetEnvironmentContraint).ToList();
+            }
+
+            if (package.filelist != null)
+            {
+                newInstance.FileList = package.filelist.Select(x => DefaultFileListItem.InitializeFromData(x));
             }
 
             return newInstance;
@@ -106,5 +113,14 @@ namespace ModInstallation.Implementations.Mods
                     throw new ArgumentOutOfRangeException("value");
             }
         }
+
+        #region Implementation of IEquatable<IPackage>
+
+        public bool Equals(IPackage other)
+        {
+            return !ReferenceEquals(other, null) && string.Equals(Name, other.Name);
+        }
+
+        #endregion
     }
 }

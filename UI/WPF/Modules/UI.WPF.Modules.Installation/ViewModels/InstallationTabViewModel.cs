@@ -121,20 +121,6 @@ namespace UI.WPF.Modules.Installation.ViewModels
             State = InstallationViewModelState.PackagesOverview;
         }
 
-        public DependenciesViewModel DependenciesViewModel
-        {
-            get { return _dependenciesViewModel; }
-            private set
-            {
-                if (Equals(value, _dependenciesViewModel))
-                {
-                    return;
-                }
-                _dependenciesViewModel = value;
-                NotifyOfPropertyChange();
-            }
-        }
-
         public IEnumerable<ModViewModel> ModificationViewModels
         {
             get { return ModGroupViewModels.Where(x => x.CurrentMod != null).Select(x => x.CurrentMod); }
@@ -346,16 +332,20 @@ namespace UI.WPF.Modules.Installation.ViewModels
                     InstallationProgress = p;
                 }))
                 {
-                    await InstallationViewModel.InstallationParent.Install().ConfigureAwait(true);
+                    await
+                        Task.WhenAll(InstallationViewModel.UninstallationParent.Install(), InstallationViewModel.InstallationParent.Install())
+                            .ConfigureAwait(true);
                 }
             }
             finally
             {
-                State = InstallationViewModelState.PackagesOverview;
                 InstallationInProgress = false;
                 TaskbarController.ProgressbarVisible = false;
                 TaskbarController.ProgressvarValue = 0.0;
             }
+
+            await InstallationViewModel.WaitforCloseAsync();
+            State = InstallationViewModelState.PackagesOverview;
         }
 
         private IEnumerable<InstallationItem> GetDependencyItems(IEnumerable<IPackage> dependencies)
@@ -480,6 +470,11 @@ namespace UI.WPF.Modules.Installation.ViewModels
                         {
                             throw new ModDependencyException(mod.Mod);
                         }
+                        catch (InvalidOperationException)
+                        {
+                            // That's not good, there is a cyclic dependency! Thow a dependency exception to let the user decide what to do
+                            throw new ModDependencyException(mod.Mod);
+                        }
                     }
 
                     // Only return packages that are not already installed or are already being installed (the current package)
@@ -509,7 +504,18 @@ namespace UI.WPF.Modules.Installation.ViewModels
 
         private IEnumerable<InstallationItem> GetUninstallationItems()
         {
-            return Enumerable.Empty<InstallationItem>();
+            return
+                ModificationViewModels.Where(modVm => modVm.Packages.Any(UninstallPackageSelector))
+                    .Select(
+                        modVm =>
+                            new InstallationItemParent(modVm.Mod.Title,
+                                modVm.Packages.Where(UninstallPackageSelector)
+                                    .Select(x => new PackageUninstallationItem(x.Package, PackageInstaller, LocalModManager))));
+        }
+
+        private bool UninstallPackageSelector(PackageViewModel model)
+        {
+            return !model.Selected && LocalModManager.IsPackageInstalled(model.Package);
         }
 
         private bool PackageSelector(PackageViewModel model)

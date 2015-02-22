@@ -6,7 +6,8 @@
              xmlns:viewModels="clr-namespace:UI.WPF.Modules.Installation.ViewModels"
              xmlns:dependencies="clr-namespace:UI.WPF.Modules.Installation.ViewModels.Dependencies"
              xmlns:dependencies1="clr-namespace:UI.WPF.Modules.Installation.Views.Dependencies"
-             mc:Ignorable="d"
+             xmlns:installation="clr-namespace:UI.WPF.Modules.Installation.ViewModels.Installation"
+             xmlns:operations="clr-namespace:UI.WPF.Modules.Installation.Views.Operations" mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModels:OperationOverviewViewModel}" d:DesignHeight="300"
              d:DesignWidth="300">
     <Grid>
@@ -15,7 +16,7 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            
+
             <Button Command="{Binding AbortCommand, Mode=OneWay}" Canvas.ZIndex="5"
                     Style="{DynamicResource MetroCircleButtonStyle}" Height="40" Width="40"
                     FontFamily="Segoe UI Symbol" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left"
@@ -60,18 +61,101 @@
             <ScrollViewer Grid.Column="0" Grid.ColumnSpan="2" HorizontalScrollBarVisibility="Hidden"
                           VerticalScrollBarVisibility="Auto">
                 <DockPanel>
-                    <Grid DockPanel.Dock="Top" DataContext="{Binding Dependencies}">
+                    <Grid DockPanel.Dock="Top">
                         <Grid.Style>
                             <Style TargetType="Grid">
                                 <Setter Property="Visibility" Value="Visible" />
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding ModViewModels.Count}" Value="0">
-                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    <DataTrigger Binding="{Binding UninstallationParent.HasChildren}" Value="False">
+                                        <Setter Property="Visibility" Value="Collapsed" />
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </Grid.Style>
-                        <dependencies1:DependenciesView />
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <Rectangle Fill="{DynamicResource BlackBrush}" Margin="0,0,5,0" Width="20" Height="20">
+                                    <Rectangle.OpacityMask>
+                                        <VisualBrush Stretch="Fill" Visual="{DynamicResource appbar_warning}" />
+                                    </Rectangle.OpacityMask>
+                                </Rectangle>
+                                <Label Margin="5" VerticalAlignment="Center" VerticalContentAlignment="Center"
+                                       Style="{DynamicResource DescriptionHeaderStyle}" Content="Uninstallations" />
+                            </StackPanel>
+                            <TextBlock
+                                Text="The following items will be removed from you installation. This operation can not be reversed!"
+                                TextWrapping="Wrap" Margin="3" HorizontalAlignment="Center" />
+
+                            <ItemsControl Margin="0,5,0,0" ItemsSource="{Binding UninstallationParent.Children}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type installation:InstallationItem}">
+                                        <Border Margin="5" CornerRadius="3"
+                                                BorderBrush="{DynamicResource AccentColorBrush}">
+                                            <operations:InstallationItemView />
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid DockPanel.Dock="Bottom">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <Grid DataContext="{Binding Dependencies}" Grid.Row="0">
+                            <Grid.Style>
+                                <Style TargetType="Grid">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ModViewModels.Count}" Value="0">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Grid.Style>
+                            <dependencies1:DependenciesView />
+                        </Grid>
+                        <Grid Grid.Row="1">
+                            <Grid.Style>
+                                <Style TargetType="Grid">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding InstallationParent.HasChildren}" Value="False">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Grid.Style>
+                            <StackPanel>
+                                <Label Margin="5" VerticalAlignment="Top"
+                                       Style="{DynamicResource DescriptionHeaderStyle}" Content="Installations" />
+                                <TextBlock Text="You have selected the following items:" TextWrapping="Wrap" Margin="3"
+                                           HorizontalAlignment="Center" />
+
+                                <ItemsControl Margin="0,5,0,0" ItemsSource="{Binding InstallationParent.Children}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="{x:Type installation:InstallationItem}">
+                                            <Border Margin="5" CornerRadius="3"
+                                                    BorderBrush="{DynamicResource AccentColorBrush}">
+                                                <operations:InstallationItemView />
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Grid>
                     </Grid>
                 </DockPanel>
             </ScrollViewer>

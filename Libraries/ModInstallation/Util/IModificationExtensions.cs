@@ -1,5 +1,6 @@
 ﻿#region Usings
 
+using System.IO;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Akavache;
@@ -22,6 +23,16 @@ namespace ModInstallation.Util
             }
 
             return await BlobCache.LocalMachine.LoadImageFromUrl(mod.LogoUri.ToString());
+        }
+
+        public static string GetInstallationPath([NotNull] this IModification mod, string rootPath = null)
+        {
+            if (rootPath == null)
+            {
+                return Path.Combine(mod.FolderName ?? mod.Id, mod.Version.ToString());
+            }
+
+            return Path.Combine(rootPath, mod.FolderName ?? mod.Id, mod.Version.ToString());
         }
     }
 }

@@ -25,6 +25,12 @@ namespace ModInstallation.Implementations.DataClasses
         [CanBeNull]
         public string logo { get; set; }
 
+        [CanBeNull]
+        public string folder { get; set; }
+
+        [CanBeNull]
+        public string cmdline { get; set; }
+
         [NotNull]
         public IEnumerable<Package> packages { get; set; }
 

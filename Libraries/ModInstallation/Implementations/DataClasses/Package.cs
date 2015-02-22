@@ -29,6 +29,9 @@ namespace ModInstallation.Implementations.DataClasses
         public IEnumerable<FileInformation> files { get; set; }
 
         [CanBeNull]
+        public IEnumerable<FileListItem> filelist { get; set; }
+
+        [CanBeNull]
         public IEnumerable<EnvironmentConstraint> environment { get; set; }
     }
-}
+ }

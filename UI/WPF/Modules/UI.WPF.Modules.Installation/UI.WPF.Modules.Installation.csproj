@@ -100,6 +100,7 @@
     <Compile Include="ViewModels\Installation\InstallationItemParent.cs" />
     <Compile Include="ViewModels\Installation\InstallationResult.cs" />
     <Compile Include="ViewModels\Installation\PackageInstallationItem.cs" />
+    <Compile Include="ViewModels\Installation\PackageUninstallationItem.cs" />
     <Compile Include="ViewModels\Mods\ModGroupViewModel.cs" />
     <Compile Include="ViewModels\Mods\ModViewModel.cs" />
     <Compile Include="ViewModels\Mods\PackageViewModel.cs" />
@@ -128,6 +129,9 @@
     </Compile>
     <Compile Include="Views\ModListView.xaml.cs">
       <DependentUpon>ModListView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Operations\InstallationItemView.xaml.cs">
+      <DependentUpon>InstallationItemView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Operations\OperationsOverviewView.xaml.cs">
       <DependentUpon>OperationsOverviewView.xaml</DependentUpon>
@@ -208,6 +212,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ModListView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Operations\InstallationItemView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
