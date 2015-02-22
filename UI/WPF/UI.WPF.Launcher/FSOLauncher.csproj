@@ -302,10 +302,6 @@
       <Project>{8A55D865-DFC1-4CE1-B56F-54D249ABD3F7}</Project>
       <Name>Utilities</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Tests\ModInstallation.Tests\ModInstallation.Tests.csproj">
-      <Project>{2dfa1deb-f4fc-4a4f-8d26-8319a8993bd9}</Project>
-      <Name>ModInstallation.Tests</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Modules\UI.WPF.Modules.Advanced\UI.WPF.Modules.Advanced.csproj">
       <Project>{7636EC3E-D47C-435C-AA51-F8981727A82E}</Project>
       <Name>UI.WPF.Modules.Advanced</Name>
