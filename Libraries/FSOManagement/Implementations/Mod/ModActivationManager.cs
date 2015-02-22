@@ -32,12 +32,14 @@ namespace FSOManagement.Implementations.Mod
             ParentProfile = profile;
 
             var modificationCountObservable = ParentProfile.WhenAnyObservable(x => x.SelectedTotalConversion.ModManager.ModificationLists.CountChanged);
+            var selectedModObservable = ParentProfile.WhenAnyValue(x => x.SelectedModification);
 
-            if (ParentProfile.SelectedModification != null)
-            {
-                // We need to wait until the mods have been loaded, then the
-                // selected modification can be resolved
-                modificationCountObservable.Where(count => count > 0).FirstAsync().Subscribe(_ =>
+            modificationCountObservable.CombineLatest(selectedModObservable,
+                (count, mod) => new
+                {
+                    Count = count,
+                    Mod = mod
+                }).Where(x => x.Count > 0 && x.Mod != null).Subscribe(x =>
                 {
                     if (ParentProfile.SelectedTotalConversion == null)
                     {
@@ -45,9 +47,8 @@ namespace FSOManagement.Implementations.Mod
                     }
 
                     ActiveMod = GetModification(ParentProfile.SelectedTotalConversion.ModManager.GetModifications(),
-                        ParentProfile.SelectedModification);
+                        x.Mod);
                 });
-            }
 
             this.WhenAnyValue(x => x.ActiveMod.Dependencies)
                 .CombineLatest(profile.WhenAnyValue(x => x.SelectedTotalConversion.RootFolder),

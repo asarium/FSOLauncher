@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FSOManagement.Annotations;
 using FSOManagement.Interfaces.Mod;
+using ModInstallation.Exceptions;
 using ModInstallation.Interfaces;
 using ModInstallation.Interfaces.Mods;
 using ModInstallation.Util;
@@ -56,8 +57,15 @@ namespace ModInstallation.Implementations.Management
                 // The resolver detected a dependency cycle
                 return Enumerable.Empty<string>();
             }
+            catch (DependencyException)
+            {
+                return Enumerable.Empty<string>();
+            }
 
-            var mods = dependencies.GroupBy(p => p.ContainingModification).Select(group => group.Key).Cast<IInstalledModification>();
+            // Make sure that we actually select the installed mods
+            var mods =
+                dependencies.GroupBy(p => p.ContainingModification).Where(x => !_mod.Equals(x.Key))
+                    .Select(group => _localModManager.Modifications.FirstOrDefault(x => x.Equals(@group.Key)));
 
             return mods.Select(mod => mod.InstallPath);
         }

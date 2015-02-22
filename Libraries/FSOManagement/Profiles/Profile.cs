@@ -405,6 +405,12 @@ namespace FSOManagement.Profiles
             }
 
             _flagManager.Flags = data.CommandLineOptions ?? Enumerable.Empty<FlagInformation>();
+
+            // Indicate that all properties have changed
+            OnPropertyChanged(string.Empty);
+
+            // HACK: The current version of ReactiveUI doesn't handle empty and null property names correctly
+            OnPropertyChanged("SelectedModification");
         }
 
         public ProfileData GetData()

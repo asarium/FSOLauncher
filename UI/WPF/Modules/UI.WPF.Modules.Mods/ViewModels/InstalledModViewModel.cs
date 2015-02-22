@@ -31,16 +31,16 @@ namespace UI.WPF.Modules.Mods.ViewModels
             return ModInstance.Modification.Title.IndexOf(filterString, StringComparison.InvariantCultureIgnoreCase) >= 0;
         }
 
-        protected override Task<IBitmap> LoadLogoAsync()
+        protected override async Task<IBitmap> LoadLogoAsync()
         {
             var uri = ModInstance.Modification.LogoUri;
 
             if (uri == null)
             {
-                return Task.FromResult<IBitmap>(null);
+                return null;
             }
 
-            return Task.Run(() => BlobCache.LocalMachine.LoadImageFromUrl(uri.ToString()).ToTask());
+            return await BlobCache.LocalMachine.LoadImageFromUrl(uri.ToString());
         }
     }
 }

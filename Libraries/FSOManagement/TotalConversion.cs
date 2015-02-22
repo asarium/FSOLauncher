@@ -20,13 +20,27 @@ namespace FSOManagement
     {
         private TcData _data;
 
+        private IModManager _modManager;
+
         [UsedImplicitly]
         public TotalConversion()
         {
         }
 
         [NotNull]
-        public IModManager ModManager { get; private set; }
+        public IModManager ModManager
+        {
+            get { return _modManager; }
+            private set
+            {
+                if (Equals(value, _modManager))
+                {
+                    return;
+                }
+                _modManager = value;
+                OnPropertyChanged();
+            }
+        }
 
         public string Name
         {
