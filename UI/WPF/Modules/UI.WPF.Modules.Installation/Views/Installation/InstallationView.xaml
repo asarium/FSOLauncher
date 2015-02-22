@@ -30,7 +30,7 @@
                 </Rectangle.LayoutTransform>
             </Rectangle>
         </Button>
-        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Hidden">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
             <DockPanel>
                 <StackPanel Orientation="Vertical" DockPanel.Dock="Top">
                     <StackPanel.Style>
