@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ using FSOManagement.Profiles;
 using FSOManagement.Profiles.DataClass;
 using ModInstallation.Interfaces;
 using Newtonsoft.Json;
+using ReactiveUI;
 using UI.WPF.Launcher.Common.Classes;
 using UI.WPF.Launcher.Common.Interfaces;
 using UI.WPF.Modules.Implementations.Implementations.DataClasses;
@@ -127,23 +129,27 @@ namespace UI.WPF.Modules.Implementations.Implementations
                 string content;
                 using (var reader = new StreamReader(filePath))
                 {
-                    content = await reader.ReadToEndAsync();
+                    content = await reader.ReadToEndAsync().ConfigureAwait(false);
                 }
 
-                var data = await Task.Factory.StartNew(() => JsonConvert.DeserializeObject<SettingsData>(content));
+                var data = await Task.Factory.StartNew(() => JsonConvert.DeserializeObject<SettingsData>(content)).ConfigureAwait(false);
 
-                SetDefaultValues();
-                if (data != null)
+                // Not get back onto the main thread to set the variables
+                await Observable.Start(() =>
                 {
-                    SetValuesFromData(data);
-                }
+                    SetDefaultValues();
+                    if (data != null)
+                    {
+                        SetValuesFromData(data);
+                    }
+                },
+                    RxApp.MainThreadScheduler);
             }
             finally
             {
                 _settingsLoaded.OnNext(this);
             }
         }
-
 
         public async Task SaveAsync()
         {
@@ -163,10 +169,10 @@ namespace UI.WPF.Modules.Implementations.Implementations
 
             var filePath = Path.Combine(directoryPath, SettingsFile);
 
-            var json = await jsonTask;
+            var json = await jsonTask.ConfigureAwait(false);
             using (var writer = new StreamWriter(filePath))
             {
-                await writer.WriteAsync(json);
+                await writer.WriteAsync(json).ConfigureAwait(false);
             }
         }
 

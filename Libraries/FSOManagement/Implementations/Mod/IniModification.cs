@@ -241,7 +241,7 @@ namespace FSOManagement.Implementations.Mod
             {
                 iniContent = new byte[stream.Length];
 
-                await stream.ReadAsync(iniContent, 0, iniContent.Length);
+                await stream.ReadAsync(iniContent, 0, iniContent.Length).ConfigureAwait(false);
             }
 
             var iniData = await Task.Run(() =>
@@ -256,7 +256,7 @@ namespace FSOManagement.Implementations.Mod
                     // TODO: Add notification
                     return null;
                 }
-            });
+            }).ConfigureAwait(false);
 
             if (iniData == null)
             {
