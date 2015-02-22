@@ -339,11 +339,13 @@ namespace UI.WPF.Modules.Installation.ViewModels
             }
             finally
             {
-                State = InstallationViewModelState.PackagesOverview;
                 InstallationInProgress = false;
                 TaskbarController.ProgressbarVisible = false;
                 TaskbarController.ProgressvarValue = 0.0;
             }
+
+            await InstallationViewModel.WaitforCloseAsync();
+            State = InstallationViewModelState.PackagesOverview;
         }
 
         private IEnumerable<InstallationItem> GetDependencyItems(IEnumerable<IPackage> dependencies)
@@ -466,6 +468,11 @@ namespace UI.WPF.Modules.Installation.ViewModels
                         }
                         catch (DependencyException)
                         {
+                            throw new ModDependencyException(mod.Mod);
+                        }
+                        catch (InvalidOperationException)
+                        {
+                            // That's not good, there is a cyclic dependency! Thow a dependency exception to let the user decide what to do
                             throw new ModDependencyException(mod.Mod);
                         }
                     }

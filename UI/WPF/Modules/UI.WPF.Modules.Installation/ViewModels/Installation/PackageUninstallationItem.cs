@@ -24,6 +24,8 @@ namespace UI.WPF.Modules.Installation.ViewModels.Installation
             _package = package;
             _installer = installer;
             _localModManager = localModManager;
+
+            Title = package.Name;
         }
 
         private void ProgressHandler([NotNull] IInstallationProgress installationProgress)
