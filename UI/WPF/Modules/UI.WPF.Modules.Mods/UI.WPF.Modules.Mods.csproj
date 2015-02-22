@@ -102,7 +102,6 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="BlendHelpers\BlendResourceDictionary.cs" />
-    <Compile Include="ViewModels\DownloadedModViewModel.cs" />
     <Compile Include="ViewModels\InstalledModViewModel.cs" />
     <Compile Include="ViewModels\ModListViewModel.cs" />
     <Compile Include="ViewModels\ModViewModel.cs" />
