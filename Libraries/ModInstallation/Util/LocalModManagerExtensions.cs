@@ -18,7 +18,7 @@ namespace ModInstallation.Util
             }
 
             return
-                This.Modifications.Where(mod => mod.Id == package.ContainingModification.Id)
+                This.Modifications.Where(mod => mod.Equals(package.ContainingModification))
                     .SelectMany(x => x.Packages)
                     .Any(x => x.Name == package.Name);
         }
