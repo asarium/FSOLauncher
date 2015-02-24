@@ -15,7 +15,9 @@ namespace UI.WPF.Modules.Update.ViewModels
     {
         public ChangeLogStatus([NotNull] IEnumerable<KeyValuePair<Version, string>> releaseNotes, [NotNull] IInteractionService interactionService)
         {
-            OpenChangeLogCommand = ReactiveCommand.CreateAsyncTask(async _ => await interactionService.ShowDialog(new ChangelogDialog(releaseNotes)));
+            OpenChangeLogCommand =
+                ReactiveCommand.CreateAsyncTask(
+                    async _ => await interactionService.ShowDialog(new ChangelogDialog(releaseNotes)).ConfigureAwait(false));
         }
 
         [NotNull]

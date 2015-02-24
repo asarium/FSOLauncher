@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Reactive;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Caliburn.Micro;
@@ -69,7 +70,8 @@ namespace UI.WPF.Modules.Update.ViewModels
 
         void IHandle<MainWindowOpenedMessage>.Handle([NotNull] MainWindowOpenedMessage message)
         {
-            _checkForUpdatesCommand.Execute(null);
+            // Delay checking for a bit...
+            Observable.Timer(TimeSpan.FromSeconds(5)).InvokeCommand(_checkForUpdatesCommand);
         }
 
         #endregion
@@ -95,7 +97,7 @@ namespace UI.WPF.Modules.Update.ViewModels
 
             try
             {
-                state = await UpdateService.CheckForUpdateAsync();
+                state = await UpdateService.CheckForUpdateAsync().ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -105,7 +107,7 @@ namespace UI.WPF.Modules.Update.ViewModels
 
             if (state.UpdateAvailable)
             {
-                await DoUpdate(state.Version);
+                await DoUpdate(state.Version).ConfigureAwait(false);
             }
             else
             {
@@ -125,7 +127,7 @@ namespace UI.WPF.Modules.Update.ViewModels
                 {
                     last = progress;
                     ((UpdatingStatus) Status).UpdateProgress(progress);
-                }));
+                })).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -145,21 +147,6 @@ namespace UI.WPF.Modules.Update.ViewModels
             {
                 Status = new SuccessfullStatus("Update was successfull.");
             }
-        }
-
-        private void OpenChangelogDialog([NotNull] IUpdateProgress last)
-        {
-//            if (last.ReleaseNotes == null)
-//            {
-//                return;
-//            }
-
-            var dialog = new ChangelogDialog(new[] {new KeyValuePair<Version, string>(new Version(1, 0), @"<![CDATA[
-<p>Test release</p>
-
-]]>")});
-
-            InteractionService.ShowDialog(dialog);
         }
     }
 }
