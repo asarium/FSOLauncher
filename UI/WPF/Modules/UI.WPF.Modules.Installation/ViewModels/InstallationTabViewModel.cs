@@ -19,7 +19,6 @@ using ReactiveUI;
 using Splat;
 using UI.WPF.Launcher.Common.Interfaces;
 using UI.WPF.Launcher.Common.Services;
-using UI.WPF.Modules.Installation.ViewModels.Dependencies;
 using UI.WPF.Modules.Installation.ViewModels.Installation;
 using UI.WPF.Modules.Installation.ViewModels.Mods;
 using IDependencyResolver = ModInstallation.Interfaces.IDependencyResolver;
@@ -59,8 +58,6 @@ namespace UI.WPF.Modules.Installation.ViewModels
     [Export(typeof(ILauncherTab)), ExportMetadata("Priority", 3)]
     public sealed class InstallationTabViewModel : Screen, ILauncherTab, IEnableLogger
     {
-        private DependenciesViewModel _dependenciesViewModel;
-
         private bool _hasManagerStatusMessage;
 
         private bool _installationInProgress;
@@ -121,9 +118,13 @@ namespace UI.WPF.Modules.Installation.ViewModels
             State = InstallationViewModelState.PackagesOverview;
         }
 
+        [CanBeNull]
         public IEnumerable<ModViewModel> ModificationViewModels
         {
-            get { return ModGroupViewModels.Where(x => x.CurrentMod != null).Select(x => x.CurrentMod); }
+            get
+            {
+                return ModGroupViewModels == null ? null : ModGroupViewModels.Where(x => x.CurrentMod != null).Select(x => x.CurrentMod);
+            }
         }
 
         public OperationOverviewViewModel OperationOverviewViewModel
@@ -232,7 +233,7 @@ namespace UI.WPF.Modules.Installation.ViewModels
         [NotNull]
         public IRemoteModManager RemoteModManager { get; private set; }
 
-        [NotNull]
+        [CanBeNull]
         public IReadOnlyReactiveList<ModGroupViewModel> ModGroupViewModels
         {
             get { return _modGroupViewModels; }
@@ -401,11 +402,14 @@ namespace UI.WPF.Modules.Installation.ViewModels
                         case RecoveryOptionResult.CancelOperation:
                             return null;
                         case RecoveryOptionResult.RetryOperation:
-                            var viewModel = ModGroupViewModels.FirstOrDefault(group => group.Group.Id == exception.Mod.Id);
-
-                            if (viewModel != null)
+                            if (ModGroupViewModels != null)
                             {
-                                viewModel.IsSelected = false;
+                                var viewModel = ModGroupViewModels.FirstOrDefault(group => @group.Group.Id == exception.Mod.Id);
+
+                                if (viewModel != null)
+                                {
+                                    viewModel.IsSelected = false;
+                                }
                             }
                             break;
                         case RecoveryOptionResult.FailOperation:
@@ -423,14 +427,18 @@ namespace UI.WPF.Modules.Installation.ViewModels
 
         private IEnumerable<IPackage> ResolveDependencies()
         {
+            if (ModGroupViewModels == null || ModificationViewModels == null)
+            {
+                return Enumerable.Empty<IPackage>();
+            }
+
             var result = Enumerable.Empty<IPackage>();
             var localMods = (LocalModManager.Modifications ?? Enumerable.Empty<IModification>()).ToList();
 
             var allMods = localMods;
-            if (RemoteModManager.ModificationGroups != null)
-            {
-                allMods = allMods.Concat(RemoteModManager.ModificationGroups.SelectMany(x => x.Versions.Values)).ToList();
-            }
+            var remoteMods = ModGroupViewModels.SelectMany(model => model.Group.Versions.Values);
+
+            allMods = allMods.Concat(remoteMods).ToList();
 
             foreach (var mod in ModificationViewModels)
             {
@@ -504,6 +512,11 @@ namespace UI.WPF.Modules.Installation.ViewModels
 
         private IEnumerable<InstallationItem> GetUninstallationItems()
         {
+            if (ModificationViewModels == null)
+            {
+                return Enumerable.Empty<InstallationItem>();
+            }
+
             return
                 ModificationViewModels.Where(modVm => modVm.Packages.Any(UninstallPackageSelector))
                     .Select(
@@ -525,6 +538,11 @@ namespace UI.WPF.Modules.Installation.ViewModels
 
         private IEnumerable<InstallationItem> GetInstallationItems()
         {
+            if (ModificationViewModels == null)
+            {
+                return Enumerable.Empty<InstallationItem>();
+            }
+
             return ModificationViewModels.Where(modvm => modvm.Packages.Any(PackageSelector)).Select(GetModInstallationItem);
         }
 
@@ -544,13 +562,13 @@ namespace UI.WPF.Modules.Installation.ViewModels
             ManagerStatusMessage = "Parsing local mod information...";
             await LocalModManager.ParseLocalModDataAsync().ConfigureAwait(false);
 
-            await
-                RemoteModManager.RetrieveInformationAsync(new Progress<string>(msg => ManagerStatusMessage = msg), CancellationToken.None)
+            var modGroups = await
+                RemoteModManager.GetModGroupsAsync(new Progress<string>(msg => ManagerStatusMessage = msg), true, CancellationToken.None)
                     .ConfigureAwait(false);
 
-            if (RemoteModManager.ModificationGroups != null)
+            if (modGroups != null)
             {
-                ModGroupViewModels = RemoteModManager.ModificationGroups.CreateDerivedCollection(group => new ModGroupViewModel(group, this));
+                ModGroupViewModels = modGroups.CreateDerivedCollection(group => new ModGroupViewModel(group, this));
             }
             else
             {
@@ -585,7 +603,7 @@ namespace UI.WPF.Modules.Installation.ViewModels
         {
             base.OnActivate();
 
-            if (RemoteModManager.ModificationGroups == null)
+            if (ModGroupViewModels == null)
             {
                 UpdateModsCommand.Execute(null);
             }

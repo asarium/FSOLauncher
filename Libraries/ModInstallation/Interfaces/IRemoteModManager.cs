@@ -14,13 +14,19 @@ namespace ModInstallation.Interfaces
 {
     public interface IRemoteModManager : INotifyPropertyChanged
     {
-        [CanBeNull]
-        IEnumerable<IModGroup> ModificationGroups { get; }
-
         [NotNull]
         IEnumerable<IModRepository> Repositories { get; set; }
 
+        /// <summary>
+        ///     Retrieves the modification groups, this may fetch the necessary information from the repositories if it is not
+        ///     already available.
+        /// </summary>
+        /// <remarks>This function may run synchronously if the requested information is already present.</remarks>
+        /// <param name="progressReporter">The reporter used for notifying a listener of status updates</param>
+        /// <param name="force">If set to <c>true</c> the repositories will always be used to retrieve the information.</param>
+        /// <param name="token">A cancellation token that can be used to abort the operation</param>
+        /// <returns>The odification groups.</returns>
         [NotNull]
-        Task RetrieveInformationAsync([NotNull] IProgress<string> progressReporter, CancellationToken token);
+        Task<IEnumerable<IModGroup>> GetModGroupsAsync([NotNull] IProgress<string> progressReporter, bool force, CancellationToken token);
     }
 }

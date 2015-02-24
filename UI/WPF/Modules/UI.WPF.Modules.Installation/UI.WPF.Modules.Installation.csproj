@@ -106,6 +106,7 @@
     <Compile Include="ViewModels\Mods\PackageViewModel.cs" />
     <Compile Include="ViewModels\Mods\SelectedChangedData.cs" />
     <Compile Include="ViewModels\OperationOverviewViewModel.cs" />
+    <Compile Include="ViewModels\UpdatesIconViewModel.cs" />
     <Compile Include="Views\Dependencies\DependenciesView.xaml.cs">
       <DependentUpon>DependenciesView.xaml</DependentUpon>
     </Compile>
