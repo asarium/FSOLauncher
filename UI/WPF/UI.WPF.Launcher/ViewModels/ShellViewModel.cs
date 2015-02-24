@@ -201,7 +201,7 @@ namespace UI.WPF.Launcher.ViewModels
             try
             {
                 OverlayVisible = true;
-                await Settings.LoadAsync();
+                await Settings.LoadAsync().ConfigureAwait(true);
             }
             finally
             {
@@ -214,7 +214,7 @@ namespace UI.WPF.Launcher.ViewModels
             try
             {
                 OverlayVisible = true;
-                await Settings.SaveAsync();
+                await Settings.SaveAsync().ConfigureAwait(true);
             }
             finally
             {
