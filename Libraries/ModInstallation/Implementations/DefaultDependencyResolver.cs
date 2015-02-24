@@ -35,7 +35,7 @@ namespace ModInstallation.Implementations
 
         protected bool Equals(DependencyNode other)
         {
-            return Package.Equals(other.Package);
+            return Package.Equals(other.Package) && Package.ContainingModification.Equals(other.Package.ContainingModification);
         }
 
         public override bool Equals(object obj)
@@ -92,7 +92,7 @@ namespace ModInstallation.Implementations
         {
             return from n in Nodes
                 from dep in n.Dependencies
-                where Equals(dep, node)
+                where ReferenceEquals(dep, node)
                 select dep;
         }
     }
@@ -115,19 +115,22 @@ namespace ModInstallation.Implementations
 
             while (openSet.Count > 0)
             {
-                var node = openSet.First();
-                openSet.Remove(node);
+                var n = openSet.First();
+                openSet.Remove(n);
 
-                result.Add(node.Package);
+                result.Add(n.Package);
 
                 // Copy the dependencies list
-                var nodeDependencies = node.Dependencies.ToList();
-                node.Dependencies.Clear();
+                var nodeDependencies = n.Dependencies.ToList();
 
-                foreach (var noIncoming in 
-                    nodeDependencies.Where(n => !graph.IncomingEdges(n).Any()))
+                foreach (var m in nodeDependencies)
                 {
-                    openSet.Add(noIncoming);
+                    n.Dependencies.Remove(m);
+
+                    if (!graph.IncomingEdges(m).Any())
+                    {
+                        openSet.Add(m);
+                    }
                 }
             }
 
