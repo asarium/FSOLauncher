@@ -1,0 +1,67 @@
+﻿<UserControl xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:viewModels="clr-namespace:UI.WPF.Modules.Installation.ViewModels"
+             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls" xmlns:cal="http://www.caliburnproject.org"
+             xmlns:controls1="clr-namespace:UI.WPF.Launcher.Common.Controls;assembly=UI.WPF.Launcher.Common"
+             x:Class="UI.WPF.Modules.Installation.Views.UpdatesIconView" mc:Ignorable="d"
+             d:DataContext="{d:DesignData /SampleData/UpdatesIconViewModelSampleData.xaml}" d:DesignHeight="50"
+             d:DesignWidth="50">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ToolTip x:Key="AvailableUpdatesToolTip">
+                Test Tooltip...
+            </ToolTip>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <UserControl.Style>
+        <Style TargetType="{x:Type UserControl}">
+            <Setter Property="Visibility" Value="Collapsed" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsVisible}" Value="True">
+                    <Setter Property="Visibility" Value="Visible" />
+                </DataTrigger>
+                <DataTrigger></DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Style>
+    <Button ToolTip="{Binding CurrentMessage}" VerticalContentAlignment="Center" HorizontalContentAlignment="Center">
+        <ContentControl Content="{Binding}">
+            <ContentControl.Style>
+                <Style TargetType="{x:Type ContentControl}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding CheckingForUpdates}" Value="True">
+                            <Setter Property="ContentTemplate">
+                                <Setter.Value>
+                                    <DataTemplate DataType="viewModels:UpdatesIconViewModel">
+                                        <Grid>
+                                            <controls:ProgressRing IsActive="{Binding CheckingForUpdates}" Width="20"
+                                                                   Height="20"
+                                                                   Foreground="{DynamicResource IdealForegroundColorBrush}"
+                                                                   IsLarge="False" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding UpdatesAvailable}" Value="True">
+                            <Setter Property="ContentTemplate">
+                                <Setter.Value>
+                                    <DataTemplate DataType="viewModels:UpdatesIconViewModel">
+                                        <Border CornerRadius="60"
+                                                BorderBrush="{DynamicResource IdealForegroundColorBrush}"
+                                                BorderThickness="1" Padding="3" Width="20" Height="20">
+                                            <TextBlock Text="{Binding NumberOfUpdates}" HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center" TextAlignment="Center" />
+                                        </Border>
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ContentControl.Style>
+        </ContentControl>
+    </Button>
+</UserControl>

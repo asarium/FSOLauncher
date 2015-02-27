@@ -1,0 +1,5 @@
+﻿<ViewModels:UpdatesIconViewModel xmlns:ViewModels="clr-namespace:UI.WPF.Modules.Installation.ViewModels"
+                                 CurrentMessage="Curabitur class vestibulum aenean adipiscing"
+                                 CheckingForUpdates="False" DisplayName="Phasellus aliquam integer" IsNotifying="False"
+                                 IsVisible="True" IsInitialized="True" IsActive="False" NumberOfUpdates="12"
+                                 UpdatesAvailable="True" />
