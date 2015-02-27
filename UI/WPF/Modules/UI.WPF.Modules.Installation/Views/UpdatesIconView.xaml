@@ -3,18 +3,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewModels="clr-namespace:UI.WPF.Modules.Installation.ViewModels"
-             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls" xmlns:cal="http://www.caliburnproject.org"
-             xmlns:controls1="clr-namespace:UI.WPF.Launcher.Common.Controls;assembly=UI.WPF.Launcher.Common"
+             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
              x:Class="UI.WPF.Modules.Installation.Views.UpdatesIconView" mc:Ignorable="d"
              d:DataContext="{d:DesignData /SampleData/UpdatesIconViewModelSampleData.xaml}" d:DesignHeight="50"
              d:DesignWidth="50">
-    <UserControl.Resources>
-        <ResourceDictionary>
-            <ToolTip x:Key="AvailableUpdatesToolTip">
-                Test Tooltip...
-            </ToolTip>
-        </ResourceDictionary>
-    </UserControl.Resources>
     <UserControl.Style>
         <Style TargetType="{x:Type UserControl}">
             <Setter Property="Visibility" Value="Collapsed" />
@@ -22,7 +14,6 @@
                 <DataTrigger Binding="{Binding IsVisible}" Value="True">
                     <Setter Property="Visibility" Value="Visible" />
                 </DataTrigger>
-                <DataTrigger></DataTrigger>
             </Style.Triggers>
         </Style>
     </UserControl.Style>
