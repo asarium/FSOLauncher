@@ -19,15 +19,12 @@ using FSOManagement;
 using ModInstallation.Interfaces;
 using ModInstallation.Windows.Implementations.Extractors;
 using NLog.Config;
-using Ookii.Dialogs.Wpf;
 using ReactiveUI;
 using SDLGlue;
 using Splat;
 using UI.WPF.Launcher.Common.Classes;
 using UI.WPF.Launcher.Common.Interfaces;
-using UI.WPF.Launcher.Common.Util;
 using UI.WPF.Launcher.Implementations;
-using UI.WPF.Launcher.Properties;
 using UI.WPF.Modules.Advanced;
 using UI.WPF.Modules.General;
 using UI.WPF.Modules.Implementations;
@@ -136,7 +133,7 @@ namespace UI.WPF.Launcher
         {
             return new[]
             {
-                // ApplicationMain assembly
+// ApplicationMain assembly
                 typeof(LauncherBootstrapper).Assembly,
 
                 // Modules follow
@@ -194,8 +191,6 @@ namespace UI.WPF.Launcher
             BlobCache.ApplicationName = LauncherUtils.GetApplicationName();
 
             DisplayRootViewFor<IShellViewModel>();
-
-            Locator.Current.GetService<IEventAggregator>().PublishOnUIThread(new MainWindowOpenedMessage());
         }
 
         private static void InitializeLogging()

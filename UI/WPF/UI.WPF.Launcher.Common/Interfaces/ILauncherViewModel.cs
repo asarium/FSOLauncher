@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Windows.Input;
 using Caliburn.Micro;
 using FSOManagement;
 using FSOManagement.Annotations;
@@ -12,7 +13,7 @@ using ReactiveUI;
 
 namespace UI.WPF.Launcher.Common.Interfaces
 {
-    public interface ILauncherViewModel : INotifyPropertyChanged
+    public interface ILauncherViewModel : IConductor
     {
         [NotNull]
         IReactiveList<TotalConversion> TotalConversions { get; }
@@ -21,6 +22,15 @@ namespace UI.WPF.Launcher.Common.Interfaces
         IReactiveList<IModRepositoryViewModel> ModRepositories { get; }
 
         [NotNull]
+        IEnumerable<ILauncherTab> LauncherTabs { set; }
+
+        [NotNull]
         IProfileManager ProfileManager { get; }
+
+        ICommand AddProfileCommand { get; }
+
+        ICommand LaunchGameCommand { get; }
+
+        ICommand AddGameRootCommand { get; }
     }
 }
