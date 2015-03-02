@@ -385,7 +385,7 @@
     <Error Condition="!Exists('..\..\..\packages\SQLitePCL.raw_basic.0.7.0\build\net45\SQLitePCL.raw_basic.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\SQLitePCL.raw_basic.0.7.0\build\net45\SQLitePCL.raw_basic.targets'))" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>copy "$(ProjectDir)ext\x86\sqlite3.dll" "$(ProjectDir)$(OutDir)x86\sqlite3.dll"</PostBuildEvent>
+    <PostBuildEvent>xcopy /R /Y "$(ProjectDir)ext\x86\sqlite3.dll" "$(ProjectDir)$(OutDir)x86\sqlite3.dll"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

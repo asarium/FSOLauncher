@@ -33,6 +33,9 @@ using UI.WPF.Modules.Mods;
 using UI.WPF.Modules.Update;
 using Utilities;
 using LogManager = NLog.LogManager;
+#if !DEBUG
+using Ookii.Dialogs.Wpf;
+#endif
 
 #endregion
 
