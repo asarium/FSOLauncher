@@ -57,10 +57,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Semver", "Libraries\semver\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External", "External", "{31903B8A-B3FB-4EEE-A9AA-20D8ABD3BCD5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "System.IO.Abstractions", "Libraries\System.IO.Abstractions\System.IO.Abstractions\System.IO.Abstractions.csproj", "{4D398F3A-0784-4401-93CD-46CD2FBD6B92}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestingHelpers", "Libraries\System.IO.Abstractions\TestingHelpers\TestingHelpers.csproj", "{251BD5E5-8133-47A4-AB19-17CF0F43D6AE}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -151,14 +147,6 @@ Global
 		{95B2542C-E371-4AB4-9E2D-B2665CBBD629}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{95B2542C-E371-4AB4-9E2D-B2665CBBD629}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{95B2542C-E371-4AB4-9E2D-B2665CBBD629}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4D398F3A-0784-4401-93CD-46CD2FBD6B92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4D398F3A-0784-4401-93CD-46CD2FBD6B92}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4D398F3A-0784-4401-93CD-46CD2FBD6B92}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4D398F3A-0784-4401-93CD-46CD2FBD6B92}.Release|Any CPU.Build.0 = Release|Any CPU
-		{251BD5E5-8133-47A4-AB19-17CF0F43D6AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{251BD5E5-8133-47A4-AB19-17CF0F43D6AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{251BD5E5-8133-47A4-AB19-17CF0F43D6AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{251BD5E5-8133-47A4-AB19-17CF0F43D6AE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -188,7 +176,5 @@ Global
 		{05C368BE-F7FA-4ECA-A651-DCB2E1FB2048} = {F78C8A15-7646-4BE5-9EF4-0DF764892006}
 		{95B2542C-E371-4AB4-9E2D-B2665CBBD629} = {31903B8A-B3FB-4EEE-A9AA-20D8ABD3BCD5}
 		{31903B8A-B3FB-4EEE-A9AA-20D8ABD3BCD5} = {246565A1-F140-4E42-B0EA-EF65C9387D22}
-		{4D398F3A-0784-4401-93CD-46CD2FBD6B92} = {31903B8A-B3FB-4EEE-A9AA-20D8ABD3BCD5}
-		{251BD5E5-8133-47A4-AB19-17CF0F43D6AE} = {31903B8A-B3FB-4EEE-A9AA-20D8ABD3BCD5}
 	EndGlobalSection
 EndGlobal

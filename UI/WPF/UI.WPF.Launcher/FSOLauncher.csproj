@@ -162,6 +162,10 @@
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
+    <Reference Include="System.IO.Abstractions, Version=2.0.0.113, Culture=neutral, PublicKeyToken=d480b5b72fb413da, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\System.IO.Abstractions.2.0.0.113\lib\net40\System.IO.Abstractions.dll</HintPath>
+    </Reference>
     <Reference Include="System.Reactive.Core, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\packages\Rx-Core.2.2.5\lib\net45\System.Reactive.Core.dll</HintPath>
@@ -307,10 +311,6 @@
       <Project>{589ecbc2-cdfb-42aa-a9df-35d804464711}</Project>
       <Name>SDLGlue</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Libraries\System.IO.Abstractions\System.IO.Abstractions\System.IO.Abstractions.csproj">
-      <Project>{4D398F3A-0784-4401-93CD-46CD2FBD6B92}</Project>
-      <Name>System.IO.Abstractions</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\Libraries\Utilities\Utilities.csproj">
       <Project>{8A55D865-DFC1-4CE1-B56F-54D249ABD3F7}</Project>
       <Name>Utilities</Name>
@@ -379,7 +379,7 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy /R /Y "$(ProjectDir)ext\x86\sqlite3.dll" "$(ProjectDir)$(OutDir)x86\sqlite3.dll"</PostBuildEvent>
+    <PostBuildEvent>xcopy /R /Y /I "$(ProjectDir)ext\x86\sqlite3.dll" "$(ProjectDir)$(OutDir)x86\"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\..\..\packages\SQLitePCL.raw_basic.0.7.1\build\net45\SQLitePCL.raw_basic.targets" Condition="Exists('..\..\..\packages\SQLitePCL.raw_basic.0.7.1\build\net45\SQLitePCL.raw_basic.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
