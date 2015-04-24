@@ -345,7 +345,7 @@ namespace UI.WPF.Modules.Installation.ViewModels
                 TaskbarController.ProgressvarValue = 0.0;
             }
 
-            await InstallationViewModel.WaitforCloseAsync();
+            await InstallationViewModel.WaitforCloseAsync().ConfigureAwait(false);
             State = InstallationViewModelState.PackagesOverview;
         }
 
