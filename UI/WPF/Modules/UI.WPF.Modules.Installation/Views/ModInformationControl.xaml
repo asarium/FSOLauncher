@@ -28,7 +28,7 @@
                     <installation:ModSelectCheckBox Margin="2,2,0,2" IsChecked="{Binding IsSelected, Mode=TwoWay}"
                                                     VerticalAlignment="Center" HorizontalAlignment="Center"
                                                     IsThreeState="True" Grid.Column="0"
-                                                    IsEnabled="{Binding InstallationTabViewModel.InteractionEnabled}">
+                                                    IsEnabled="{Binding OldInstallationTabViewModel.InteractionEnabled}">
                         <installation:ModSelectCheckBox.Style>
                             <Style TargetType="installation:ModSelectCheckBox"
                                    BasedOn="{StaticResource {x:Type CheckBox}}" />

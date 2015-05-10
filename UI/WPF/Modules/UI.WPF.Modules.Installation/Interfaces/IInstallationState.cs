@@ -6,8 +6,17 @@ using System.Threading.Tasks;
 
 namespace UI.WPF.Modules.Installation.Interfaces
 {
+    public enum StateResult
+    {
+        Continue,
+
+        Back,
+
+        Abort
+    }
+
     public interface IInstallationState
     {
-        Task<IInstallationState> WaitForNextState();
+        Task<StateResult> GetResult();
     }
 }

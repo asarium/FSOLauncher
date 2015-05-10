@@ -94,23 +94,26 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="InstallationModule.cs" />
+    <Compile Include="Interfaces\IInstallationManager.cs" />
     <Compile Include="Interfaces\IInstallationState.cs" />
     <Compile Include="ModSelectCheckBox.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\Dependencies\DependenciesViewModel.cs" />
     <Compile Include="ViewModels\Dependencies\DependencyModViewModel.cs" />
     <Compile Include="ViewModels\Dependencies\DependencyPackageViewModel.cs" />
-    <Compile Include="ViewModels\InstallationTabViewModel.cs" />
+    <Compile Include="ViewModels\OldInstallationTabViewModel.cs" />
     <Compile Include="ViewModels\Installation\InstallationViewModel.cs" />
     <Compile Include="ViewModels\Installation\InstallationItem.cs" />
     <Compile Include="ViewModels\Installation\InstallationItemParent.cs" />
     <Compile Include="ViewModels\Installation\InstallationResult.cs" />
     <Compile Include="ViewModels\Installation\PackageInstallationItem.cs" />
     <Compile Include="ViewModels\Installation\PackageUninstallationItem.cs" />
+    <Compile Include="ViewModels\ListOverview\PackageListViewModel.cs" />
     <Compile Include="ViewModels\Mods\ModGroupViewModel.cs" />
     <Compile Include="ViewModels\Mods\ModViewModel.cs" />
     <Compile Include="ViewModels\Mods\PackageViewModel.cs" />
     <Compile Include="ViewModels\Mods\SelectedChangedData.cs" />
+    <Compile Include="ViewModels\InstallationTabViewModel.cs" />
     <Compile Include="ViewModels\OperationOverviewViewModel.cs" />
     <Compile Include="ViewModels\UpdatesIconViewModel.cs" />
     <Compile Include="Views\Dependencies\DependenciesView.xaml.cs">
@@ -134,8 +137,8 @@
     <Compile Include="Views\ModInformationControl.xaml.cs">
       <DependentUpon>ModInformationControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ModListView.xaml.cs">
-      <DependentUpon>ModListView.xaml</DependentUpon>
+    <Compile Include="Views\ListOverview\PackageListView.xaml.cs">
+      <DependentUpon>PackageListView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Operations\InstallationItemView.xaml.cs">
       <DependentUpon>InstallationItemView.xaml</DependentUpon>
@@ -222,7 +225,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\ModListView.xaml">
+    <Page Include="Views\ListOverview\PackageListView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

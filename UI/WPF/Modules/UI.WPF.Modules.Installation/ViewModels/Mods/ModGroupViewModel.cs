@@ -7,6 +7,7 @@ using ModInstallation.Interfaces.Mods;
 using ReactiveUI;
 using Semver;
 using UI.WPF.Launcher.Common.Classes;
+using UI.WPF.Modules.Installation.Interfaces;
 
 #endregion
 
@@ -25,14 +26,14 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
         public IEnumerable<SemVersion> Versions { get; private set; }
         public bool HasMultipleVersions { get; private set; }
 
-        public ModGroupViewModel(IModGroup group, InstallationTabViewModel installationTabViewModel)
+        public ModGroupViewModel(IModGroup group, InstallationTabViewModel tabViewModel)
         {
-            InstallationTabViewModel = installationTabViewModel;
+            TabViewModel = tabViewModel;
             _group = @group;
 
             this.WhenAnyValue(x => x.SelectedVersion)
                 .Where(x => x != null && _group.Versions.ContainsKey(x))
-                .Select(x => new ModViewModel(_group.Versions[x], installationTabViewModel))
+                .Select(x => new ModViewModel(_group.Versions[x], TabViewModel))
                 .BindTo(this, x => x.CurrentMod);
 
             // When selected changes, propagate to the mod view model
@@ -45,7 +46,9 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
             HasMultipleVersions = Versions.Count() > 1;
         }
 
-        public InstallationTabViewModel InstallationTabViewModel { get; set; }
+        private InstallationTabViewModel TabViewModel { get; set; }
+
+        public OldInstallationTabViewModel OldInstallationTabViewModel { get; set; }
 
         public bool? IsSelected
         {

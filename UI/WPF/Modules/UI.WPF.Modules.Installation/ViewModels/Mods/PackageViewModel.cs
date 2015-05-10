@@ -7,6 +7,7 @@ using ModInstallation.Interfaces.Mods;
 using ModInstallation.Util;
 using ReactiveUI;
 using UI.WPF.Launcher.Common.Classes;
+using UI.WPF.Modules.Installation.Interfaces;
 
 #endregion
 
@@ -18,16 +19,15 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
 
         private bool _selected;
 
-        public PackageViewModel([NotNull] IPackage package, [NotNull] InstallationTabViewModel installationTabViewModel)
+        public PackageViewModel([NotNull] IPackage package, [NotNull] InstallationTabViewModel tabViewModel)
         {
             Package = package;
 
             IsSelectedObservable = this.WhenAnyValue(x => x.Selected).Select(b => new SelectedChangedData(this, b));
 
-            installationTabViewModel.InteractionEnabledObservable.Select(b => b && package.Status != PackageStatus.Required)
-                .BindTo(this, x => x.IsChangeable);
+            IsChangeable = package.Status != PackageStatus.Required;
 
-            Selected = installationTabViewModel.LocalModManager.IsPackageInstalled(package);
+            Selected = tabViewModel.LocalModManager.IsPackageInstalled(package);
         }
 
         [NotNull]

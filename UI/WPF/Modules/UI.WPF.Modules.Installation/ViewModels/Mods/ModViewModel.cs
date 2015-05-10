@@ -8,6 +8,7 @@ using FSOManagement.Annotations;
 using ModInstallation.Interfaces.Mods;
 using ReactiveUI;
 using UI.WPF.Launcher.Common.Classes;
+using UI.WPF.Modules.Installation.Interfaces;
 
 #endregion
 
@@ -23,11 +24,11 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
 
         private IEnumerable<PackageViewModel> _packages;
 
-        public ModViewModel([NotNull] IModification mod, [NotNull] InstallationTabViewModel installationTabViewModel)
+        public ModViewModel([NotNull] IModification mod, [NotNull] InstallationTabViewModel tabVeViewModel)
         {
             _mod = mod;
 
-            Packages = mod.Packages.CreateDerivedCollection(p => new PackageViewModel(p, installationTabViewModel));
+            Packages = mod.Packages.CreateDerivedCollection(p => new PackageViewModel(p, tabVeViewModel));
             Packages.Select(x => x.IsSelectedObservable).CombineLatest().Select(IsSelectedTransform).BindTo(this, x => x.ModSelected);
 
             mod.WhenAny(x => x.Description, val => !string.IsNullOrEmpty(val.Value)).BindTo(this, x => x.HasDescription);
