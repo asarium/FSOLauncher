@@ -104,8 +104,8 @@
     <Compile Include="Implementations\DataClasses\Package.cs" />
     <Compile Include="Implementations\DataClasses\Repository.cs" />
     <Compile Include="Implementations\DefaultDependencyResolver.cs" />
-    <Compile Include="Implementations\DefaultLocalModManager.cs" />
-    <Compile Include="Implementations\DefaultRemoteModManager.cs" />
+    <Compile Include="Implementations\LocalModManager.cs" />
+    <Compile Include="Implementations\RemoteModManager.cs" />
     <Compile Include="Implementations\DefaultFileDownloader.cs" />
     <Compile Include="Implementations\DefaultPackageInstaller.cs" />
     <Compile Include="Implementations\Extractors\DefaultExtractionProgress.cs" />
@@ -138,6 +138,7 @@
     <Compile Include="Interfaces\IFileDownloader.cs" />
     <Compile Include="Interfaces\ILocalModManager.cs" />
     <Compile Include="Interfaces\IPackageInstaller.cs" />
+    <Compile Include="Interfaces\IRemoteModManager.cs" />
     <Compile Include="Interfaces\IRepositoryFactory.cs" />
     <Compile Include="Interfaces\Mods\ConstraintType.cs" />
     <Compile Include="Interfaces\Mods\IEnvironmentConstraint.cs" />
@@ -149,7 +150,6 @@
     <Compile Include="Interfaces\Mods\IModDependency.cs" />
     <Compile Include="Interfaces\Mods\IModGroup.cs" />
     <Compile Include="Interfaces\Mods\IModification.cs" />
-    <Compile Include="Interfaces\IRemoteModManager.cs" />
     <Compile Include="Interfaces\IModRepository.cs" />
     <Compile Include="Interfaces\Mods\IPackage.cs" />
     <Compile Include="Interfaces\Mods\IPostInstallActions.cs" />

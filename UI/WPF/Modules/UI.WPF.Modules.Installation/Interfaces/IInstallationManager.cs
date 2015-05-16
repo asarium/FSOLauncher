@@ -17,8 +17,6 @@ namespace UI.WPF.Modules.Installation.Interfaces
 
         ICommand UpdatePackageListCommand { get; }
 
-        IReadOnlyReactiveList<IModGroup> ModGroups { get; }
-
         Task UpdatePackageList();
 
         Task InstallPackages(IEnumerable<IPackage> packages);

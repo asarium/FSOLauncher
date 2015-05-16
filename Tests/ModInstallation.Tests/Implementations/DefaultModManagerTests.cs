@@ -19,7 +19,7 @@ namespace ModInstallation.Tests.Implementations
         [Test, NotNull]
         public async Task TestRetrieveInformationAsync()
         {
-            var modManager = new DefaultRemoteModManager
+            var modManager = new RemoteModManager
             {
                 Repositories = new[] {new TestRepository("test://host")}
             };

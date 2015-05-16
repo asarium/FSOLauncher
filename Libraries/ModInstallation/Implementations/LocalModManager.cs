@@ -108,8 +108,7 @@ namespace ModInstallation.Implementations
         #endregion
     }
 
-    [Export(typeof(ILocalModManager))]
-    public class DefaultLocalModManager : ILocalModManager, IEnableLogger
+    public class LocalModManager : IEnableLogger
     {
         private const string ModInfoFile = "mod.json";
 
@@ -119,8 +118,7 @@ namespace ModInstallation.Implementations
 
         private readonly ReactiveList<IInstalledModification> _modifications;
 
-        [ImportingConstructor]
-        public DefaultLocalModManager(IFileSystem fileSystem)
+        public LocalModManager(IFileSystem fileSystem)
         {
             _fileSystem = fileSystem;
             _modifications = new ReactiveList<IInstalledModification>();

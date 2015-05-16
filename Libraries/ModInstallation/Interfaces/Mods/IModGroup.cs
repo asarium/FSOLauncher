@@ -3,10 +3,10 @@ using Semver;
 
 namespace ModInstallation.Interfaces.Mods
 {
-    public interface IModGroup
+    public interface IModGroup<T> where T : IModification
     {
         string Id { get; }
 
-        IDictionary<SemVersion, IModification> Versions { get; }
+        IDictionary<SemVersion, T> Versions { get; }
     }
 }

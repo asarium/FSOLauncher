@@ -95,7 +95,7 @@
     <Compile Include="Implementations\AbstractJsonRepositoryTests.cs" />
     <Compile Include="Implementations\DefaultDependencyResolverTests.cs" />
     <Compile Include="Implementations\DefaultFileDownloaderTests.cs" />
-    <Compile Include="Implementations\DefaultLocalModManagerTests.cs" />
+    <Compile Include="Implementations\LocalModManagerTests.cs" />
     <Compile Include="Implementations\DefaultModManagerTests.cs" />
     <Compile Include="Implementations\DefaultPackageInstallerTests.cs" />
     <Compile Include="Implementations\Extractors\SharpCompressExtractorTests.cs" />

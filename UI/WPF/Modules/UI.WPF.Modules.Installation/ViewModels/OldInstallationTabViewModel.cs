@@ -70,7 +70,7 @@ namespace UI.WPF.Modules.Installation.ViewModels
 
         private string _managerStatusMessage;
 
-        private IReadOnlyReactiveList<ModGroupViewModel> _modGroupViewModels;
+        private IReadOnlyReactiveList<ModGroupViewModel<IModification>> _modGroupViewModels;
 
         private OperationOverviewViewModel _operationOverviewViewModel;
 
@@ -230,7 +230,7 @@ namespace UI.WPF.Modules.Installation.ViewModels
         public IRemoteModManager RemoteModManager { get; private set; }
 
         [CanBeNull]
-        public IReadOnlyReactiveList<ModGroupViewModel> ModGroupViewModels
+        public IReadOnlyReactiveList<ModGroupViewModel<IModification>> ModGroupViewModels
         {
             get { return _modGroupViewModels; }
             private set

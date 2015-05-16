@@ -32,8 +32,6 @@ namespace UI.WPF.Modules.Installation.ViewModels
             LocalModManager = localModManager;
             RemoteModManager = remoteModManager;
 
-            _modGroups = new ReactiveList<IModGroup>();
-
             UpdatePackageListCommand = ReactiveCommand.CreateAsyncTask(_ => UpdatePackageList());
 
             this.WhenAnyValue(x => x.ManagerStatusMessage).Select(val => !string.IsNullOrEmpty(val)).BindTo(this, x => x.HasManagerStatusMessage);
@@ -112,10 +110,6 @@ namespace UI.WPF.Modules.Installation.ViewModels
 
         public ICommand UpdatePackageListCommand { get; private set; }
 
-        public IReadOnlyReactiveList<IModGroup> ModGroups
-        {
-            get { return _modGroups; }
-        }
 
         public async Task UpdatePackageList()
         {
@@ -167,8 +161,6 @@ namespace UI.WPF.Modules.Installation.ViewModels
         {
             throw new NotImplementedException();
         }
-
-        private readonly ReactiveList<IModGroup> _modGroups;
 
         private bool _hasManagerStatusMessage;
 

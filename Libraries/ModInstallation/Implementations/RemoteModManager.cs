@@ -15,12 +15,11 @@ using ModInstallation.Util;
 
 namespace ModInstallation.Implementations
 {
-    [Export(typeof(IRemoteModManager))]
-    public class DefaultRemoteModManager : PropertyChangeBase, IRemoteModManager
+    public class RemoteModManager : PropertyChangeBase
     {
-        private IEnumerable<IModGroup> _modificationGroups;
+        private IEnumerable<IModGroup<IModification>> _modificationGroups;
 
-        public DefaultRemoteModManager()
+        public RemoteModManager()
         {
             Repositories = new List<IModRepository>();
         }
@@ -29,7 +28,7 @@ namespace ModInstallation.Implementations
 
         public IEnumerable<IModRepository> Repositories { get; set; }
 
-        public async Task<IEnumerable<IModGroup>> GetModGroupsAsync(IProgress<string> progressReporter, bool force, CancellationToken token)
+        public async Task<IEnumerable<IModGroup<IModification>>> GetModGroupsAsync(IProgress<string> progressReporter, bool force, CancellationToken token)
         {
             if (_modificationGroups != null && !force)
             {
@@ -49,7 +48,7 @@ namespace ModInstallation.Implementations
                 Repositories.Where(modRepository => modRepository.Modifications != null)
                     .SelectMany(modRepository => modRepository.Modifications)
                     .GroupBy(x => x.Id)
-                    .Select(g => new DefaultModGroup(g))
+                    .Select(g => new DefaultModGroup<IModification>(g))
                     .ToList();
 
             return _modificationGroups;

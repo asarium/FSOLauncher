@@ -13,9 +13,9 @@ using UI.WPF.Modules.Installation.Interfaces;
 
 namespace UI.WPF.Modules.Installation.ViewModels.Mods
 {
-    public class ModGroupViewModel : ReactiveObjectBase
+    public class ModGroupViewModel<T> : ReactiveObjectBase where T : IModification
     {
-        private readonly IModGroup _group;
+        private readonly IModGroup<T> _group;
 
         private ModViewModel _currentMod;
 
@@ -26,7 +26,7 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
         public IEnumerable<SemVersion> Versions { get; private set; }
         public bool HasMultipleVersions { get; private set; }
 
-        public ModGroupViewModel(IModGroup group, InstallationTabViewModel tabViewModel)
+        public ModGroupViewModel(IModGroup<T> group, InstallationTabViewModel tabViewModel)
         {
             TabViewModel = tabViewModel;
             _group = @group;
@@ -68,7 +68,7 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
             private set { RaiseAndSetIfPropertyChanged(ref _currentMod, value); }
         }
 
-        public IModGroup Group
+        public IModGroup<T> Group
         {
             get { return _group; }
         }

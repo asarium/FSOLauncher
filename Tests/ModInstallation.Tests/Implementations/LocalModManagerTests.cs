@@ -21,7 +21,7 @@ using Semver;
 namespace ModInstallation.Tests.Implementations
 {
     [TestFixture]
-    public class DefaultLocalModManagerTests
+    public class LocalModManagerTests
     {
         private MockFileSystem _fileSystem;
 
@@ -46,7 +46,7 @@ namespace ModInstallation.Tests.Implementations
         [Test, NotNull]
         public async Task TestAddPackageAsync()
         {
-            var testInstance = new DefaultLocalModManager(_fileSystem)
+            var testInstance = new LocalModManager(_fileSystem)
             {
                 PackageDirectory = @"C:\mods"
             };
@@ -88,7 +88,7 @@ namespace ModInstallation.Tests.Implementations
         [Test, NotNull]
         public async Task TestParseLocalModDataAsync()
         {
-            var testInstance = new DefaultLocalModManager(_fileSystem)
+            var testInstance = new LocalModManager(_fileSystem)
             {
                 PackageDirectory = @"C:\mods"
             };
@@ -113,7 +113,7 @@ namespace ModInstallation.Tests.Implementations
         [Test, NotNull]
         public async Task TestRemovePackageAsync()
         {
-            var testInstance = new DefaultLocalModManager(_fileSystem)
+            var testInstance = new LocalModManager(_fileSystem)
             {
                 PackageDirectory = @"C:\mods"
             };

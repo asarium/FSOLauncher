@@ -4,13 +4,13 @@ using Semver;
 
 namespace ModInstallation.Implementations.Mods
 {
-    public class DefaultModGroup : IModGroup
+    public class DefaultModGroup<T> : IModGroup<T> where T : IModification
     {
         #region Implementation of IModGroup
 
-        public DefaultModGroup(IEnumerable<IModification> mods)
+        public DefaultModGroup(IEnumerable<T> mods)
         {
-            Versions = new Dictionary<SemVersion, IModification>();
+            Versions = new Dictionary<SemVersion, T>();
             foreach (var modification in mods)
             {
                 Id = modification.Id;
@@ -21,7 +21,7 @@ namespace ModInstallation.Implementations.Mods
 
         public string Id { get; private set; }
 
-        public IDictionary<SemVersion, IModification> Versions { get; private set; }
+        public IDictionary<SemVersion, T> Versions { get; private set; }
 
         #endregion
     }

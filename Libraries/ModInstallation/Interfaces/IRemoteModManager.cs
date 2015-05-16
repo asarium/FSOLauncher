@@ -27,6 +27,6 @@ namespace ModInstallation.Interfaces
         /// <param name="token">A cancellation token that can be used to abort the operation</param>
         /// <returns>The modification groups.</returns>
         [NotNull]
-        Task<IEnumerable<IModGroup>> GetModGroupsAsync([NotNull] IProgress<string> progressReporter, bool force, CancellationToken token);
+        Task<IEnumerable<IModGroup<IModification>>> GetModGroupsAsync([NotNull] IProgress<string> progressReporter, bool force, CancellationToken token);
     }
 }
