@@ -116,7 +116,7 @@ namespace UI.WPF.Modules.Update.Services
         [NotNull]
         private static UpdateManager CreateUpdateManager()
         {
-            return new UpdateManager(UpdateUrl, LauncherUtils.GetApplicationName(), FrameworkVersion.Net45);
+            return new UpdateManager(UpdateUrl, LauncherUtils.GetApplicationName());
         }
     }
 }
