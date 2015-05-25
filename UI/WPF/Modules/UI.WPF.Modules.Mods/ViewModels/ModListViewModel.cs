@@ -25,7 +25,7 @@ namespace UI.WPF.Modules.Mods.ViewModels
 
         private bool _hasManyMods;
 
-        public ModListViewModel([NotNull] IReactiveCollection<ILocalModification> mods, [NotNull] IObservable<string> filterObservable)
+        public ModListViewModel([NotNull] IEnumerable<ILocalModification> mods, [NotNull] IObservable<string> filterObservable)
         {
             DisplayString = mods.Any() ? GetDisplayString(mods.First()) : "";
 

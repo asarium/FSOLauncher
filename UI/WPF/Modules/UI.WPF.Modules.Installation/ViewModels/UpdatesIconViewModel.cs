@@ -23,7 +23,7 @@ using UI.WPF.Launcher.Common.Interfaces;
 namespace UI.WPF.Modules.Installation.ViewModels
 {
     [Export(ContractNames.RightWindowCommandsContract, typeof(IWindowCommand)), ExportMetadata("Priority", 1)]
-    public class UpdatesIconViewModel : Screen, IWindowCommand, IHandle<MainWindowOpenedMessage>
+    public class UpdatesIconViewModel : Screen, IWindowCommand
     {
         private readonly IReactiveCommand<Unit> _checkForUpdatesCommand;
 
@@ -40,13 +40,14 @@ namespace UI.WPF.Modules.Installation.ViewModels
         private bool _updatesAvailable;
 
         [ImportingConstructor]
-        public UpdatesIconViewModel([NotNull] IEventAggregator aggregator, IRemoteModManager remoteManager, ILocalModManager localModManager)
+        public UpdatesIconViewModel([NotNull] IMessageBus bus, IModInstallationManager modInstallationManager)
         {
-            RemoteManager = remoteManager;
-            LocalModManager = localModManager;
-            aggregator.Subscribe(this);
+            RemoteManager = modInstallationManager.RemoteModManager;
+            LocalModManager = modInstallationManager.LocalModManager;
 
             _checkForUpdatesCommand = ReactiveCommand.CreateAsyncTask((_, tok) => CheckForModUpdates());
+
+            bus.Listen<MainWindowOpenedMessage>().Delay(TimeSpan.FromSeconds(5)).InvokeCommand(_checkForUpdatesCommand);
 
             this.WhenAnyValue(x => x.CheckingForUpdates, x => x.UpdatesAvailable).Select(x => x.Item1 || x.Item2).BindTo(this, x => x.IsVisible);
         }
@@ -139,16 +140,6 @@ namespace UI.WPF.Modules.Installation.ViewModels
             }
         }
 
-        #region IHandle<MainWindowOpenedMessage> Members
-
-        void IHandle<MainWindowOpenedMessage>.Handle([NotNull] MainWindowOpenedMessage message)
-        {
-            // Delay checking for a bit...
-            Observable.Timer(TimeSpan.FromSeconds(10)).InvokeCommand(_checkForUpdatesCommand);
-        }
-
-        #endregion
-
         private async Task CheckForModUpdates()
         {
             CheckingForUpdates = true;
@@ -170,14 +161,13 @@ namespace UI.WPF.Modules.Installation.ViewModels
                     return;
                 }
 
-                var remoteGroups =
-                    await
-                        RemoteManager.GetModGroupsAsync(new Progress<string>(msg => CurrentMessage = msg), false, CancellationToken.None)
-                            .ConfigureAwait(false);
+                await
+                    RemoteManager.GetModGroupsAsync(new Progress<string>(msg => CurrentMessage = msg), false, CancellationToken.None)
+                        .ConfigureAwait(false);
                 CurrentMessage = null;
 
                 // Now check the remote mods and the local mods, do it in task to not block the UI
-                var updates = await Task.Run(() => remoteGroups.Select(g => new
+                var updates = RemoteManager.ModGroups.Select(g => new
                 {
                     Group = g,
                     Local = localModList.Where(m => string.Equals(m.Id, g.Id))
@@ -186,7 +176,7 @@ namespace UI.WPF.Modules.Installation.ViewModels
                     .Select(x => x.Group.Versions.Where(p => x.Local.All(m => p.Key > m.Version)).OrderByDescending(p => p.Key).Select(p => p.Value))
                     .Select(u => u.FirstOrDefault())
                     .Where(x => x != null)
-                    .ToList()).ConfigureAwait(false);
+                    .ToList();
 
                 UpdatesAvailable = updates.Count > 0;
                 if (UpdatesAvailable)
@@ -210,7 +200,6 @@ namespace UI.WPF.Modules.Installation.ViewModels
 
         private string GetUpdatesMessage()
         {
-
             var builder = new StringBuilder();
 
             if (NumberOfUpdates == 1)
@@ -220,7 +209,6 @@ namespace UI.WPF.Modules.Installation.ViewModels
             }
             else
             {
-
                 builder.AppendFormat("There are updates available for the following mods:");
 
                 foreach (var modification in UpdatedMods)

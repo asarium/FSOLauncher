@@ -178,6 +178,7 @@ namespace ModInstallation.Implementations
             foreach (var fileInfo in fileList)
             {
                 var file = _fileSystem.Path.Combine(modDirectory, fileInfo.Filename);
+
                 progressReporter.Report(new DefaultInstallationProgress
                 {
                     Message = string.Format("Deleting {0}", fileInfo.Filename),
@@ -268,7 +269,7 @@ namespace ModInstallation.Implementations
         [NotNull]
         private string GetInstallationDirectory([NotNull] IPackage package)
         {
-            return _fileSystem.Path.Combine(InstallationDirectory, "mods", package.ContainingModification.GetInstallationPath());
+            return _fileSystem.Path.Combine(InstallationDirectory, package.ContainingModification.GetInstallationPath());
         }
     }
 }

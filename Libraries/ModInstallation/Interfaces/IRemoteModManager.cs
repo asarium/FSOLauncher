@@ -17,6 +17,8 @@ namespace ModInstallation.Interfaces
         [NotNull]
         IEnumerable<IModRepository> Repositories { get; set; }
 
+        IEnumerable<IModGroup<IModification>> ModGroups { get; }
+
         /// <summary>
         ///     Retrieves the modification groups, this may fetch the necessary information from the repositories if it is not
         ///     already available.
@@ -27,6 +29,6 @@ namespace ModInstallation.Interfaces
         /// <param name="token">A cancellation token that can be used to abort the operation</param>
         /// <returns>The modification groups.</returns>
         [NotNull]
-        Task<IEnumerable<IModGroup<IModification>>> GetModGroupsAsync([NotNull] IProgress<string> progressReporter, bool force, CancellationToken token);
+        Task GetModGroupsAsync([NotNull] IProgress<string> progressReporter, bool force, CancellationToken token);
     }
 }

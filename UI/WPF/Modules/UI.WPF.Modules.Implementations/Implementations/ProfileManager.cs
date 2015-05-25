@@ -9,6 +9,7 @@ using FSOManagement.Annotations;
 using FSOManagement.Interfaces;
 using FSOManagement.Profiles;
 using ReactiveUI;
+using UI.WPF.Launcher.Common.Classes;
 using UI.WPF.Launcher.Common.Interfaces;
 
 #endregion
@@ -23,7 +24,7 @@ namespace UI.WPF.Modules.Implementations.Implementations
         private IProfile _currentProfile;
 
         [ImportingConstructor]
-        public ProfileManager([NotNull] ISettings settings)
+        public ProfileManager([NotNull] ISettings settings, IMessageBus bus)
         {
             _profiles = new ReactiveList<IProfile>();
             _profiles.Changed.Subscribe(_ => settings.Profiles = _profiles);
@@ -32,19 +33,14 @@ namespace UI.WPF.Modules.Implementations.Implementations
 
             this.WhenAnyValue(x => x.CurrentProfile).BindTo(settings, x => x.SelectedProfile);
 
-            settings.SettingsLoaded.Subscribe(newSettings =>
+            bus.Listen<MainWindowOpenedMessage>().Subscribe(_ =>
             {
-                if (newSettings == null)
-                {
-                    return;
-                }
-
                 using (_profiles.SuppressChangeNotifications())
                 {
                     _profiles.Clear();
-                    if (newSettings.Profiles.Any())
+                    if (settings.Profiles.Any())
                     {
-                        _profiles.AddRange(newSettings.Profiles);
+                        _profiles.AddRange(settings.Profiles);
                     }
                     else
                     {
@@ -54,7 +50,7 @@ namespace UI.WPF.Modules.Implementations.Implementations
                         _profiles.Add(defaultProfile);
                     }
 
-                    CurrentProfile = newSettings.SelectedProfile ?? _profiles.FirstOrDefault();
+                    CurrentProfile = settings.SelectedProfile ?? _profiles.FirstOrDefault();
                 }
             });
         }

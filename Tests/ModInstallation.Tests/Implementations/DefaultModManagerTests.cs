@@ -24,14 +24,14 @@ namespace ModInstallation.Tests.Implementations
                 Repositories = new[] {new TestRepository("test://host")}
             };
 
-            var result = await modManager.GetModGroupsAsync(new Progress<string>(), false, CancellationToken.None).ConfigureAwait(false);
+            await modManager.GetModGroupsAsync(new Progress<string>(), false, CancellationToken.None).ConfigureAwait(false);
 
-            Assert.IsNotNull(result);
+            Assert.IsNotNull(modManager.ModGroups);
 
-            CollectionAssert.IsNotEmpty(result);
-            Assert.AreEqual(1, result.Count());
+            CollectionAssert.IsNotEmpty(modManager.ModGroups);
+            Assert.AreEqual(1, modManager.ModGroups.Count());
 
-            Assert.AreEqual("mediavps", result.First().Id);
+            Assert.AreEqual("mediavps", modManager.ModGroups.First().Id);
         }
     }
 }

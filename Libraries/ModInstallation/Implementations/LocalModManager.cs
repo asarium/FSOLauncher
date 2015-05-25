@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.Composition;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
@@ -108,9 +107,11 @@ namespace ModInstallation.Implementations
         #endregion
     }
 
-    public class LocalModManager : IEnableLogger
+    public class LocalModManager : ILocalModManager, IEnableLogger
     {
-        private const string ModInfoFile = "mod.json";
+        public const string ModInfoFile = "mod.json";
+
+        private readonly ILocalModEnumerator _enumerator;
 
         private readonly IFileSystem _fileSystem;
 
@@ -118,9 +119,10 @@ namespace ModInstallation.Implementations
 
         private readonly ReactiveList<IInstalledModification> _modifications;
 
-        public LocalModManager(IFileSystem fileSystem)
+        public LocalModManager(IFileSystem fileSystem, ILocalModEnumerator enumerator)
         {
             _fileSystem = fileSystem;
+            _enumerator = enumerator;
             _modifications = new ReactiveList<IInstalledModification>();
         }
 
@@ -174,30 +176,8 @@ namespace ModInstallation.Implementations
             {
                 await Observable.Start(() => _modifications.Clear(), RxApp.MainThreadScheduler);
 
-                if (PackageDirectory == null)
-                {
-                    return;
-                }
-
-                if (!_fileSystem.Directory.Exists(PackageDirectory))
-                {
-                    return;
-                }
-
-                foreach (var modDir in _fileSystem.Directory.EnumerateDirectories(PackageDirectory))
-                {
-                    foreach (var versionDir in _fileSystem.Directory.EnumerateDirectories(modDir))
-                    {
-                        var modFile = _fileSystem.Path.Combine(versionDir, ModInfoFile);
-
-                        if (!_fileSystem.File.Exists(modFile))
-                        {
-                            continue;
-                        }
-
-                        await ProcessModFile(modFile).ConfigureAwait(false);
-                    }
-                }
+                var mods = await _enumerator.FindMods(PackageDirectory);
+                _modifications.AddRange(mods);
             }
             finally
             {
@@ -207,28 +187,28 @@ namespace ModInstallation.Implementations
 
         public async Task RemovePackageAsync(IPackage package)
         {
-            if (!_modifications.Any(mod => mod.Equals(package.ContainingModification) && mod.Packages.Contains(package)))
-            {
-                // Mod is not known, nothing to do here
-                return;
-            }
-
-            var packageFile = _fileSystem.Path.Combine(package.ContainingModification.GetInstallationPath(PackageDirectory), ModInfoFile);
-
-            if (!_fileSystem.File.Exists(packageFile))
-            {
-                await RemoveModification(package.ContainingModification).ConfigureAwait(false);
-                return;
-            }
-
-            var currentData = await _fileSystem.ParseJSONFile<Modification>(packageFile).ConfigureAwait(false);
-
-            // Update the data
-            currentData.packages = currentData.packages.Where(p => !string.Equals(p.name, package.Name)).ToList();
-
             await _lock.WaitAsync().ConfigureAwait(true);
             try
             {
+                if (!_modifications.Any(mod => mod.Equals(package.ContainingModification) && mod.Packages.Contains(package)))
+                {
+                    // Mod is not known, nothing to do here
+                    return;
+                }
+
+                var packageFile = _fileSystem.Path.Combine(package.ContainingModification.GetInstallationPath(PackageDirectory), ModInfoFile);
+
+                if (!_fileSystem.File.Exists(packageFile))
+                {
+                    await RemoveModification(package.ContainingModification).ConfigureAwait(false);
+                    return;
+                }
+
+                var currentData = await _fileSystem.ParseJSONFile<Modification>(packageFile).ConfigureAwait(false);
+
+                // Update the data
+                currentData.packages = currentData.packages.Where(p => !string.Equals(p.name, package.Name)).ToList();
+
                 if (!currentData.packages.Any())
                 {
                     // If there are no packages left delete the mod file
@@ -312,47 +292,6 @@ namespace ModInstallation.Implementations
                 }
             },
                 RxApp.MainThreadScheduler);
-        }
-
-        [NotNull]
-        private async Task ProcessModFile([NotNull] string modFile)
-        {
-            string content;
-            try
-            {
-                using (var stream = _fileSystem.File.Open(modFile, FileMode.Open, FileAccess.Read))
-                {
-                    using (var reader = new StreamReader(stream))
-                    {
-                        content = await reader.ReadToEndAsync().ConfigureAwait(false);
-                    }
-                }
-            }
-            catch (IOException e)
-            {
-                this.Log().ErrorException("Failed to load " + modFile + " content!", e);
-                return;
-            }
-
-            Modification mod;
-            try
-            {
-                mod = await Task.Run(() => JsonConvert.DeserializeObject<Modification>(content)).ConfigureAwait(false);
-            }
-            catch (Exception e)
-            {
-                this.Log().ErrorException(modFile + " parsing failed!", e);
-                return;
-            }
-
-            var modInstance = DefaultModification.InitializeFromData(mod);
-
-            if (modInstance == null)
-            {
-                return;
-            }
-
-            await AddModification(modInstance).ConfigureAwait(false);
         }
 
         [NotNull]

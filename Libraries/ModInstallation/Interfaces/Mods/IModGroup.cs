@@ -7,6 +7,6 @@ namespace ModInstallation.Interfaces.Mods
     {
         string Id { get; }
 
-        IDictionary<SemVersion, T> Versions { get; }
+        IReadOnlyDictionary<SemVersion, T> Versions { get; }
     }
 }

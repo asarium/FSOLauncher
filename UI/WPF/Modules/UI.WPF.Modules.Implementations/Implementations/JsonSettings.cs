@@ -6,7 +6,6 @@ using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
 using FSOManagement;
@@ -31,8 +30,6 @@ namespace UI.WPF.Modules.Implementations.Implementations
     {
         private const string SettingsFile = "settings.json";
 
-        private readonly BehaviorSubject<ISettings> _settingsLoaded;
-
         private bool _checkForUpdates;
 
         private int _height;
@@ -49,7 +46,6 @@ namespace UI.WPF.Modules.Implementations.Implementations
 
         public JsonSettings()
         {
-            _settingsLoaded = new BehaviorSubject<ISettings>(null);
             SetDefaultValues();
         }
 
@@ -100,55 +96,42 @@ namespace UI.WPF.Modules.Implementations.Implementations
             set { RaiseAndSetIfPropertyChanged(ref _checkForUpdates, value); }
         }
 
-        public IObservable<ISettings> SettingsLoaded
-        {
-            get { return _settingsLoaded; }
-        }
-
         public async Task LoadAsync()
         {
-            try
+            var directoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), LauncherUtils.GetApplicationName());
+
+            if (!Directory.Exists(directoryPath))
             {
-                var directoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                    LauncherUtils.GetApplicationName());
-
-                if (!Directory.Exists(directoryPath))
-                {
-                    Directory.CreateDirectory(directoryPath);
-                }
-
-                var filePath = Path.Combine(directoryPath, SettingsFile);
-
-                if (!File.Exists(filePath))
-                {
-                    // Nothing to load, set default values
-                    SetDefaultValues();
-                    return;
-                }
-
-                string content;
-                using (var reader = new StreamReader(filePath))
-                {
-                    content = await reader.ReadToEndAsync().ConfigureAwait(false);
-                }
-
-                var data = await Task.Factory.StartNew(() => JsonConvert.DeserializeObject<SettingsData>(content)).ConfigureAwait(false);
-
-                // Not get back onto the main thread to set the variables
-                await Observable.Start(() =>
-                {
-                    SetDefaultValues();
-                    if (data != null)
-                    {
-                        SetValuesFromData(data);
-                    }
-                },
-                    RxApp.MainThreadScheduler);
+                Directory.CreateDirectory(directoryPath);
             }
-            finally
+
+            var filePath = Path.Combine(directoryPath, SettingsFile);
+
+            if (!File.Exists(filePath))
             {
-                _settingsLoaded.OnNext(this);
+                // Nothing to load, set default values
+                SetDefaultValues();
+                return;
             }
+
+            string content;
+            using (var reader = new StreamReader(filePath))
+            {
+                content = await reader.ReadToEndAsync().ConfigureAwait(false);
+            }
+
+            var data = await Task.Factory.StartNew(() => JsonConvert.DeserializeObject<SettingsData>(content)).ConfigureAwait(false);
+
+            // Not get back onto the main thread to set the variables
+            await Observable.Start(() =>
+            {
+                SetDefaultValues();
+                if (data != null)
+                {
+                    SetValuesFromData(data);
+                }
+            },
+                RxApp.MainThreadScheduler);
         }
 
         public async Task SaveAsync()

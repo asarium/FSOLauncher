@@ -22,7 +22,7 @@ using ViewLocator = Caliburn.Micro.ViewLocator;
 namespace UI.WPF.Launcher.ViewModels
 {
     [Export(typeof(IShellViewModel)), Export(typeof(IFlyoutManager))]
-    public class ShellViewModel : Screen, IShellViewModel, IHandle<MainWindowOpenedMessage>, IHandle<InstanceLaunchedMessage>, IFlyoutManager
+    public class ShellViewModel : Screen, IShellViewModel, IFlyoutManager
     {
         private bool _hasNoLauncherViewModel;
 
@@ -33,11 +33,11 @@ namespace UI.WPF.Launcher.ViewModels
         private string _title = "FSO Launcher";
 
         [ImportingConstructor]
-        public ShellViewModel(IEventAggregator eventAggregator, ISettings settings, IInteractionService interactionService)
+        public ShellViewModel(IMessageBus messageBus, ISettings settings, IInteractionService interactionService)
         {
             Settings = settings;
 
-            eventAggregator.Subscribe(this);
+            messageBus.ListenIncludeLatest<InstanceLaunchedMessage>().Subscribe(HandleInstanceLaunched);
 
             RightCommands = new BindableCollection<UIElement>();
             WindowFlyouts = new BindableCollection<IFlyout>();
@@ -45,8 +45,8 @@ namespace UI.WPF.Launcher.ViewModels
             this.WhenAnyValue(x => x.LauncherViewModel).Select(x => x == null).BindTo(this, x => x.HasNoLauncherViewModel);
 
             // Do the dependency resolution on a background thread so the UI can be shown as soon as possible
-            var reimportCommand = ReactiveCommand.CreateAsyncTask(async _ => await ImportPartsAsync().ConfigureAwait(true));
-            reimportCommand.ExecuteAsync().Subscribe();
+            var initializeCommand = ReactiveCommand.CreateAsyncTask(async _ => await InitializeAsync().ConfigureAwait(true));
+            initializeCommand.ExecuteAsync().Subscribe();
         }
 
         public bool HasNoLauncherViewModel
@@ -106,11 +106,7 @@ namespace UI.WPF.Launcher.ViewModels
 
         #endregion
 
-        #region IHandle<InstanceLaunchedMessage> Members
-
-        #region Implementation of IHandle<InstanceLaunchedMessage>
-
-        public void Handle(InstanceLaunchedMessage message)
+        public void HandleInstanceLaunched(InstanceLaunchedMessage message)
         {
             var view = GetView() as Window;
 
@@ -119,20 +115,7 @@ namespace UI.WPF.Launcher.ViewModels
                 view.Activate();
             }
         }
-
-        #endregion
-
-        #endregion
-
-        #region IHandle<MainWindowOpenedMessage> Members
-
-        void IHandle<MainWindowOpenedMessage>.Handle(MainWindowOpenedMessage message)
-        {
-            LoadSettingsAsync();
-        }
-
-        #endregion
-
+        
         #region IShellViewModel Members
 
         public bool OverlayVisible
@@ -179,36 +162,37 @@ namespace UI.WPF.Launcher.ViewModels
 
         #endregion
 
-        private async Task ImportPartsAsync()
-        {
-            var container = (CompositionContainer) Locator.Current.GetService(typeof(CompositionContainer));
-
-            ImportedRightCommands =
-                await
-                    Task.Run(() => container.GetExports<IWindowCommand, ILauncherTabMetaData>(ContractNames.RightWindowCommandsContract))
-                        .ConfigureAwait(true);
-
-            LauncherViewModel = await Task.Run(() => container.GetExportedValue<ILauncherViewModel>()).ConfigureAwait(true);
-
-            if (LauncherViewModel == null)
-            {
-                // Ehhhh
-                throw new Exception("Something is very wrong! Please contact the developer!");
-            }
-
-            var tabs = await Task.Run(() => container.GetExports<ILauncherTab, ILauncherTabMetaData>().ToList()).ConfigureAwait(true);
-            LauncherViewModel.LauncherTabs = tabs.OrderBy(x => x.Metadata.Priority).Select(x => x.Value);
-
-            // Now publish the message that we are alive
-            Locator.Current.GetService<IEventAggregator>().PublishOnUIThread(new MainWindowOpenedMessage());
-        }
-
-        public async void LoadSettingsAsync()
+        private async Task InitializeAsync()
         {
             try
             {
                 OverlayVisible = true;
-                await Settings.LoadAsync().ConfigureAwait(true);
+                await Task.Yield();
+
+                var settingsLoadTask = Settings.LoadAsync();
+
+                var container = (CompositionContainer) Locator.Current.GetService(typeof(CompositionContainer));
+
+                LauncherViewModel = await Task.Run(() => container.GetExportedValue<ILauncherViewModel>()).ConfigureAwait(true);
+
+                if (LauncherViewModel == null)
+                {
+                    // Ehhhh
+                    throw new InvalidOperationException("Something is very wrong! Please contact the developer!");
+                }
+
+                var tabs = await Task.Run(() => container.GetExports<ILauncherTab, ILauncherTabMetaData>().ToList()).ConfigureAwait(true);
+                LauncherViewModel.LauncherTabs = tabs.OrderBy(x => x.Metadata.Priority).Select(x => x.Value);
+
+                ImportedRightCommands =
+                    await
+                        Task.Run(() => container.GetExports<IWindowCommand, ILauncherTabMetaData>(ContractNames.RightWindowCommandsContract))
+                            .ConfigureAwait(true);
+
+                await settingsLoadTask.ConfigureAwait(true);
+
+                // Now publish the message that we are alive
+                Locator.Current.GetService<IMessageBus>().SendMessage(new MainWindowOpenedMessage());
             }
             finally
             {

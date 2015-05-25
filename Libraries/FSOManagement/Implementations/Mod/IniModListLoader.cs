@@ -18,7 +18,7 @@ namespace FSOManagement.Implementations.Mod
     {
         #region IModListLoader Members
 
-        public async Task<IReadOnlyReactiveList<ILocalModification>> LoadModificationListAsync(string searchFolder)
+        public async Task<IEnumerable<ILocalModification>> LoadModificationListAsync(string searchFolder)
         {
             var modifications = new ReactiveList<ILocalModification>(GetModifications(searchFolder));
 

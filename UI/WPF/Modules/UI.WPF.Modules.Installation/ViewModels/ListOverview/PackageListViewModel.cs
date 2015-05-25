@@ -1,6 +1,9 @@
 ﻿using System.Threading.Tasks;
+using ModInstallation.Interfaces;
+using ModInstallation.Interfaces.Mods;
 using ReactiveUI;
 using UI.WPF.Launcher.Common.Classes;
+using UI.WPF.Launcher.Common.Interfaces;
 using UI.WPF.Modules.Installation.Interfaces;
 using UI.WPF.Modules.Installation.ViewModels.Mods;
 
@@ -8,15 +11,11 @@ namespace UI.WPF.Modules.Installation.ViewModels.ListOverview
 {
     public class PackageListViewModel : ReactiveObjectBase, IInstallationState
     {
-        private InstallationTabViewModel TabViewModel { get; set; }
-
         public IReadOnlyReactiveList<ModGroupViewModel> ModGroupViewModels { get; private set; }
 
-        public PackageListViewModel(InstallationTabViewModel tabViewModel)
+        public PackageListViewModel(IInstallationManager manager, IModInstallationManager modInstallation)
         {
-            TabViewModel = tabViewModel;
-
-            ModGroupViewModels = tabViewModel.ModGroups.CreateDerivedCollection(x => new ModGroupViewModel(x, tabViewModel));
+            ModGroupViewModels = manager.ModGroups.CreateDerivedCollection(x => new ModGroupViewModel(x, modInstallation));
         }
 
         #region Implementation of IInstallationState

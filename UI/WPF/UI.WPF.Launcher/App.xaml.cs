@@ -7,6 +7,7 @@ using Caliburn.Micro;
 using FSOManagement.Annotations;
 using Launcher.Shared.Startup;
 using Microsoft.Shell;
+using ReactiveUI;
 using Splat;
 using Squirrel;
 using UI.WPF.Launcher.Common.Classes;
@@ -32,7 +33,7 @@ namespace UI.WPF.Launcher
 
         bool ISingleInstanceApp.SignalExternalCommandLineArgs(IList<string> args)
         {
-            Locator.Current.GetService<IEventAggregator>().PublishOnUIThreadAsync(new InstanceLaunchedMessage(args));
+            Locator.Current.GetService<IMessageBus>().SendMessage(new InstanceLaunchedMessage(args));
 
             return true;
         }

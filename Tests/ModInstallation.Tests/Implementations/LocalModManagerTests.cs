@@ -5,9 +5,11 @@ using System.Collections.ObjectModel;
 using System.IO.Abstractions.TestingHelpers;
 using System.Linq;
 using System.Threading.Tasks;
+using FSOManagement.Util;
 using ModInstallation.Annotations;
 using ModInstallation.Implementations;
 using ModInstallation.Implementations.DataClasses;
+using ModInstallation.Interfaces;
 using ModInstallation.Interfaces.Mods;
 using ModInstallation.Tests.TestData;
 using ModInstallation.Util;
@@ -46,7 +48,7 @@ namespace ModInstallation.Tests.Implementations
         [Test, NotNull]
         public async Task TestAddPackageAsync()
         {
-            var testInstance = new LocalModManager(_fileSystem)
+            var testInstance = new LocalModManager(_fileSystem, null)
             {
                 PackageDirectory = @"C:\mods"
             };
@@ -85,10 +87,41 @@ namespace ModInstallation.Tests.Implementations
             }
         }
 
+        private static IPackage GetTestPackage(string name, IModification parent)
+        {
+            var mock = new Mock<IPackage>();
+            mock.Setup(x => x.Name).Returns(name);
+            mock.Setup(x => x.ContainingModification).Returns(parent);
+            mock.Setup(x => x.Equals(It.IsAny<IPackage>())).Returns(true);
+            return mock.Object;
+        }
+
+        private static ILocalModEnumerator GetTestModEnumerator()
+        {
+            var modList = new List<IInstalledModification>();
+
+            var modMock = new Mock<IInstalledModification>();
+            modMock.Setup(x => x.Id).Returns("test1");
+            modMock.Setup(x => x.Packages).Returns(GetTestPackage("TestPackage 1", modMock.Object).AsEnumerable());
+            modMock.Setup(x => x.Equals(It.IsAny<IModification>())).Returns(true);
+            modList.Add(modMock.Object);
+
+            modMock = new Mock<IInstalledModification>();
+            modMock.Setup(x => x.Id).Returns("test2");
+            modMock.Setup(x => x.Packages).Returns(GetTestPackage("TestPackage 2", modMock.Object).AsEnumerable());
+            modMock.Setup(x => x.Equals(It.IsAny<IModification>())).Returns(true);
+            modList.Add(modMock.Object);
+
+            var enumeratorMock = new Mock<ILocalModEnumerator>();
+            enumeratorMock.Setup(x => x.FindMods(It.IsAny<string>())).Returns(Task.FromResult((IEnumerable<IInstalledModification>)modList));
+
+            return enumeratorMock.Object;
+        }
+
         [Test, NotNull]
         public async Task TestParseLocalModDataAsync()
         {
-            var testInstance = new LocalModManager(_fileSystem)
+            var testInstance = new LocalModManager(_fileSystem, GetTestModEnumerator())
             {
                 PackageDirectory = @"C:\mods"
             };
@@ -113,7 +146,7 @@ namespace ModInstallation.Tests.Implementations
         [Test, NotNull]
         public async Task TestRemovePackageAsync()
         {
-            var testInstance = new LocalModManager(_fileSystem)
+            var testInstance = new LocalModManager(_fileSystem, new LocalModEnumerator(_fileSystem))
             {
                 PackageDirectory = @"C:\mods"
             };

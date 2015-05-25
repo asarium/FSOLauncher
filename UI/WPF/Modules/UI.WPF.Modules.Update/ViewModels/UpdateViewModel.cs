@@ -21,20 +21,21 @@ using UI.WPF.Modules.Update.Views;
 namespace UI.WPF.Modules.Update.ViewModels
 {
     [Export(ContractNames.RightWindowCommandsContract, typeof(IWindowCommand)), ExportMetadata("Priority", 0)]
-    public sealed class UpdateViewModel : Screen, IWindowCommand, IHandle<MainWindowOpenedMessage>
+    public sealed class UpdateViewModel : Screen, IWindowCommand
     {
         private object _status;
 
         private readonly ReactiveCommand<Unit> _checkForUpdatesCommand;
 
         [ImportingConstructor]
-        public UpdateViewModel([NotNull] IEventAggregator aggregator)
+        public UpdateViewModel([NotNull] IMessageBus bus)
         {
             DisplayName = "Update";
 
-            aggregator.Subscribe(this);
-
             _checkForUpdatesCommand = ReactiveCommand.CreateAsyncTask((_, token) => StartUpdateCheck());
+
+            // Delay checking for a bit...
+            bus.Listen<MainWindowOpenedMessage>().Delay(TimeSpan.FromSeconds(5)).InvokeCommand(_checkForUpdatesCommand);
         }
 
         [NotNull, Import]
@@ -65,16 +66,6 @@ namespace UI.WPF.Modules.Update.ViewModels
                 NotifyOfPropertyChange();
             }
         }
-
-        #region IHandle<MainWindowOpenedMessage> Members
-
-        void IHandle<MainWindowOpenedMessage>.Handle([NotNull] MainWindowOpenedMessage message)
-        {
-            // Delay checking for a bit...
-            Observable.Timer(TimeSpan.FromSeconds(5)).InvokeCommand(_checkForUpdatesCommand);
-        }
-
-        #endregion
 
         [NotNull]
         public async Task StartUpdateCheck()

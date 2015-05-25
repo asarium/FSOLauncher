@@ -27,9 +27,6 @@ namespace UI.WPF.Launcher.Common.Interfaces
         bool CheckForUpdates { get; set; }
 
         [NotNull]
-        IObservable<ISettings> SettingsLoaded { get; }
-
-        [NotNull]
         Task LoadAsync();
 
         [NotNull]

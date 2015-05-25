@@ -1,6 +1,7 @@
 ﻿#region Usings
 
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Linq;
 using FSOManagement.Interfaces.Mod;
 
@@ -8,18 +9,19 @@ using FSOManagement.Interfaces.Mod;
 
 namespace FSOManagement.Implementations.Mod
 {
+    [Export(typeof(IModDependencies))]
     public class NoModDependencies : IModDependencies
     {
-        #region IModDependencies Members
+        #region Implementation of IModDependencies
 
-        public IEnumerable<string> GetPrimaryDependencies(string rootPath)
+        public int GetSupportScore(ILocalModification mod)
         {
-            return Enumerable.Empty<string>();
+            return -1000;
         }
 
-        public IEnumerable<string> GetSecondayDependencies(string rootPath)
+        public IEnumerable<string> GetModPaths(ILocalModification mod, string rootPath)
         {
-            return Enumerable.Empty<string>();
+            yield return mod.ModRootPath;
         }
 
         #endregion

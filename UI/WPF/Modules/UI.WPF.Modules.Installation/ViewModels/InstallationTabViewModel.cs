@@ -22,29 +22,26 @@ using UI.WPF.Modules.Installation.ViewModels.ListOverview;
 namespace UI.WPF.Modules.Installation.ViewModels
 {
     [Export(typeof(ILauncherTab)), ExportMetadata("Priority", 3), Export(typeof(IInstallationManager))]
-    public class InstallationTabViewModel : Screen, ILauncherTab, IInstallationManager, IHandle<MainWindowOpenedMessage>
+    public class InstallationTabViewModel : Screen, ILauncherTab, IInstallationManager
     {
         private IInstallationState _currentState;
 
         [ImportingConstructor]
-        public InstallationTabViewModel(ILocalModManager localModManager, IRemoteModManager remoteModManager, IEventAggregator aggregator)
+        public InstallationTabViewModel(IModInstallationManager modManager, IMessageBus bus)
         {
-            LocalModManager = localModManager;
-            RemoteModManager = remoteModManager;
+            ModInstallationManager = modManager;
 
-            UpdatePackageListCommand = ReactiveCommand.CreateAsyncTask(_ => UpdatePackageList());
+            _updatePackageListCommand = ReactiveCommand.CreateAsyncTask(_ => UpdatePackageList());
 
             this.WhenAnyValue(x => x.ManagerStatusMessage).Select(val => !string.IsNullOrEmpty(val)).BindTo(this, x => x.HasManagerStatusMessage);
 
             CurrentState = InitializeFirstState();
 
-            aggregator.Subscribe(this);
+            bus.Listen<MainWindowOpenedMessage>().InvokeCommand(_updatePackageListCommand);
         }
 
-        public ILocalModManager LocalModManager { get; set; }
-
-        public IRemoteModManager RemoteModManager { get; set; }
-
+        private IModInstallationManager ModInstallationManager { get; set; }
+        
         #region ILauncherTab Members
 
         #region Overrides of Screen
@@ -60,7 +57,7 @@ namespace UI.WPF.Modules.Installation.ViewModels
 
         private IInstallationState InitializeFirstState()
         {
-            return new PackageListViewModel(this);
+            return new PackageListViewModel(this, ModInstallationManager);
         }
 
         #region Implementation of IInstallationManager
@@ -108,53 +105,68 @@ namespace UI.WPF.Modules.Installation.ViewModels
             }
         }
 
-        public ICommand UpdatePackageListCommand { get; private set; }
+        public ICommand UpdatePackageListCommand
+        {
+            get { return _updatePackageListCommand; }
+        }
+
+        public IEnumerable<IModGroup<IModification>> ModGroups
+        {
+            get { return _modGroups; }
+        }
 
 
         public async Task UpdatePackageList()
         {
-            await Task.Delay(10000);
-
             ManagerStatusMessage = "Parsing local mod information...";
-            await LocalModManager.ParseLocalModDataAsync().ConfigureAwait(false);
-
-            var modGroups =
-                await
-                    RemoteModManager.GetModGroupsAsync(new Progress<string>(msg => ManagerStatusMessage = msg), true, CancellationToken.None)
-                        .ConfigureAwait(false);
-
-            if (modGroups != null)
+            try
             {
-                _modGroups.Reset();
-                _modGroups.AddRange(modGroups);
-            }
-            else
-            {
-                var result =
-                    await
-                        UserError.Throw(new UserError("Mod information retrieval failed!",
-                            "There was an error while retrieving the modification information.\n" +
-                            "Please check if your internet connection is working.",
-                            new[]
-                            {
-                                new RecoveryCommand("Retry", _ => RecoveryOptionResult.RetryOperation)
-                                {
-                                    IsDefault = true
-                                },
-                                new RecoveryCommand("Cancel", _ => RecoveryOptionResult.CancelOperation)
-                            }));
-
-                switch (result)
+                var exception = false;
+                try
                 {
-                    case RecoveryOptionResult.CancelOperation:
-                        break;
-                    case RecoveryOptionResult.RetryOperation:
-                        UpdatePackageListCommand.Execute(null);
-                        break;
+                    await
+                        ModInstallationManager.RemoteModManager.GetModGroupsAsync(new Progress<string>(msg => ManagerStatusMessage = msg),
+                            true,
+                            CancellationToken.None).ConfigureAwait(false);
+
+                    _modGroups.Reset();
+                    _modGroups.AddRange(ModInstallationManager.RemoteModManager.ModGroups);
+                }
+                catch (Exception)
+                {
+                    exception = true;
+                }
+
+                if (exception)
+                {
+                    var result =
+                        await
+                            UserError.Throw(new UserError("Mod information retrieval failed!",
+                                "There was an error while retrieving the modification information.\n" +
+                                "Please check if your internet connection is working.",
+                                new[]
+                                {
+                                    new RecoveryCommand("Retry", _ => RecoveryOptionResult.RetryOperation)
+                                    {
+                                        IsDefault = true
+                                    },
+                                    new RecoveryCommand("Cancel", _ => RecoveryOptionResult.CancelOperation)
+                                }));
+
+                    switch (result)
+                    {
+                        case RecoveryOptionResult.CancelOperation:
+                            break;
+                        case RecoveryOptionResult.RetryOperation:
+                            UpdatePackageListCommand.Execute(null);
+                            break;
+                    }
                 }
             }
-
-            ManagerStatusMessage = null;
+            finally
+            {
+                ManagerStatusMessage = null;
+            }
         }
 
         public Task InstallPackages(IEnumerable<IPackage> packages)
@@ -166,15 +178,9 @@ namespace UI.WPF.Modules.Installation.ViewModels
 
         private string _managerStatusMessage;
 
+        private readonly IReactiveList<IModGroup<IModification>> _modGroups = new ReactiveList<IModGroup<IModification>>();
 
-        #endregion
-
-        #region Implementation of IHandle<MainWindowOpenedMessage>
-
-        void IHandle<MainWindowOpenedMessage>.Handle(MainWindowOpenedMessage message)
-        {
-            UpdatePackageListCommand.Execute(null);
-        }
+        private readonly ICommand _updatePackageListCommand;
 
         #endregion
     }

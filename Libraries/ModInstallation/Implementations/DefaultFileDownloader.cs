@@ -19,7 +19,6 @@ using Splat;
 
 namespace ModInstallation.Implementations
 {
-    [Export(typeof(IFileDownloader))]
     public class DefaultFileDownloader : IFileDownloader, IEnableLogger
     {
         private const int DefaultMaxConcurrentDownloads = 1;
@@ -28,7 +27,6 @@ namespace ModInstallation.Implementations
 
         private SemaphoreSlim _downloadSemaphore;
 
-        [ImportingConstructor]
         public DefaultFileDownloader(IWebClient webclient)
         {
             _webclient = webclient;

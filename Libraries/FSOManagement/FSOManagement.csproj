@@ -103,6 +103,7 @@
     <Compile Include="Interfaces\ISpeechHandler.cs" />
     <Compile Include="Interfaces\Mod\IModManager.cs" />
     <Compile Include="Interfaces\TextureFiltering.cs" />
+    <Compile Include="MoreLinq\MoreEnumerable.MaxBy.cs" />
     <Compile Include="OpenAL\AL.cs" />
     <Compile Include="OpenAL\LPUtf8StrMarshaler.cs" />
     <Compile Include="OpenAL\OpenALManager.cs" />

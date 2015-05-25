@@ -60,7 +60,7 @@ namespace UI.WPF.Launcher
 
             var batch = new CompositionBatch();
 
-            batch.AddExportedValue<IEventAggregator>(new EventAggregator());
+            batch.AddExportedValue<IMessageBus>(new MessageBus());
             batch.AddExportedValue<IArchiveExtractor>(new SevenZipArchiveExtractor());
             batch.AddExportedValue<IFileSystem>(new FileSystem());
             batch.AddExportedValue(_container);

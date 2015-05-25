@@ -101,7 +101,6 @@
     <Compile Include="ViewModels\Dependencies\DependenciesViewModel.cs" />
     <Compile Include="ViewModels\Dependencies\DependencyModViewModel.cs" />
     <Compile Include="ViewModels\Dependencies\DependencyPackageViewModel.cs" />
-    <Compile Include="ViewModels\OldInstallationTabViewModel.cs" />
     <Compile Include="ViewModels\Installation\InstallationViewModel.cs" />
     <Compile Include="ViewModels\Installation\InstallationItem.cs" />
     <Compile Include="ViewModels\Installation\InstallationItemParent.cs" />

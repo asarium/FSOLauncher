@@ -15,6 +15,7 @@ using FSOManagement.Interfaces;
 using FSOManagement.Profiles.DataClass;
 using ModInstallation.Interfaces;
 using ReactiveUI;
+using UI.WPF.Launcher.Common.Classes;
 using UI.WPF.Launcher.Common.Interfaces;
 using UI.WPF.Launcher.Views;
 using UI.WPF.Modules.Implementations.Implementations;
@@ -30,17 +31,23 @@ namespace UI.WPF.Launcher.ViewModels
 
         private readonly ReactiveList<TotalConversion> _totalConversions;
 
-        private ICommand _addProfileCommand;
-
-        private ICommand _launchGameCommand;
-
         private ICommand _addGameRootCommand;
+
+        private ICommand _addProfileCommand;
 
         private bool _hasTotalConversions;
 
+        private ICommand _launchGameCommand;
+
         [ImportingConstructor]
-        public LauncherViewModel([NotNull] ISettings settings, [NotNull] IRepositoryFactory factory)
+        public LauncherViewModel([NotNull] ISettings settings,
+            [NotNull] IRepositoryFactory factory,
+            IModInstallationManager modInstallationManager,
+            IProfileManager profileManager, IMessageBus bus)
         {
+            ModInstallationManager = modInstallationManager;
+            ProfileManager = profileManager;
+
             _totalConversions = new ReactiveList<TotalConversion>();
             _repositories = new ReactiveList<IModRepositoryViewModel>();
 
@@ -64,24 +71,21 @@ namespace UI.WPF.Launcher.ViewModels
             HasTotalConversions = _totalConversions.Count > 0;
             _totalConversions.CountChanged.Select(val => val > 0).BindTo(this, x => x.HasTotalConversions);
 
-            settings.SettingsLoaded.Subscribe(newSettings =>
-            {
-                if (newSettings == null)
-                {
-                    return;
-                }
+            ProfileManager.WhenAnyValue(x => x.CurrentProfile.SelectedTotalConversion.RootFolder).BindTo(ModInstallationManager, x => x.RootPath);
 
+            bus.Listen<MainWindowOpenedMessage>().Subscribe(_ =>
+            {
                 using (_totalConversions.SuppressChangeNotifications())
                 {
                     _totalConversions.Clear();
-                    _totalConversions.AddRange(newSettings.TotalConversions);
+                    _totalConversions.AddRange(settings.TotalConversions);
                 }
 
                 using (_repositories.SuppressChangeNotifications())
                 {
                     _repositories.Clear();
 
-                    if (newSettings.ModRepositories == null)
+                    if (settings.ModRepositories == null)
                     {
                         _repositories.Add(new ModRepositoryViewModel
                         {
@@ -91,7 +95,7 @@ namespace UI.WPF.Launcher.ViewModels
                     }
                     else
                     {
-                        _repositories.AddRange(newSettings.ModRepositories);
+                        _repositories.AddRange(settings.ModRepositories);
                     }
                 }
             });
@@ -143,7 +147,8 @@ namespace UI.WPF.Launcher.ViewModels
             }
         }
 
-        [Import]
+        public IModInstallationManager ModInstallationManager { get; private set; }
+
         public IProfileManager ProfileManager { get; private set; }
 
         public ICommand AddProfileCommand

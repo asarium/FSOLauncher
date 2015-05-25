@@ -3,19 +3,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
+using ModInstallation.Interfaces;
 using ModInstallation.Interfaces.Mods;
 using ReactiveUI;
 using Semver;
 using UI.WPF.Launcher.Common.Classes;
-using UI.WPF.Modules.Installation.Interfaces;
+using UI.WPF.Launcher.Common.Interfaces;
 
 #endregion
 
 namespace UI.WPF.Modules.Installation.ViewModels.Mods
 {
-    public class ModGroupViewModel<T> : ReactiveObjectBase where T : IModification
+    public class ModGroupViewModel : ReactiveObjectBase
     {
-        private readonly IModGroup<T> _group;
+        private readonly IModGroup<IModification> _group;
 
         private ModViewModel _currentMod;
 
@@ -23,17 +24,13 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
 
         private SemVersion _selectedVersion;
 
-        public IEnumerable<SemVersion> Versions { get; private set; }
-        public bool HasMultipleVersions { get; private set; }
-
-        public ModGroupViewModel(IModGroup<T> group, InstallationTabViewModel tabViewModel)
+        public ModGroupViewModel(IModGroup<IModification> group, IModInstallationManager modInstallationManager)
         {
-            TabViewModel = tabViewModel;
             _group = @group;
 
             this.WhenAnyValue(x => x.SelectedVersion)
                 .Where(x => x != null && _group.Versions.ContainsKey(x))
-                .Select(x => new ModViewModel(_group.Versions[x], TabViewModel))
+                .Select(x => new ModViewModel(_group.Versions[x], modInstallationManager))
                 .BindTo(this, x => x.CurrentMod);
 
             // When selected changes, propagate to the mod view model
@@ -46,9 +43,9 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
             HasMultipleVersions = Versions.Count() > 1;
         }
 
-        private InstallationTabViewModel TabViewModel { get; set; }
+        public IEnumerable<SemVersion> Versions { get; private set; }
 
-        public OldInstallationTabViewModel OldInstallationTabViewModel { get; set; }
+        public bool HasMultipleVersions { get; private set; }
 
         public bool? IsSelected
         {
@@ -68,7 +65,7 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
             private set { RaiseAndSetIfPropertyChanged(ref _currentMod, value); }
         }
 
-        public IModGroup<T> Group
+        public IModGroup<IModification> Group
         {
             get { return _group; }
         }

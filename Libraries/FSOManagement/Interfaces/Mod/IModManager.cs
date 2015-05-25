@@ -1,5 +1,6 @@
 ﻿#region Usings
 
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FSOManagement.Annotations;
 using ReactiveUI;
@@ -14,7 +15,7 @@ namespace FSOManagement.Interfaces.Mod
         string RootFolder { set; }
 
         [NotNull]
-        IReadOnlyReactiveList<IReadOnlyReactiveList<ILocalModification>> ModificationLists { get; }
+        IReadOnlyReactiveList<IEnumerable<ILocalModification>> ModificationLists { get; }
 
         [NotNull]
         Task RefreshModsAsync();

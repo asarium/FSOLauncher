@@ -3,6 +3,8 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
+using System.IO.Abstractions;
+using System.Linq;
 using System.Threading.Tasks;
 using FSOManagement.Implementations.Mod;
 using FSOManagement.Interfaces.Mod;
@@ -18,27 +20,22 @@ namespace ModInstallation.Implementations.Management
     [Export(typeof(IModListLoader))]
     public class LocalModManagerListLoader : IModListLoader
     {
-        [NotNull, Import]
-        private ILocalModManager LocalModManager { get; set; }
+        private readonly ILocalModEnumerator _enumerator;
+
+        private IFileSystem _fileSystem;
+
+        [ImportingConstructor]
+        public LocalModManagerListLoader(ILocalModEnumerator enumerator, IFileSystem fileSystem)
+        {
+            _enumerator = enumerator;
+            _fileSystem = fileSystem;
+        }
 
         #region IModListLoader Members
 
-        public async Task<IReadOnlyReactiveList<ILocalModification>> LoadModificationListAsync(string searchFolder)
+        public async Task<IEnumerable<ILocalModification>> LoadModificationListAsync(string searchFolder)
         {
-            var currentDirectory = LocalModManager.PackageDirectory;
-
-            var newDirectory = Path.Combine(searchFolder, "mods");
-
-            if (currentDirectory != null && Path.GetFullPath(currentDirectory) == Path.GetFullPath(newDirectory))
-            {
-                // No change necessary
-                return LocalModManager.Modifications.CreateDerivedCollection(GetLocaModification);
-            }
-
-            LocalModManager.PackageDirectory = newDirectory;
-            await LocalModManager.ParseLocalModDataAsync();
-
-            return LocalModManager.Modifications.CreateDerivedCollection(GetLocaModification);
+            return (await _enumerator.FindMods(_fileSystem.Path.Combine(searchFolder, "mods"))).Select(GetLocaModification);
         }
 
         #endregion
@@ -46,11 +43,7 @@ namespace ModInstallation.Implementations.Management
         [NotNull]
         private ILocalModification GetLocaModification([NotNull] IInstalledModification mod)
         {
-           return new InstalledModification(mod)
-            {
-                ModRootPath = mod.InstallPath,
-                Dependencies = new ModificationDependencies(mod, LocalModManager)
-            };
+            return new InstalledModification(mod);
         }
     }
 }

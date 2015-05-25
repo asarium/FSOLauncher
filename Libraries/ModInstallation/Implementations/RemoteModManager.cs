@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,9 +14,9 @@ using ModInstallation.Util;
 
 namespace ModInstallation.Implementations
 {
-    public class RemoteModManager : PropertyChangeBase
+    public class RemoteModManager : PropertyChangeBase, IRemoteModManager
     {
-        private IEnumerable<IModGroup<IModification>> _modificationGroups;
+        private IEnumerable<IModGroup<IModification>> _modGroups;
 
         public RemoteModManager()
         {
@@ -28,11 +27,25 @@ namespace ModInstallation.Implementations
 
         public IEnumerable<IModRepository> Repositories { get; set; }
 
-        public async Task<IEnumerable<IModGroup<IModification>>> GetModGroupsAsync(IProgress<string> progressReporter, bool force, CancellationToken token)
+        public IEnumerable<IModGroup<IModification>> ModGroups
         {
-            if (_modificationGroups != null && !force)
+            get { return _modGroups; }
+            private set
             {
-                return _modificationGroups;
+                if (Equals(value, _modGroups))
+                {
+                    return;
+                }
+                _modGroups = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public async Task GetModGroupsAsync(IProgress<string> progressReporter, bool force, CancellationToken token)
+        {
+            if (_modGroups != null && !force)
+            {
+                return;
             }
 
             progressReporter.Report("Starting information retrieval...");
@@ -44,14 +57,12 @@ namespace ModInstallation.Implementations
                 await modRepository.RetrieveRepositoryInformationAsync(progressReporter, token).ConfigureAwait(false);
             }
 
-            _modificationGroups =
+            ModGroups =
                 Repositories.Where(modRepository => modRepository.Modifications != null)
                     .SelectMany(modRepository => modRepository.Modifications)
                     .GroupBy(x => x.Id)
                     .Select(g => new DefaultModGroup<IModification>(g))
                     .ToList();
-
-            return _modificationGroups;
         }
 
         #endregion

@@ -17,6 +17,8 @@ namespace UI.WPF.Modules.Installation.Interfaces
 
         ICommand UpdatePackageListCommand { get; }
 
+        IEnumerable<IModGroup<IModification>> ModGroups { get; }
+
         Task UpdatePackageList();
 
         Task InstallPackages(IEnumerable<IPackage> packages);

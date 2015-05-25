@@ -24,6 +24,8 @@ namespace UI.WPF.Launcher.Common.Interfaces
         [NotNull]
         IEnumerable<ILauncherTab> LauncherTabs { set; }
 
+        IModInstallationManager ModInstallationManager { get; }
+        
         [NotNull]
         IProfileManager ProfileManager { get; }
 

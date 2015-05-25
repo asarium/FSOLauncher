@@ -3,10 +3,12 @@
 using System;
 using System.Reactive.Linq;
 using ModInstallation.Annotations;
+using ModInstallation.Interfaces;
 using ModInstallation.Interfaces.Mods;
 using ModInstallation.Util;
 using ReactiveUI;
 using UI.WPF.Launcher.Common.Classes;
+using UI.WPF.Launcher.Common.Interfaces;
 using UI.WPF.Modules.Installation.Interfaces;
 
 #endregion
@@ -19,7 +21,7 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
 
         private bool _selected;
 
-        public PackageViewModel([NotNull] IPackage package, [NotNull] InstallationTabViewModel tabViewModel)
+        public PackageViewModel([NotNull] IPackage package, [NotNull] IModInstallationManager modInstallationManager)
         {
             Package = package;
 
@@ -27,7 +29,7 @@ namespace UI.WPF.Modules.Installation.ViewModels.Mods
 
             IsChangeable = package.Status != PackageStatus.Required;
 
-            Selected = tabViewModel.LocalModManager.IsPackageInstalled(package);
+            Selected = modInstallationManager.LocalModManager.IsPackageInstalled(package);
         }
 
         [NotNull]

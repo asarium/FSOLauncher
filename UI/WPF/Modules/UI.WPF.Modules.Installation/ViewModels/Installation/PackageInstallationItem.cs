@@ -8,6 +8,7 @@ using ModInstallation.Implementations;
 using ModInstallation.Interfaces;
 using ModInstallation.Interfaces.Mods;
 using Splat;
+using UI.WPF.Launcher.Common.Interfaces;
 
 #endregion
 
@@ -21,11 +22,11 @@ namespace UI.WPF.Modules.Installation.ViewModels.Installation
 
         private readonly IPackageInstaller _packageInstaller;
 
-        public PackageInstallationItem(IPackage package, IPackageInstaller packageInstaller, ILocalModManager modManager)
+        public PackageInstallationItem(IPackage package, IModInstallationManager modInstallationManager)
         {
             _package = package;
-            _packageInstaller = packageInstaller;
-            _modManager = modManager;
+            _packageInstaller = modInstallationManager.PackageInstaller;
+            _modManager = modInstallationManager.LocalModManager;
             Title = package.Name;
         }
 

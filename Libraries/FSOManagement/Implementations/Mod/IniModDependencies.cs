@@ -15,39 +15,38 @@ namespace FSOManagement.Implementations.Mod
 {
     public class IniModDependencies : IModDependencies
     {
-        private List<string> _primaryList;
+        #region Implementation of IModDependencies
 
-        private List<string> _secondaryList;
-
-        public IniModDependencies([NotNull] KeyDataCollection keyDataCollection)
+        public int GetSupportScore(ILocalModification mod)
         {
-            InitializeFromIniData(keyDataCollection);
+            if (mod is IniModification)
+            {
+                return 1000;
+            }
+
+            return int.MinValue;
         }
 
-        #region IModDependencies Members
-
-        public IEnumerable<string> GetPrimaryDependencies(string rootPath)
+        public IEnumerable<string> GetModPaths(ILocalModification mod, string rootPath)
         {
-            return _primaryList.Select(mod => Path.Combine(rootPath, mod));
-        }
+            var iniMod = mod as IniModification;
 
-        public IEnumerable<string> GetSecondayDependencies(string rootPath)
-        {
-            return _secondaryList.Select(mod => Path.Combine(rootPath, mod));
+            if (iniMod == null)
+                throw new NotSupportedException("Class is not supported!");
+
+
+            string primaryListVal;
+            string secondaryListVal;
+
+            iniMod.Dependencies.TryGetValue("primarylist", out primaryListVal, "");
+            iniMod.Dependencies.TryGetValue("secondarylist", out secondaryListVal, "");
+
+            var primaryPaths = primaryListVal.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(p => Path.Combine(rootPath, p));
+            var secondaryPaths = secondaryListVal.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(p => Path.Combine(rootPath, p));
+
+            return primaryPaths.Concat(iniMod.ModRootPath.AsEnumerable()).Concat(secondaryPaths);
         }
 
         #endregion
-
-        private void InitializeFromIniData([NotNull] KeyDataCollection data)
-        {
-            string primaryList;
-            string secondaryList;
-
-            data.TryGetValue("primarylist", out primaryList, "");
-            data.TryGetValue("secondarylist", out secondaryList, "");
-
-            _primaryList = new List<string>(primaryList.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries));
-            _secondaryList = new List<string>(secondaryList.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries));
-        }
     }
 }

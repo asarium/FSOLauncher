@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using FSOManagement.Annotations;
 
 #endregion
 
@@ -38,6 +39,12 @@ namespace FSOManagement.Util
             }
 
             return -1;
+        }
+
+        [NotNull]
+        public static IEnumerable<T> AsEnumerable<T>(this T obj)
+        {
+            yield return obj;
         }
 
         public static string NormalizePath(string path)

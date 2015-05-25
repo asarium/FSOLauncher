@@ -6,8 +6,5 @@ namespace FSOManagement.Interfaces.Mod
     {
         [NotNull]
         string ModRootPath { get; }
-
-        [NotNull]
-        IModDependencies Dependencies { get; }
     }
 }

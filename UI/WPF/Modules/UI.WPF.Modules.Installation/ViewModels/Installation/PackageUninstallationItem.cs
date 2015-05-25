@@ -6,6 +6,7 @@ using ModInstallation.Implementations;
 using ModInstallation.Interfaces;
 using ModInstallation.Interfaces.Mods;
 using Splat;
+using UI.WPF.Launcher.Common.Interfaces;
 
 namespace UI.WPF.Modules.Installation.ViewModels.Installation
 {
@@ -19,11 +20,11 @@ namespace UI.WPF.Modules.Installation.ViewModels.Installation
 
         private readonly ILocalModManager _localModManager;
 
-        public PackageUninstallationItem(IPackage package, IPackageInstaller installer, ILocalModManager localModManager)
+        public PackageUninstallationItem(IPackage package, IModInstallationManager manager)
         {
             _package = package;
-            _installer = installer;
-            _localModManager = localModManager;
+            _installer = manager.PackageInstaller;
+            _localModManager = manager.LocalModManager;
 
             Title = package.Name;
         }

@@ -1,6 +1,10 @@
-﻿using FSOManagement.Annotations;
+﻿#region Usings
+
+using FSOManagement.Annotations;
 using FSOManagement.Interfaces.Mod;
 using ModInstallation.Interfaces.Mods;
+
+#endregion
 
 namespace ModInstallation.Implementations.Management
 {
@@ -9,13 +13,16 @@ namespace ModInstallation.Implementations.Management
         public InstalledModification([NotNull] IInstalledModification installedModification)
         {
             Modification = installedModification;
+            ModRootPath = Modification.InstallPath;
         }
 
         [NotNull]
         public IInstalledModification Modification { get; private set; }
 
-        public string ModRootPath { get; set; }
+        #region ILocalModification Members
 
-        public IModDependencies Dependencies { get; set; }
+        public string ModRootPath { get; private set; }
+
+        #endregion
     }
 }

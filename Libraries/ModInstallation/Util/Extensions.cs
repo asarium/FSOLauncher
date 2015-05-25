@@ -20,11 +20,5 @@ namespace ModInstallation.Util
 
             return string.Format("{0:0.0} {1}B", bytes / Math.Pow(unit, exp), pre);
         }
-
-        [NotNull]
-        public static IEnumerable<T> AsEnumerable<T>(this T obj)
-        {
-            yield return obj;
-        }
     }
 }

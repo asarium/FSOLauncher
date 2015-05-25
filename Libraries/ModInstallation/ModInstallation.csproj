@@ -95,6 +95,8 @@
     <Compile Include="Exceptions\InstallationException.cs" />
     <Compile Include="Implementations\AbstractJsonRepository.cs" />
     <Compile Include="Implementations\DataClasses\ActionData.cs" />
+    <Compile Include="Implementations\LocalModEnumerator.cs" />
+    <Compile Include="Implementations\ModinstallationManager.cs" />
     <Compile Include="Implementations\Mods\DefaultFileListItem.cs" />
     <Compile Include="Implementations\DataClasses\Dependency.cs" />
     <Compile Include="Implementations\DataClasses\EnvironmentConstraint.cs" />
@@ -136,7 +138,9 @@
     <Compile Include="Interfaces\IArchiveExtractor.cs" />
     <Compile Include="Interfaces\IDependencyResolver.cs" />
     <Compile Include="Interfaces\IFileDownloader.cs" />
+    <Compile Include="Interfaces\ILocalModEnumerator.cs" />
     <Compile Include="Interfaces\ILocalModManager.cs" />
+    <Compile Include="Interfaces\IModInstallationManager.cs" />
     <Compile Include="Interfaces\IPackageInstaller.cs" />
     <Compile Include="Interfaces\IRemoteModManager.cs" />
     <Compile Include="Interfaces\IRepositoryFactory.cs" />

@@ -40,11 +40,9 @@ namespace UI.WPF.Modules.Mods.ViewModels
 
             _filterObservable = this.WhenAnyValue(x => x.FilterString);
 
-            profileManager.WhenAnyValue(x => x.CurrentProfile.ModActivationManager.PrimaryModifications).Subscribe(OnPrimaryModificationsChanged);
-
             profileManager.WhenAnyValue(x => x.CurrentProfile.ModActivationManager.ActiveMod).Subscribe(OnActiveModChanged);
 
-            profileManager.WhenAnyValue(x => x.CurrentProfile.ModActivationManager.SecondaryModifications).Subscribe(OnSecondaryModificationsChanged);
+            profileManager.WhenAnyValue(x => x.CurrentProfile.ModActivationManager.ActivatedMods).Subscribe(OnActivatedModsChanged);
         }
 
         [CanBeNull]
@@ -98,20 +96,18 @@ namespace UI.WPF.Modules.Mods.ViewModels
 
             OnActiveModChanged(_profileManager.CurrentProfile.ModActivationManager.ActiveMod);
 
-            OnPrimaryModificationsChanged(_profileManager.CurrentProfile.ModActivationManager.PrimaryModifications);
-
-            OnSecondaryModificationsChanged(_profileManager.CurrentProfile.ModActivationManager.SecondaryModifications);
+            OnActivatedModsChanged(_profileManager.CurrentProfile.ModActivationManager.ActivatedMods);
         }
 
         private void InitializeModLists([NotNull] IProfileManager profileManager)
         {
-            profileManager.WhenAny(x => x.CurrentProfile.SelectedTotalConversion.ModManager.ModificationLists, val => CreateModListsView(val.Value))
+            profileManager.WhenAnyValue(x => x.CurrentProfile.SelectedTotalConversion.ModManager.ModificationLists).Select(CreateModListsView)
                 .BindTo(this, x => x.ModLists);
         }
 
         [NotNull]
         private IReadOnlyReactiveList<ModListViewModel> CreateModListsView(
-            [NotNull] IEnumerable<IReadOnlyReactiveList<ILocalModification>> value)
+            [NotNull] IEnumerable<IEnumerable<ILocalModification>> value)
         {
             var viewModels = value.CreateDerivedCollection(mods => new ModListViewModel(mods, _filterObservable));
             
@@ -135,25 +131,7 @@ namespace UI.WPF.Modules.Mods.ViewModels
             }
         }
 
-        private void OnPrimaryModificationsChanged([CanBeNull] IEnumerable<ILocalModification> modifications)
-        {
-            if (_modLists == null)
-            {
-                return;
-            }
-            if (modifications == null)
-            {
-                return;
-            }
-
-            var localModifications = modifications as IList<ILocalModification> ?? modifications.ToList();
-            foreach (var modListViewModel in _modLists)
-            {
-                modListViewModel.OnPrimaryModificationsChanged(localModifications);
-            }
-        }
-
-        private void OnSecondaryModificationsChanged([CanBeNull] IEnumerable<ILocalModification> modifications)
+        private void OnActivatedModsChanged([CanBeNull] IEnumerable<ILocalModification> modifications)
         {
             if (_modLists == null)
             {
