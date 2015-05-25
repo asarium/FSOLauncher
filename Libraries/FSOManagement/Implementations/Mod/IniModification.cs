@@ -12,12 +12,13 @@ using FSOManagement.Util;
 using IniParser;
 using IniParser.Exceptions;
 using IniParser.Model;
+using Splat;
 
 #endregion
 
 namespace FSOManagement.Implementations.Mod
 {
-    public class IniModification : INotifyPropertyChanged, ILocalModification
+    public class IniModification : INotifyPropertyChanged, ILocalModification, IEnableLogger
     {
         #region Fields
 
@@ -51,7 +52,7 @@ namespace FSOManagement.Implementations.Mod
             Name = Path.GetFileName(path);
             ModRootPath = path;
 
-            Dependencies = new NoModDependencies();
+            Dependencies = new KeyDataCollection();
         }
 
         #region Properties
@@ -145,20 +146,6 @@ namespace FSOManagement.Implementations.Mod
             }
         }
 
-        public IModDependencies Dependencies
-        {
-            get { return _dependencies; }
-            private set
-            {
-                if (Equals(value, _dependencies))
-                {
-                    return;
-                }
-                _dependencies = value;
-                OnPropertyChanged();
-            }
-        }
-
         #endregion
 
         #region ILocalModification Members
@@ -232,28 +219,23 @@ namespace FSOManagement.Implementations.Mod
                 return;
             }
 
-            var parser = new FileIniDataParser();
+            var parser = new StreamIniDataParser();
             parser.Parser.Configuration.CommentString = "#";
-
-            byte[] iniContent;
-
-            using (var stream = new FileStream(iniPath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true))
-            {
-                iniContent = new byte[stream.Length];
-
-                await stream.ReadAsync(iniContent, 0, iniContent.Length).ConfigureAwait(false);
-            }
 
             var iniData = await Task.Run(() =>
             {
                 try
                 {
-                    return parser.ReadData(new StreamReader(new MemoryStream(iniContent), Encoding.UTF8));
+                    return parser.ReadData(new StreamReader(new FileStream(iniPath, FileMode.Open), Encoding.UTF8));
                 }
-                catch (ParsingException)
+                catch (IOException e)
                 {
-                    // Ignore the error, pretend its a mod without mod.ini
-                    // TODO: Add notification
+                    this.Log().WarnException("Failed to load mod.ini ("+iniPath+")!", e);
+                    return null;
+                }
+                catch (ParsingException e)
+                {
+                    this.Log().WarnException("Failed to parse mod.ini (" + iniPath + ")!", e);
                     return null;
                 }
             }).ConfigureAwait(false);
@@ -272,11 +254,11 @@ namespace FSOManagement.Implementations.Mod
 
             if (iniData.Sections.ContainsSection("multimod"))
             {
-                var iniDependencies = new IniModDependencies(iniData["multimod"]);
-
-                Dependencies = iniDependencies;
+                Dependencies = iniData["multimod"];
             }
         }
+
+        public KeyDataCollection Dependencies { get; private set; }
 
         private void InitializeFromIniData(KeyDataCollection data)
         {
