@@ -50,26 +50,32 @@ namespace UI.WPF.Modules.Installation.ViewModels.ListOverview
 
         public IReadOnlyReactiveList<ModGroupViewModel> ModGroupViewModels { get; private set; }
 
-        #region IInstallationState Members
-
-        #region Implementation of IInstallationState
-
-        public Task<StateResult> GetResult()
+        private IEnumerable<InstallationItem> GetUninstallationItems()
         {
-            return null;
+            return
+                ModGroupViewModels.Select(x => x.CurrentMod)
+                    .Where(modVm => modVm.Packages.Any(UninstallPackageSelector))
+                    .Select(
+                        modVm =>
+                            new InstallationItemParent(modVm.Mod.Title,
+                                modVm.Packages.Where(UninstallPackageSelector).Select(x => new PackageUninstallationItem(x.Package, _modInstallation))));
         }
-
-        #endregion
-
-        #endregion
 
         private async Task StartInstallation()
         {
             var installationItems = GetInstallationItems().ToList();
+            var uninstallationItems = GetUninstallationItems().ToList();
 
             var dependencies = await GetPackageDependencies();
 
-            await _manager.ExecuteChanges(installationItems, Enumerable.Empty<InstallationItem>());
+            await _manager.ExecuteChanges(installationItems.Concat(GetDependencyItems(dependencies)), uninstallationItems);
+        }
+
+        private IEnumerable<InstallationItem> GetDependencyItems(IEnumerable<IPackage> dependencies)
+        {
+            return
+                dependencies.GroupBy(x => x.ContainingModification)
+                    .Select(g => new InstallationItemParent(g.Key.Title, g.Select(p => new PackageInstallationItem(p, _modInstallation))));
         }
 
         private bool PackageSelector(PackageViewModel model)
@@ -246,5 +252,20 @@ namespace UI.WPF.Modules.Installation.ViewModels.ListOverview
                 }
             }
         }
+
+        #region Implementation of IInstallationState
+
+        public Task<StateResult> GetResult()
+        {
+            // Never completes
+            return new TaskCompletionSource<StateResult>().Task;
+        }
+
+        private bool UninstallPackageSelector(PackageViewModel model)
+        {
+            return !model.Selected && _modInstallation.LocalModManager.IsPackageInstalled(model.Package);
+        }
+
+        #endregion
     }
 }
