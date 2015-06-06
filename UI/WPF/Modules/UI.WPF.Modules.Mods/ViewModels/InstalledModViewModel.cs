@@ -30,6 +30,10 @@ namespace UI.WPF.Modules.Mods.ViewModels
 
             return ModInstance.Modification.Title.IndexOf(filterString, StringComparison.InvariantCultureIgnoreCase) >= 0;
         }
+        public override int CompareTo(ModViewModel<InstalledModification> other)
+        {
+            return string.Compare(ModInstance.Modification.Title, other.ModInstance.Modification.Title, StringComparison.CurrentCulture);
+        }
 
         protected override async Task<IBitmap> LoadLogoAsync()
         {

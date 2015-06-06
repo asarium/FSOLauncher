@@ -16,7 +16,7 @@ using UI.WPF.Launcher.Common.Interfaces;
 
 namespace UI.WPF.Modules.Mods.ViewModels
 {
-    public abstract class ModViewModel : ReactiveObjectBase
+    public abstract class ModViewModel : ReactiveObjectBase, IComparable<ModViewModel>
     {
         private bool _isActiveMod;
 
@@ -130,9 +130,15 @@ namespace UI.WPF.Modules.Mods.ViewModels
 
         [NotNull]
         protected abstract Task<IBitmap> LoadLogoAsync();
+
+        #region Implementation of IComparable<in ModViewModel>
+
+        public abstract int CompareTo(ModViewModel other);
+
+        #endregion
     }
 
-    public abstract class ModViewModel<TMod> : ModViewModel where TMod : ILocalModification
+    public abstract class ModViewModel<TMod> : ModViewModel, IComparable<ModViewModel<TMod>> where TMod : ILocalModification
     {
         protected ModViewModel([NotNull] TMod mod, [NotNull] IObservable<string> filterObservable) : base(mod, filterObservable)
         {
@@ -156,5 +162,19 @@ namespace UI.WPF.Modules.Mods.ViewModels
                 base.Mod = value;
             }
         }
+        public override int CompareTo(ModViewModel other)
+        {
+            var castedMod = other as ModViewModel<TMod>;
+            if (castedMod == null)
+                return 0;
+
+            return CompareTo(castedMod);
+        }
+
+        #region Implementation of IComparable<in ModViewModel<TMod>>
+
+        public abstract int CompareTo(ModViewModel<TMod> other);
+
+        #endregion
     }
 }

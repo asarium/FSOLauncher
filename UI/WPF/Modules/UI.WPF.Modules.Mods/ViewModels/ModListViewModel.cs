@@ -31,7 +31,10 @@ namespace UI.WPF.Modules.Mods.ViewModels
 
             var viewModels = mods.CreateDerivedCollection(mod => GetViewModel(mod, filterObservable));
 
-            _filteredViewModels = viewModels.CreateDerivedCollection(model => model, model => model.Visible, null, filterObservable);
+            _filteredViewModels = viewModels.CreateDerivedCollection(model => model,
+                model => model.Visible,
+                (a, b) => a.CompareTo(b),
+                filterObservable);
 
             HasModsObservable = _filteredViewModels.CountChanged.Select(c => c > 0);
             _filteredViewModels.CountChanged.Select(c => c > ManyModsThreashold).BindTo(this, x => x.HasManyMods);

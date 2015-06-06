@@ -109,5 +109,14 @@ namespace UI.WPF.Modules.Mods.ViewModels
                 return null;
             }
         }
+
+        #region Overrides of ModViewModel<IniModification>
+
+        public override int CompareTo(ModViewModel<IniModification> other)
+        {
+            return string.Compare(ModInstance.Name, other.ModInstance.Name, StringComparison.CurrentCulture);
+        }
+
+        #endregion
     }
 }
