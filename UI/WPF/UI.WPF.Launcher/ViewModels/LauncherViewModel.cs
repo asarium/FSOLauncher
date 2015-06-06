@@ -45,6 +45,8 @@ namespace UI.WPF.Launcher.ViewModels
             IModInstallationManager modInstallationManager,
             IProfileManager profileManager, IMessageBus bus)
         {
+            ScreenExtensions.TryActivate(this);
+
             ModInstallationManager = modInstallationManager;
             ProfileManager = profileManager;
 
@@ -101,7 +103,11 @@ namespace UI.WPF.Launcher.ViewModels
             });
 
             _totalConversions.Changed.Subscribe(_ => settings.TotalConversions = _totalConversions);
-            _repositories.Changed.Subscribe(_ => settings.ModRepositories = _repositories);
+            _repositories.Changed.Subscribe(_ =>
+            {
+                settings.ModRepositories = _repositories;
+                ModInstallationManager.RemoteModManager.Repositories = _repositories.Select(x => x.Repository);
+            });
         }
 
         public bool HasTotalConversions

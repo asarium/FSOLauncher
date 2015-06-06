@@ -5,14 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mods="clr-namespace:UI.WPF.Modules.Installation.ViewModels.Mods"
              xmlns:views="clr-namespace:UI.WPF.Modules.Installation.Views"
-             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:listOverview="clr-namespace:UI.WPF.Modules.Installation.ViewModels.ListOverview"
              mc:Ignorable="d" d:DesignHeight="300"
              d:DesignWidth="300" d:DataContext="{d:DesignInstance listOverview:PackageListViewModel}">
-
-    <UserControl.Resources>
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-    </UserControl.Resources>
     <Grid>
         <Grid ZIndex="1">
             <Grid.RowDefinitions>
@@ -51,18 +46,8 @@
                     <ColumnDefinition />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <Button HorizontalAlignment="Right" VerticalAlignment="Top" Command="{Binding InstallModsCommand}"
-                        Margin="3" Grid.Column="1">
-                    <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-                            <Setter Property="ToolTip" Value="Start download and installation" />
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding InstallationInProgress}" Value="True">
-                                    <Setter Property="ToolTip" Value="Click for more information" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
+                <Button HorizontalAlignment="Right" VerticalAlignment="Top" Command="{Binding StartInstallationCommand}"
+                        Margin="3" Grid.Column="1" ToolTip="Start download and installation">
                     <StackPanel Orientation="Horizontal">
                         <Rectangle Width="20" Height="20"
                                    Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}">
@@ -71,18 +56,7 @@
                             </Rectangle.OpacityMask>
                         </Rectangle>
                         <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,2,2,2"
-                                   FontSize="18" FontWeight="Bold">
-                            <TextBlock.Style>
-                                <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
-                                    <Setter Property="Text" Value="Install" />
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding InstallationInProgress}" Value="True">
-                                            <Setter Property="Text" Value="Installing..." />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Style>
-                        </TextBlock>
+                                   FontSize="18" FontWeight="Bold" Text="Install" />
                     </StackPanel>
                 </Button>
             </Grid>

@@ -2,35 +2,37 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using ModInstallation.Interfaces.Mods;
 using ReactiveUI;
 using UI.WPF.Launcher.Common.Classes;
+using UI.WPF.Modules.Installation.Interfaces;
 using UI.WPF.Modules.Installation.ViewModels.Dependencies;
 using UI.WPF.Modules.Installation.ViewModels.Installation;
 
 #endregion
 
-namespace UI.WPF.Modules.Installation.ViewModels
+namespace UI.WPF.Modules.Installation.ViewModels.Operations
 {
-    public class OperationOverviewViewModel : ReactiveObjectBase
+    public class OperationsOverviewViewModel : ReactiveObjectBase, IInstallationState
     {
         private InstallationItemParent _installationParent;
 
         private InstallationItemParent _uninstallationParent;
+        
+        private readonly TaskCompletionSource<StateResult> _resultTcs;
 
-        public DependenciesViewModel Dependencies { get; private set; }
-
-        public OperationOverviewViewModel(IEnumerable<IPackage> deps, Action abortAction, Action continueAction)
+        public OperationsOverviewViewModel()
         {
-            Dependencies = new DependenciesViewModel(deps);
+            _resultTcs = new TaskCompletionSource<StateResult>();
 
             var cmd = ReactiveCommand.Create();
-            cmd.Subscribe(_ => abortAction());
+            cmd.Subscribe(_ => _resultTcs.TrySetResult(StateResult.Abort));
             AbortCommand = cmd;
 
             cmd = ReactiveCommand.Create();
-            cmd.Subscribe(_ => continueAction());
+            cmd.Subscribe(_ => _resultTcs.TrySetResult(StateResult.Continue));
             ContinueCommand = cmd;
         }
 
@@ -58,6 +60,11 @@ namespace UI.WPF.Modules.Installation.ViewModels
         public IEnumerable<InstallationItem> UninstallationItems
         {
             set { UninstallationParent = new InstallationItemParent(null, value); }
+        }
+
+        public Task<StateResult> GetResult()
+        {
+            return _resultTcs.Task;
         }
     }
 }

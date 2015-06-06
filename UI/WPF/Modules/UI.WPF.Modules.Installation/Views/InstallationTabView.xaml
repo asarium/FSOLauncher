@@ -5,8 +5,44 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewModels="clr-namespace:UI.WPF.Modules.Installation.ViewModels"
              xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls" xmlns:cal="http://www.caliburnproject.org"
-             mc:Ignorable="d"
-             d:DataContext="{d:DesignInstance viewModels:InstallationTabViewModel}" d:DesignHeight="300"
-             d:DesignWidth="300">
-    <controls:TransitioningContentControl cal:View.Model="{Binding CurrentState}" />
+             mc:Ignorable="d" d:DataContext="{d:DesignInstance viewModels:InstallationTabViewModel}"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Resources/Shared.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid ZIndex="1">
+            <controls:TransitioningContentControl cal:View.Model="{Binding CurrentState}" />
+        </Grid>
+
+        <Grid ZIndex="2">
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding HasManagerStatusMessage}" Value="True">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+            
+            <Rectangle Fill="{DynamicResource WhiteBrush}" Opacity="0.5" />
+            <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <controls:ProgressRing Grid.Row="0" IsActive="{Binding HasManagerStatusMessage}" />
+                <TextBlock Text="{Binding ManagerStatusMessage}" VerticalAlignment="Center"
+                           HorizontalAlignment="Center" Margin="5" Grid.Row="1" FontSize="14.667" FontWeight="Bold"
+                           TextWrapping="Wrap" TextAlignment="Center" />
+            </Grid>
+        </Grid>
+    </Grid>
 </UserControl>

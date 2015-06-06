@@ -3,12 +3,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:viewModels="clr-namespace:UI.WPF.Modules.Installation.ViewModels"
-             xmlns:dependencies="clr-namespace:UI.WPF.Modules.Installation.ViewModels.Dependencies"
              xmlns:dependencies1="clr-namespace:UI.WPF.Modules.Installation.Views.Dependencies"
              xmlns:installation="clr-namespace:UI.WPF.Modules.Installation.ViewModels.Installation"
-             xmlns:operations="clr-namespace:UI.WPF.Modules.Installation.Views.Operations" mc:Ignorable="d"
-             d:DataContext="{d:DesignInstance viewModels:OperationOverviewViewModel}" d:DesignHeight="300"
+             xmlns:operations="clr-namespace:UI.WPF.Modules.Installation.Views.Operations"
+             xmlns:operations1="clr-namespace:UI.WPF.Modules.Installation.ViewModels.Operations"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance operations1:OperationsOverviewViewModel}" d:DesignHeight="300"
              d:DesignWidth="300">
     <Grid>
         <Grid Margin="5">
@@ -105,57 +105,38 @@
                     </Grid>
 
                     <Grid DockPanel.Dock="Bottom">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-                        <Grid DataContext="{Binding Dependencies}" Grid.Row="0">
-                            <Grid.Style>
-                                <Style TargetType="Grid">
-                                    <Setter Property="Visibility" Value="Visible" />
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding ModViewModels.Count}" Value="0">
-                                            <Setter Property="Visibility" Value="Collapsed" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Grid.Style>
-                            <dependencies1:DependenciesView />
-                        </Grid>
-                        <Grid Grid.Row="1">
-                            <Grid.Style>
-                                <Style TargetType="Grid">
-                                    <Setter Property="Visibility" Value="Visible" />
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding InstallationParent.HasChildren}" Value="False">
-                                            <Setter Property="Visibility" Value="Collapsed" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Grid.Style>
-                            <StackPanel>
-                                <Label Margin="5" VerticalAlignment="Top"
-                                       Style="{DynamicResource DescriptionHeaderStyle}" Content="Installations" />
-                                <TextBlock Text="You have selected the following items:" TextWrapping="Wrap" Margin="3"
-                                           HorizontalAlignment="Center" />
+                        <Grid.Style>
+                            <Style TargetType="Grid">
+                                <Setter Property="Visibility" Value="Visible" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding InstallationParent.HasChildren}" Value="False">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Grid.Style>
+                        <StackPanel>
+                            <Label Margin="5" VerticalAlignment="Top"
+                                    Style="{DynamicResource DescriptionHeaderStyle}" Content="Installations" />
+                            <TextBlock Text="You have selected the following items:" TextWrapping="Wrap" Margin="3"
+                                        HorizontalAlignment="Center" />
 
-                                <ItemsControl Margin="0,5,0,0" ItemsSource="{Binding InstallationParent.Children}">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <WrapPanel />
-                                        </ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate DataType="{x:Type installation:InstallationItem}">
-                                            <Border Margin="5" CornerRadius="3"
-                                                    BorderBrush="{DynamicResource AccentColorBrush}">
-                                                <operations:InstallationItemView />
-                                            </Border>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                            </StackPanel>
-                        </Grid>
+                            <ItemsControl Margin="0,5,0,0" ItemsSource="{Binding InstallationParent.Children}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type installation:InstallationItem}">
+                                        <Border Margin="5" CornerRadius="3"
+                                                BorderBrush="{DynamicResource AccentColorBrush}">
+                                            <operations:InstallationItemView />
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
                     </Grid>
                 </DockPanel>
             </ScrollViewer>

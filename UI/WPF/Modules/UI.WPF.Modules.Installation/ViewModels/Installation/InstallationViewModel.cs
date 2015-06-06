@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using ReactiveUI;
 using UI.WPF.Launcher.Common.Classes;
+using UI.WPF.Modules.Installation.Interfaces;
 
 #endregion
 
 namespace UI.WPF.Modules.Installation.ViewModels.Installation
 {
-    public class InstallationViewModel : ReactiveObjectBase
+    public class InstallationViewModel : ReactiveObjectBase, IInstallationState
     {
         private InstallationItemParent _installationParent;
 
@@ -20,16 +21,14 @@ namespace UI.WPF.Modules.Installation.ViewModels.Installation
 
         public ReactiveCommand<object> CloseCommand { get; private set; }
 
-        public InstallationViewModel(Action closeAction)
-        {
-            CloseCommand =  ReactiveCommand.Create();
-            CloseCommand.Subscribe(_ => closeAction());
-        }
+        private readonly TaskCompletionSource<StateResult> _resultTcs;
 
-        public async Task WaitforCloseAsync()
+        public InstallationViewModel()
         {
-            // This will wait for the next "value" of the command
-            await CloseCommand;
+            _resultTcs = new TaskCompletionSource<StateResult>();
+
+            CloseCommand =  ReactiveCommand.Create();
+            CloseCommand.Subscribe(_ => _resultTcs.TrySetResult(StateResult.Abort));
         }
 
         public InstallationItemParent InstallationParent
@@ -53,5 +52,14 @@ namespace UI.WPF.Modules.Installation.ViewModels.Installation
         {
             set { UninstallationParent = new InstallationItemParent(null, value); }
         }
+
+        #region Implementation of IInstallationState
+
+        public Task<StateResult> GetResult()
+        {
+            return _resultTcs.Task;
+        }
+
+        #endregion
     }
 }

@@ -3,28 +3,57 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Caliburn.Micro;
 using ModInstallation.Annotations;
+using ModInstallation.Exceptions;
+using ModInstallation.Implementations.Util;
 using ModInstallation.Interfaces;
 using ModInstallation.Interfaces.Mods;
 using ReactiveUI;
+using Splat;
 using UI.WPF.Launcher.Common.Classes;
 using UI.WPF.Launcher.Common.Interfaces;
+using UI.WPF.Launcher.Common.Services;
 using UI.WPF.Modules.Installation.Interfaces;
+using UI.WPF.Modules.Installation.ViewModels.Installation;
 using UI.WPF.Modules.Installation.ViewModels.ListOverview;
+using UI.WPF.Modules.Installation.ViewModels.Operations;
 
 #endregion
 
 namespace UI.WPF.Modules.Installation.ViewModels
 {
-    [Export(typeof(ILauncherTab)), ExportMetadata("Priority", 3), Export(typeof(IInstallationManager))]
-    public class InstallationTabViewModel : Screen, ILauncherTab, IInstallationManager
+    internal class ModDependencyException : DependencyException
     {
+        public ModDependencyException(IModification mod) : base(mod.Title)
+        {
+            Mod = mod;
+        }
+
+        public IModification Mod { get; private set; }
+    }
+
+    [Export(typeof(ILauncherTab)), ExportMetadata("Priority", 3), Export(typeof(IInstallationManager))]
+    public class InstallationTabViewModel : Screen, ILauncherTab, IInstallationManager, IEnableLogger
+    {
+        private readonly Subject<Unit> _activatedObservable = new Subject<Unit>();
+
+        private readonly IReactiveList<IModGroup<IModification>> _modGroups = new ReactiveList<IModGroup<IModification>>();
+
+        private readonly ICommand _updatePackageListCommand;
+
         private IInstallationState _currentState;
+
+        private bool _hasManagerStatusMessage;
+
+        private string _managerStatusMessage;
 
         [ImportingConstructor]
         public InstallationTabViewModel(IModInstallationManager modManager, IMessageBus bus)
@@ -37,12 +66,21 @@ namespace UI.WPF.Modules.Installation.ViewModels
 
             CurrentState = InitializeFirstState();
 
-            bus.Listen<MainWindowOpenedMessage>().InvokeCommand(_updatePackageListCommand);
+            var setupObservable =
+                bus.Listen<MainWindowOpenedMessage>()
+                    .Select(x => Unit.Default)
+                    .Delay(TimeSpan.FromSeconds(30))
+                    .Merge(_activatedObservable)
+                    .FirstAsync();
+            setupObservable.InvokeCommand(_updatePackageListCommand);
         }
 
         private IModInstallationManager ModInstallationManager { get; set; }
-        
-        #region ILauncherTab Members
+
+        private IInstallationState InitializeFirstState()
+        {
+            return new PackageListViewModel(this, ModInstallationManager);
+        }
 
         #region Overrides of Screen
 
@@ -51,14 +89,14 @@ namespace UI.WPF.Modules.Installation.ViewModels
             get { return "Update/Install Mods"; }
         }
 
-        #endregion
-
-        #endregion
-
-        private IInstallationState InitializeFirstState()
+        protected override void OnActivate()
         {
-            return new PackageListViewModel(this, ModInstallationManager);
+            base.OnActivate();
+
+            _activatedObservable.OnNext(Unit.Default);
         }
+
+        #endregion
 
         #region Implementation of IInstallationManager
 
@@ -119,6 +157,8 @@ namespace UI.WPF.Modules.Installation.ViewModels
         public async Task UpdatePackageList()
         {
             ManagerStatusMessage = "Parsing local mod information...";
+            await ModInstallationManager.LocalModManager.ParseLocalModDataAsync();
+
             try
             {
                 var exception = false;
@@ -129,11 +169,16 @@ namespace UI.WPF.Modules.Installation.ViewModels
                             true,
                             CancellationToken.None).ConfigureAwait(false);
 
-                    _modGroups.Reset();
-                    _modGroups.AddRange(ModInstallationManager.RemoteModManager.ModGroups);
+                    await Observable.Start(() =>
+                    {
+                        _modGroups.Reset();
+                        _modGroups.AddRange(ModInstallationManager.RemoteModManager.ModGroups);
+                    },
+                        RxApp.MainThreadScheduler);
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
+                    this.Log().WarnException("Exception while updating package list!", e);
                     exception = true;
                 }
 
@@ -169,18 +214,64 @@ namespace UI.WPF.Modules.Installation.ViewModels
             }
         }
 
-        public Task InstallPackages(IEnumerable<IPackage> packages)
+        [NotNull, Import]
+        private ITaskbarController TaskbarController { get; set; }
+
+        public async Task ExecuteChanges(IEnumerable<InstallationItem> installations, IEnumerable<InstallationItem> uninstallations)
         {
-            throw new NotImplementedException();
+            var installationsList = installations.ToList();
+            var uninstallationsList = uninstallations.ToList();
+
+            try
+            {
+                var operationOverview = new OperationsOverviewViewModel();
+                operationOverview.InstallationItems = installationsList;
+                operationOverview.UninstallationItems = uninstallationsList;
+
+                CurrentState = operationOverview;
+
+                var result = await operationOverview.GetResult();
+
+                if (result != StateResult.Continue)
+                {
+                    return;
+                }
+
+                var installationVm = new InstallationViewModel();
+
+                TaskbarController.ProgressbarVisible = true;
+                TaskbarController.ProgressvarValue = 0.0;
+
+                try
+                {
+                    installationVm.InstallationItems = installationsList;
+                    installationVm.UninstallationItems = uninstallationsList;
+
+                    CurrentState = installationVm;
+
+                    using (installationVm.InstallationParent.WhenAnyValue(x => x.Progress).Subscribe(p =>
+                    {
+                        TaskbarController.ProgressvarValue = p;
+                    }))
+                    {
+                        await
+                            Task.WhenAll(installationVm.UninstallationParent.Install(), installationVm.InstallationParent.Install())
+                                .ConfigureAwait(true);
+                    }
+                }
+                finally
+                {
+                    TaskbarController.ProgressbarVisible = false;
+                    TaskbarController.ProgressvarValue = 0.0;
+                }
+
+                await installationVm.GetResult();
+            }
+            finally
+            {
+                CurrentState = InitializeFirstState();
+            }
         }
-
-        private bool _hasManagerStatusMessage;
-
-        private string _managerStatusMessage;
-
-        private readonly IReactiveList<IModGroup<IModification>> _modGroups = new ReactiveList<IModGroup<IModification>>();
-
-        private readonly ICommand _updatePackageListCommand;
 
         #endregion
     }
