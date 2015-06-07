@@ -92,6 +92,7 @@
     </Compile>
     <Compile Include="Classes\InstanceLaunchedMessage.cs" />
     <Compile Include="Classes\MainWindowOpenedMessage.cs" />
+    <Compile Include="Classes\ModInstallationFinishedMessage.cs" />
     <Compile Include="ContractNames.cs" />
     <Compile Include="Interfaces\IDialogControl.cs" />
     <Compile Include="Interfaces\IExecutableLauncher.cs" />

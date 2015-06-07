@@ -105,6 +105,7 @@
     <Compile Include="BlendHelpers\BlendResourceDictionary.cs" />
     <Compile Include="ViewModels\InstalledModViewModel.cs" />
     <Compile Include="ViewModels\ModListViewModel.cs" />
+    <Compile Include="ViewModels\ModManagerViewModel.cs" />
     <Compile Include="ViewModels\ModViewModel.cs" />
     <Compile Include="Views\InstalledModView.xaml.cs">
       <DependentUpon>InstalledModView.xaml</DependentUpon>

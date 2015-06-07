@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Composition;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using FSOManagement.Annotations;
@@ -48,8 +49,14 @@ namespace FSOManagement.Implementations.Mod
 
             var loaded = await Task.WhenAll(loadTasks);
 
-            _modifications.Clear();
-            _modifications.AddRange(loaded);
+            await Observable.Start(() =>
+            {
+                using (_modifications.SuppressChangeNotifications())
+                {
+                    _modifications.Clear();
+                    _modifications.AddRange(loaded);
+                }
+            }, RxApp.MainThreadScheduler);
         }
 
         #endregion

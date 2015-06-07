@@ -43,6 +43,8 @@ namespace UI.WPF.Modules.Installation.ViewModels
     [Export(typeof(ILauncherTab)), ExportMetadata("Priority", 3), Export(typeof(IInstallationManager))]
     public class InstallationTabViewModel : Screen, ILauncherTab, IInstallationManager, IEnableLogger
     {
+        private readonly IMessageBus _bus;
+
         private readonly Subject<Unit> _activatedObservable = new Subject<Unit>();
 
         private readonly IReactiveList<IModGroup<IModification>> _modGroups = new ReactiveList<IModGroup<IModification>>();
@@ -58,6 +60,7 @@ namespace UI.WPF.Modules.Installation.ViewModels
         [ImportingConstructor]
         public InstallationTabViewModel(IModInstallationManager modManager, IMessageBus bus)
         {
+            _bus = bus;
             ModInstallationManager = modManager;
 
             _updatePackageListCommand = ReactiveCommand.CreateAsyncTask(_ => UpdatePackageList());
@@ -269,6 +272,7 @@ namespace UI.WPF.Modules.Installation.ViewModels
             }
             finally
             {
+                _bus.SendMessage(new ModInstallationFinishedMessage());
                 CurrentState = InitializeFirstState();
             }
         }

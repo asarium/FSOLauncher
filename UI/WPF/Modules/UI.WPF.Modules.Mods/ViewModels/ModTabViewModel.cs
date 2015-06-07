@@ -4,13 +4,13 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
-using System.Reactive;
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
+using System.Threading.Tasks;
 using Caliburn.Micro;
 using FSOManagement.Annotations;
 using FSOManagement.Interfaces.Mod;
 using ReactiveUI;
+using UI.WPF.Launcher.Common.Classes;
 using UI.WPF.Launcher.Common.Interfaces;
 
 #endregion
@@ -28,15 +28,15 @@ namespace UI.WPF.Modules.Mods.ViewModels
 
         private IReadOnlyReactiveList<ModListViewModel> _modLists;
 
+        private ModManagerViewModel _modManagerVm;
+
         [ImportingConstructor]
-        public ModTabViewModel([NotNull] IProfileManager profileManager)
+        public ModTabViewModel([NotNull] IProfileManager profileManager, IMessageBus messageBus)
         {
             _profileManager = profileManager;
             DisplayName = "Mods";
 
-            InitializeLoadMods(profileManager);
-
-            InitializeModLists(profileManager);
+            InitializeLoadMods(profileManager, messageBus);
 
             _filterObservable = this.WhenAnyValue(x => x.FilterString);
 
@@ -60,31 +60,27 @@ namespace UI.WPF.Modules.Mods.ViewModels
             }
         }
 
-        [CanBeNull]
-        public IReadOnlyReactiveList<ModListViewModel> ModLists
+        public ModManagerViewModel ModManagerVm
         {
-            get { return _modLists; }
+            get { return _modManagerVm; }
             private set
             {
-                if (Equals(value, _modLists))
+                if (Equals(value, _modManagerVm))
                 {
                     return;
                 }
-                _modLists = value;
+                _modManagerVm = value;
                 NotifyOfPropertyChange();
             }
         }
 
-        private void InitializeLoadMods([NotNull] IProfileManager profileManager)
+        private void InitializeLoadMods([NotNull] IProfileManager profileManager, IMessageBus bus)
         {
-            profileManager.WhenAnyValue(x => x.CurrentProfile.SelectedTotalConversion.ModManager).Subscribe(LoadMods);
-        }
+            profileManager.WhenAnyValue(x => x.CurrentProfile.SelectedTotalConversion.ModManager)
+                .Select(x => new ModManagerViewModel(x, _filterObservable, bus))
+                .BindTo(this, x => x.ModManagerVm);
 
-        private async void LoadMods([NotNull] IModManager manager)
-        {
-            await manager.RefreshModsAsync();
-
-            UpdateViewModelStatus();
+            this.WhenAnyObservable(x => x.ModManagerVm.RefreshModsCommand).Subscribe(_ => UpdateViewModelStatus());
         }
 
         private void UpdateViewModelStatus()
@@ -97,25 +93,6 @@ namespace UI.WPF.Modules.Mods.ViewModels
             OnActiveModChanged(_profileManager.CurrentProfile.ModActivationManager.ActiveMod);
 
             OnActivatedModsChanged(_profileManager.CurrentProfile.ModActivationManager.ActivatedMods);
-        }
-
-        private void InitializeModLists([NotNull] IProfileManager profileManager)
-        {
-            profileManager.WhenAnyValue(x => x.CurrentProfile.SelectedTotalConversion.ModManager.ModificationLists).Select(CreateModListsView)
-                .BindTo(this, x => x.ModLists);
-        }
-
-        [NotNull]
-        private IReadOnlyReactiveList<ModListViewModel> CreateModListsView(
-            [NotNull] IEnumerable<IEnumerable<ILocalModification>> value)
-        {
-            var viewModels = value.CreateDerivedCollection(mods => new ModListViewModel(mods, _filterObservable));
-            
-            // This feels like a hack but I don't know how to do it better...
-            var resetSubject = new Subject<bool>();
-            viewModels.CreateDerivedCollection(x => x.HasModsObservable.ObserveOn(RxApp.MainThreadScheduler).Subscribe(resetSubject.OnNext));
-
-            return viewModels.CreateDerivedCollection(x => x, x => x.ModViewModels.Any(), null, resetSubject);
         }
 
         private void OnActiveModChanged([CanBeNull] ILocalModification activeMod)
@@ -132,6 +109,41 @@ namespace UI.WPF.Modules.Mods.ViewModels
         }
 
         private void OnActivatedModsChanged([CanBeNull] IEnumerable<ILocalModification> modifications)
+        {
+            if (_modLists == null)
+            {
+                return;
+            }
+            if (modifications == null)
+            {
+                return;
+            }
+
+            var localModifications = modifications as IList<ILocalModification> ?? modifications.ToList();
+            foreach (var modListViewModel in _modLists)
+            {
+                modListViewModel.OnSecondaryModificationsChanged(localModifications);
+            }
+        }
+        private void OnPrimaryModificationsChanged([CanBeNull] IEnumerable<ILocalModification> modifications)
+        {
+            if (_modLists == null)
+            {
+                return;
+            }
+            if (modifications == null)
+            {
+                return;
+            }
+
+            var localModifications = modifications as IList<ILocalModification> ?? modifications.ToList();
+            foreach (var modListViewModel in _modLists)
+            {
+                modListViewModel.OnPrimaryModificationsChanged(localModifications);
+            }
+        }
+
+        private void OnSecondaryModificationsChanged([CanBeNull] IEnumerable<ILocalModification> modifications)
         {
             if (_modLists == null)
             {
