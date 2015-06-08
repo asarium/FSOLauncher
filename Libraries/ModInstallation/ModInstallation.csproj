@@ -108,6 +108,7 @@
     <Compile Include="Implementations\DataClasses\Repository.cs" />
     <Compile Include="Implementations\DefaultDependencyResolver.cs" />
     <Compile Include="Implementations\LocalModManager.cs" />
+    <Compile Include="Implementations\Mods\RetailModification.cs" />
     <Compile Include="Implementations\RemoteModManager.cs" />
     <Compile Include="Implementations\DefaultFileDownloader.cs" />
     <Compile Include="Implementations\DefaultPackageInstaller.cs" />
